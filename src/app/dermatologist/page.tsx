@@ -1,9 +1,8 @@
 'use client';
 
 import { diagnoseSkinCondition, type SkinConditionDiagnosisOutput } from "@/ai/flows/skin-condition-diagnosis";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Bot, Loader2, User, Volume2, Wand2 } from "lucide-react";
 import Image from "next/image";
@@ -24,11 +23,14 @@ export default function DermatologistPage() {
 
     const speak = (text: string) => {
         if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+            // Hentikan suara yang sedang diputar jika ada
+            window.speechSynthesis.cancel();
+            
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
+            utterance.lang = 'id-ID'; // Set bahasa ke Indonesia
             window.speechSynthesis.speak(utterance);
         } else {
-            toast({ title: 'Browser Not Supported', description: 'Your browser does not support text-to-speech.', variant: 'destructive' });
+            toast({ title: 'Browser Tidak Didukung', description: 'Browser Anda tidak mendukung text-to-speech.', variant: 'destructive' });
         }
     }
 
@@ -37,8 +39,8 @@ export default function DermatologistPage() {
 
         if (!photoDataUri || !description) {
             toast({
-                title: 'Missing Fields',
-                description: 'Please upload a photo and provide a description.',
+                title: 'Kolom Tidak Lengkap',
+                description: 'Mohon unggah foto dan berikan deskripsi.',
                 variant: 'destructive'
             });
             return;
@@ -59,15 +61,20 @@ export default function DermatologistPage() {
         try {
             const res = await diagnoseSkinCondition({ photoDataUri, description });
             
+            const diagnosisText = `Diagnosis: ${res.diagnosis}.`;
+            const amRoutineText = `Rekomendasi Pagi: ${res.recommendations.amRoutine}.`;
+            const pmRoutineText = `Rekomendasi Malam: ${res.recommendations.pmRoutine}.`;
+            const fullText = `${diagnosisText} ${amRoutineText} ${pmRoutineText}`;
+
             const assistantMessage: Message = {
                 role: 'assistant',
-                rawContent: `Diagnosis: ${res.diagnosis}. \n\n AM Routine: ${res.recommendations.amRoutine}. \n\n PM Routine: ${res.recommendations.pmRoutine}`,
+                rawContent: fullText,
                 content: (
                      <div className="space-y-6">
                         <div className="space-y-2">
                             <h3 className="font-semibold text-primary flex items-center justify-between mb-2">
                                 Diagnosis
-                                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => speak(res.diagnosis)}>
+                                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => speak(diagnosisText)}>
                                     <Volume2 className="h-4 w-4" />
                                 </Button>
                             </h3>
@@ -83,7 +90,7 @@ export default function DermatologistPage() {
                                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">{res.recommendations.pmRoutine}</p>
                             </div>
                         </div>
-                         <p className="text-center text-xs text-muted-foreground pt-4">Disclaimer: This AI diagnosis is for informational purposes only and is not a substitute for professional medical advice.</p>
+                         <p className="text-center text-xs text-muted-foreground pt-4">Disclaimer: Diagnosis AI ini hanya untuk tujuan informasi dan bukan pengganti nasihat medis profesional.</p>
                     </div>
                 )
             };
@@ -93,12 +100,12 @@ export default function DermatologistPage() {
             console.error(error);
             const errorMessage: Message = {
                 role: 'assistant',
-                content: 'An error occurred during diagnosis. Please try again.'
+                content: 'Terjadi kesalahan saat melakukan diagnosis. Silakan coba lagi.'
             };
              setMessages(prev => [...prev, errorMessage]);
             toast({
-                title: 'Diagnosis Failed',
-                description: 'An error occurred during diagnosis. Please try again.',
+                title: 'Diagnosis Gagal',
+                description: 'Terjadi kesalahan saat melakukan diagnosis. Silakan coba lagi.',
                 variant: 'destructive'
             });
         } finally {
@@ -116,7 +123,7 @@ export default function DermatologistPage() {
                     </div>
                     <h1 className="text-4xl font-bold tracking-tight">AI Dermatologist</h1>
                     <p className="mt-2 max-w-2xl text-muted-foreground">
-                        Upload a photo of your skin concern and describe the issue. Our AI will provide a potential diagnosis and a recommended skincare routine.
+                        Unggah foto masalah kulit Anda dan berikan deskripsi. AI kami akan memberikan diagnosis potensial dan rutinitas perawatan kulit yang direkomendasikan.
                     </p>
                 </div>
             )}

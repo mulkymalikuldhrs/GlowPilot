@@ -24,24 +24,41 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
     useEffect(() => {
         if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognitionRef.current = new SpeechRecognition();
-            const recognition = recognitionRef.current;
-            recognition.continuous = false;
-            recognition.lang = 'en-US';
+            const recognition = new SpeechRecognition();
+            recognition.continuous = true; // Dengarkan terus menerus
+            recognition.lang = 'id-ID'; // Set bahasa ke Indonesia
+            recognition.interimResults = true; // Dapatkan hasil sementara
 
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                setDescription(prev => prev ? `${prev} ${transcript}` : transcript);
-                setIsListening(false);
+                let finalTranscript = '';
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                setDescription(prev => `${prev}${finalTranscript}`);
             };
+
             recognition.onerror = (event) => {
                 console.error('Speech recognition error', event.error);
-                toast({ title: 'Voice Error', description: 'Could not recognize speech.', variant: 'destructive' });
+                let errorMessage = 'Terjadi kesalahan saat pengenalan suara.';
+                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                    errorMessage = 'Akses mikrofon ditolak. Mohon izinkan di pengaturan browser Anda.';
+                } else if (event.error === 'no-speech') {
+                    errorMessage = 'Tidak ada suara yang terdeteksi.';
+                }
+                toast({ title: 'Kesalahan Suara', description: errorMessage, variant: 'destructive' });
                 setIsListening(false);
             };
+
             recognition.onend = () => {
                 setIsListening(false);
             };
+            
+            recognitionRef.current = recognition;
         }
     }, [toast]);
 
@@ -49,6 +66,15 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            // Validasi tipe file
+            if (!file.type.startsWith('image/')) {
+                toast({
+                    title: 'File Tidak Valid',
+                    description: 'Silakan pilih file gambar (contoh: JPG, PNG, WEBP).',
+                    variant: 'destructive',
+                });
+                return;
+            }
             setPhoto(file);
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -69,11 +95,12 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
 
     const handleMicClick = () => {
         if (!recognitionRef.current) {
-            toast({ title: 'Browser Not Supported', description: 'Your browser does not support voice recognition.', variant: 'destructive' });
+            toast({ title: 'Browser Tidak Didukung', description: 'Browser Anda tidak mendukung pengenalan suara.', variant: 'destructive' });
             return;
         }
         if (isListening) {
             recognitionRef.current.stop();
+            setIsListening(false);
         } else {
             recognitionRef.current.start();
             setIsListening(true);
@@ -82,11 +109,19 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
 
     const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (isLoading) return;
+        if (!description && !photo) return;
+        
         const photoDataUri = photo ? await fileToBase64(photo) : null;
         onSubmit({ description, photo, photoDataUri });
+
+        // Reset form setelah submit
         setDescription('');
         setPhoto(null);
         setPhotoPreview(null);
+        if(fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
     };
 
     const handleRemoveImage = () => {
@@ -100,8 +135,8 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
     return (
         <form onSubmit={handleFormSubmit} className="relative">
              {photoPreview && (
-                <div className="absolute bottom-full left-0 mb-2 w-32 h-32 p-2 bg-secondary rounded-lg glass-card">
-                    <Image src={photoPreview} alt="Preview" width={128} height={128} className="w-full h-full rounded-md object-cover" />
+                <div className="absolute bottom-full left-0 mb-2 w-24 h-24 p-1 bg-secondary rounded-lg glass-card">
+                    <Image src={photoPreview} alt="Preview" width={96} height={96} className="w-full h-full rounded-md object-cover" />
                     <Button
                         type="button"
                         variant="destructive"
@@ -113,32 +148,15 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
                     </Button>
                 </div>
              )}
-            <div className="flex items-center gap-4">
-                 <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isLoading}
-                    className="h-10 w-10 shrink-0"
-                 >
-                    <ImageIcon className="h-5 w-5" />
-                 </Button>
-                 <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                    accept="image/*"
-                 />
+            <div className="relative flex items-center w-full">
                  <Textarea
                      id="description"
                      rows={1}
-                     placeholder="Describe your concern, or use the mic to speak..."
+                     placeholder="Unggah foto & jelaskan masalah kulit Anda..."
                      value={description}
                      onChange={(e) => setDescription(e.target.value)}
                      disabled={isLoading}
-                     className="pr-20 resize-none"
+                     className="pr-32 resize-none min-h-[40px] flex items-center"
                      onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
@@ -146,21 +164,40 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
                         }
                      }}
                  />
-                 <div className="absolute right-14 top-1/2 -translate-y-1/2 flex">
+                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isLoading}
+                        className="h-8 w-8 shrink-0"
+                        aria-label="Unggah Gambar"
+                    >
+                        <ImageIcon className="h-5 w-5" />
+                    </Button>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept="image/*"
+                    />
                     <Button 
                         type="button" 
                         size="icon" 
                         variant="ghost" 
-                        className={`h-8 w-8 ${isListening ? 'text-primary' : ''}`} 
+                        className={`h-8 w-8 ${isListening ? 'text-primary animate-pulse' : ''}`} 
                         onClick={handleMicClick} 
                         disabled={isLoading}
+                        aria-label={isListening ? 'Hentikan Perekaman' : 'Mulai Perekaman Suara'}
                     >
                         <Mic className="h-4 w-4"/>
                     </Button>
+                     <Button type="submit" size="icon" disabled={isLoading || (!description && !photo)} aria-label="Kirim Pesan">
+                        <SendHorizonal className="h-5 w-5" />
+                     </Button>
                  </div>
-                 <Button type="submit" size="icon" disabled={isLoading || (!description && !photo)}>
-                    <SendHorizonal className="h-5 w-5" />
-                 </Button>
             </div>
         </form>
     );

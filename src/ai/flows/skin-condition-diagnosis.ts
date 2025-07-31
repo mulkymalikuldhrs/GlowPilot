@@ -27,6 +27,11 @@ const SkinConditionDiagnosisOutputSchema = z.object({
     amRoutine: z.string().describe('The recommended morning skincare routine.'),
     pmRoutine: z.string().describe('The recommended evening skincare routine.'),
   }).describe('Personalized skincare routine recommendations'),
+  productRecommendations: z.array(z.object({
+    name: z.string().describe('The name of the recommended product.'),
+    category: z.string().describe('The category of the product (e.g., Cleanser, Moisturizer, Serum).'),
+    reason: z.string().describe('The reason why this product is recommended for the user\'s condition.'),
+  })).describe('A list of specific product recommendations.'),
 });
 export type SkinConditionDiagnosisOutput = z.infer<typeof SkinConditionDiagnosisOutputSchema>;
 
@@ -38,12 +43,12 @@ const prompt = ai.definePrompt({
   name: 'skinConditionDiagnosisPrompt',
   input: {schema: SkinConditionDiagnosisInputSchema},
   output: {schema: SkinConditionDiagnosisOutputSchema},
-  prompt: `You are an AI dermatologist that will provide a diagnosis of the skin condition and provide personalized skincare routine recommendations. Ensure your diagnosis is detailed, but easy to understand.
+  prompt: `You are an AI dermatologist. Provide a diagnosis of the skin condition, personalized skincare routine recommendations, and a list of 3-5 specific (but generic, well-known) product recommendations. For each product, explain why it's suitable.
 
   Description: {{{description}}}
   Photo: {{media url=photoDataUri}}
 
-  Format your output as a JSON object with "diagnosis" and "recommendations" fields.  The "recommendations" field should itself be a JSON object containing the "amRoutine" and "pmRoutine" fields.
+  Format your output as a JSON object with "diagnosis", "recommendations", and "productRecommendations" fields.
   `,
 });
 

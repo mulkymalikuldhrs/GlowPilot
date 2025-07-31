@@ -1,56 +1,54 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, CheckCircle, MessageCircle, Scan, Scale, User, Wand2 } from "lucide-react";
+import { ArrowRight, CheckCircle, MessageCircle, Scan, Scale, Wand2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-16 md:gap-24">
-      <section className="text-center pt-12 md:pt-20">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary-foreground">
-          Meet GlowPilot
+    <div className="flex flex-col gap-20 md:gap-32">
+      <section className="text-center pt-16 md:pt-24">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary-foreground">
+          GlowPilot Copilot
         </h1>
-        <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-          Your Personal AI Skincare Copilot. Achieve your best skin with AI-driven diagnosis, personalized routines, and smart product comparisons.
+        <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground">
+          Asisten AI personal Anda untuk kulit yang lebih sehat. Dapatkan diagnosis akurat, rekomendasi rutin, dan perbandingan produk cerdas dalam satu platform.
         </p>
-        <div className="mt-8 flex justify-center gap-4">
-          <Button asChild size="lg">
+        <div className="mt-10 flex justify-center gap-4">
+          <Button asChild size="lg" className="rounded-full px-8 py-6 text-base font-semibold">
             <Link href="/dermatologist">
-              Start Diagnosis <Wand2 className="ml-2" />
+              Mulai Diagnosis <Wand2 className="ml-2 h-5 w-5" />
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link href="#how-it-works">
-              Learn More
+          <Button asChild size="lg" variant="outline" className="rounded-full px-8 py-6 text-base font-semibold">
+            <Link href="#features">
+              Pelajari Lebih Lanjut
             </Link>
           </Button>
         </div>
       </section>
 
-      <section id="features" className="space-y-12">
+      <section id="features" className="space-y-16">
         <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight">One App, All Your Skin Needs</h2>
-          <p className="mt-2 text-muted-foreground">From analysis to purchase, we've got you covered.</p>
+          <h2 className="text-4xl font-bold tracking-tight">Semua Kebutuhan Kulit Anda, dalam Satu Aplikasi</h2>
+          <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">Dari analisis hingga rekomendasi, kami hadir untuk Anda.</p>
         </div>
         <div className="grid gap-8 md:grid-cols-2">
-          <Card className="glass-card flex flex-col overflow-hidden transform hover:scale-105 transition-transform duration-300">
-            <CardHeader>
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Wand2 className="h-6 w-6" />
+          <Card className="glass-card transform hover:-translate-y-2 transition-transform duration-300">
+            <CardHeader className="flex-row items-center gap-4">
+               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Wand2 className="h-7 w-7" />
                 </div>
-                <div>
-                  <CardTitle>AI Dermatologist</CardTitle>
-                  <CardDescription>
-                    Personalized diagnosis and routines.
-                  </CardDescription>
-                </div>
+              <div>
+                <CardTitle className="text-2xl">AI Dermatologist</CardTitle>
+                <CardDescription>
+                  Diagnosis & rutinitas perawatan personal.
+                </CardDescription>
               </div>
             </CardHeader>
-            <CardContent className="flex-grow">
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+            <CardContent>
+              <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border/20">
                 <Image 
                   src="https://placehold.co/600x400.png" 
                   alt="AI Dermatologist" 
@@ -60,32 +58,22 @@ export default function Home() {
                 />
               </div>
             </CardContent>
-            <div className="p-6 pt-4">
-               <Button asChild className="w-full">
-                 <Link href="/dermatologist">
-                   Analyze Your Skin
-                   <ArrowRight className="ml-2 h-4 w-4" />
-                 </Link>
-               </Button>
-            </div>
           </Card>
 
-          <Card className="glass-card flex flex-col overflow-hidden transform hover:scale-105 transition-transform duration-300">
-            <CardHeader>
-              <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/20 text-accent">
-                    <Scale className="h-6 w-6" />
-                  </div>
-                <div>
-                  <CardTitle>Product Comparison</CardTitle>
-                  <CardDescription>
-                    Find the best value and formulation.
-                  </CardDescription>
-                </div>
+          <Card className="glass-card transform hover:-translate-y-2 transition-transform duration-300">
+            <CardHeader className="flex-row items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/20 text-accent">
+                <Scale className="h-7 w-7" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl">Perbandingan Produk</CardTitle>
+                <CardDescription>
+                  Temukan formulasi & harga terbaik.
+                </CardDescription>
               </div>
             </CardHeader>
-            <CardContent className="flex-grow">
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+            <CardContent>
+               <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border/20">
                   <Image 
                     src="https://placehold.co/600x400.png" 
                     alt="Product Comparison" 
@@ -95,121 +83,113 @@ export default function Home() {
                   />
               </div>
             </CardContent>
-            <div className="p-6 pt-4">
-               <Button asChild className="w-full">
-                 <Link href="/compare">
-                   Compare Products
-                   <ArrowRight className="ml-2 h-4 w-4" />
-                 </Link>
-               </Button>
-            </div>
           </Card>
         </div>
       </section>
 
-      <section id="how-it-works" className="space-y-12">
+      <section id="how-it-works" className="space-y-16">
         <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight">How It Works</h2>
-          <p className="mt-2 text-muted-foreground">Get your personalized skincare plan in 3 simple steps.</p>
+          <h2 className="text-4xl font-bold tracking-tight">Bagaimana Caranya?</h2>
+          <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">Dapatkan rencana perawatan kulit personal dalam 3 langkah mudah.</p>
         </div>
         <div className="grid gap-8 md:grid-cols-3">
-          <div className="flex flex-col items-center text-center gap-4 p-6 rounded-lg glass-card">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <MessageCircle className="h-8 w-8" />
+          <div className="flex flex-col items-center text-center gap-4 p-8 rounded-2xl glass-card">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <MessageCircle className="h-10 w-10" />
             </div>
-            <h3 className="text-xl font-semibold">1. Describe</h3>
-            <p className="text-muted-foreground">Tell us about your skin concerns, goals, and lifestyle through chat, voice, or by uploading a photo.</p>
+            <h3 className="text-2xl font-semibold mt-2">1. Deskripsikan</h3>
+            <p className="text-muted-foreground">Ceritakan kondisi, tujuan, dan gaya hidup Anda melalui chat, suara, atau foto.</p>
           </div>
-          <div className="flex flex-col items-center text-center gap-4 p-6 rounded-lg glass-card">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Scan className="h-8 w-8" />
+          <div className="flex flex-col items-center text-center gap-4 p-8 rounded-2xl glass-card">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Scan className="h-10 w-10" />
             </div>
-            <h3 className="text-xl font-semibold">2. Analyze</h3>
-            <p className="text-muted-foreground">Our AI copilot analyzes your input to identify potential issues and determine your unique skin profile.</p>
+            <h3 className="text-2xl font-semibold mt-2">2. Analisis</h3>
+            <p className="text-muted-foreground">AI copilot kami akan menganalisis input untuk mengidentifikasi masalah dan profil unik kulit Anda.</p>
           </div>
-          <div className="flex flex-col items-center text-center gap-4 p-6 rounded-lg glass-card">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <CheckCircle className="h-8 w-8" />
+          <div className="flex flex-col items-center text-center gap-4 p-8 rounded-2xl glass-card">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <CheckCircle className="h-10 w-10" />
             </div>
-            <h3 className="text-xl font-semibold">3. Recommend</h3>
-            <p className="text-muted-foreground">Receive a tailored AM/PM skincare routine with product recommendations you can trust.</p>
+            <h3 className="text-2xl font-semibold mt-2">3. Rekomendasi</h3>
+            <p className="text-muted-foreground">Dapatkan rutinitas AM/PM yang dirancang khusus dengan rekomendasi produk terpercaya.</p>
           </div>
         </div>
       </section>
       
-      <section id="testimonials" className="space-y-12">
+      <section id="testimonials" className="space-y-16">
         <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight">Loved by Users Worldwide</h2>
-          <p className="mt-2 text-muted-foreground">Don't just take our word for it.</p>
+          <h2 className="text-4xl font-bold tracking-tight">Dipercaya oleh Pengguna di Seluruh Dunia</h2>
+          <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">Jangan hanya percaya kata kami.</p>
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="glass-card">
+          <Card className="glass-card p-2">
             <CardContent className="pt-6">
-              <div className="flex items-center gap-4 mb-4">
+              <p className="text-base text-foreground/90">"GlowPilot mengubah rutinitas saya sepenuhnya! Diagnosis AI-nya sangat akurat dan rekomendasi produknya benar-benar tepat sasaran."</p>
+              <div className="flex items-center gap-4 mt-6">
                 <Avatar>
                   <AvatarImage src="https://placehold.co/100x100.png" alt="User" data-ai-hint="female avatar" />
                   <AvatarFallback>S</AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="font-semibold">Sarah L.</p>
-                  <p className="text-sm text-muted-foreground">Skincare Enthusiast</p>
+                  <p className="text-sm text-muted-foreground">Pecinta Skincare</p>
                 </div>
               </div>
-              <p className="text-sm text-foreground/80">"GlowPilot completely transformed my skincare routine! The AI diagnosis was scarily accurate and the product recommendations were spot on."</p>
             </CardContent>
           </Card>
-          <Card className="glass-card">
+          <Card className="glass-card p-2">
             <CardContent className="pt-6">
-              <div className="flex items-center gap-4 mb-4">
+              <p className="text-base text-foreground/90">"Sebagai orang yang awam soal skincare, aplikasi ini adalah penyelamat. Simpel, cepat, dan hasilnya sudah terlihat."</p>
+               <div className="flex items-center gap-4 mt-6">
                 <Avatar>
                   <AvatarImage src="https://placehold.co/100x100.png" alt="User" data-ai-hint="male avatar" />
                   <AvatarFallback>M</AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="font-semibold">Michael B.</p>
-                  <p className="text-sm text-muted-foreground">Busy Professional</p>
+                  <p className="text-sm text-muted-foreground">Profesional Sibuk</p>
                 </div>
               </div>
-              <p className="text-sm text-foreground/80">"As someone who knows nothing about skincare, this was a lifesaver. It's simple, fast, and I've already seen improvements."</p>
             </CardContent>
           </Card>
-          <Card className="glass-card">
+          <Card className="glass-card p-2">
             <CardContent className="pt-6">
-              <div className="flex items-center gap-4 mb-4">
+              <p className="text-base text-foreground/90">"Alat yang fantastis untuk edukasi skincare yang mudah diakses. Memberdayakan pengguna untuk membuat keputusan yang tepat."</p>
+               <div className="flex items-center gap-4 mt-6">
                 <Avatar>
                   <AvatarImage src="https://placehold.co/100x100.png" alt="User" data-ai-hint="person face" />
                   <AvatarFallback>D</AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="font-semibold">Dr. Evelyn Reed</p>
-                  <p className="text-sm text-muted-foreground">Dermatologist</p>
+                  <p className="text-sm text-muted-foreground">Dermatologis</p>
                 </div>
               </div>
-              <p className="text-sm text-foreground/80">"A fantastic tool for accessible skincare education. It empowers users to make informed decisions about their skin health. Highly recommended."</p>
             </CardContent>
           </Card>
         </div>
       </section>
 
-      <section className="text-center py-12">
-        <div className="glass-card p-8 md:p-12 rounded-2xl">
-          <h2 className="text-3xl font-bold tracking-tight">Ready for Your Glow Up?</h2>
-          <p className="mt-4 max-w-xl mx-auto text-muted-foreground">
-            Stop guessing and start seeing results. Get your free, personalized skin analysis and routine from GlowPilot today.
+      <section className="py-16">
+        <div className="glass-card p-10 md:p-16 rounded-3xl text-center">
+          <h2 className="text-4xl font-bold tracking-tight">Siap untuk Kulit Impian Anda?</h2>
+          <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
+            Berhentilah menebak-nebak dan mulailah melihat hasilnya. Dapatkan analisis kulit dan rutinitas personal gratis dari GlowPilot hari ini.
           </p>
-          <div className="mt-8">
-            <Button asChild size="lg">
+          <div className="mt-10">
+            <Button asChild size="lg" className="rounded-full px-8 py-6 text-base font-semibold">
               <Link href="/dermatologist">
-                Get My Free Analysis
-                <ArrowRight className="ml-2" />
+                Dapatkan Analisis Gratis Saya
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
           </div>
         </div>
       </section>
 
-       <footer className="text-center py-6 border-t border-border/20">
-         <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} GlowPilot by Mulky Malikul Dhaher. For a more glowing world. ✨</p>
+       <footer className="text-center py-8 border-t border-border/20">
+         <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} GlowPilot oleh Mulky Malikul Dhaher. Untuk dunia yang lebih bersinar. ✨</p>
        </footer>
     </div>
   );

@@ -15,13 +15,13 @@ export default function Home() {
         <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground">
           Temukan potensi terbaik kulit Anda. Analisis cerdas, rekomendasi ahli, dan perbandingan produk dalam satu platform revolusioner.
         </p>
-        <div className="mt-10 flex justify-center gap-4">
-          <Button asChild size="lg" className="rounded-full px-8 py-6 text-base font-semibold">
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button asChild size="lg" className="rounded-full px-8 py-6 text-base font-semibold w-full sm:w-auto">
             <Link href="/dermatologist">
               Mulai Analisis Gratis <Wand2 className="ml-2 h-5 w-5" />
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="rounded-full px-8 py-6 text-base font-semibold">
+          <Button asChild size="lg" variant="outline" className="rounded-full px-8 py-6 text-base font-semibold w-full sm:w-auto">
             <Link href="#features">
               Pelajari Fitur
             </Link>
@@ -128,7 +128,7 @@ export default function Home() {
               <p className="text-base text-foreground/90">"Diagnosis AI-nya sangat akurat! Saya akhirnya menemukan rutinitas yang benar-benar bekerja untuk kulit sensitif saya. Terima kasih, GlowPilot!"</p>
               <div className="flex items-center gap-4 mt-6">
                 <Avatar>
-                  <AvatarImage src="https://placehold.co/100x100.png" alt="User" data-ai-hint="female avatar" />
+                  <AvatarImage src="https://placehold.co/100x100.png" alt="Amanda S." data-ai-hint="female avatar" />
                   <AvatarFallback>A</AvatarFallback>
                 </Avatar>
                 <div>
@@ -143,7 +143,7 @@ export default function Home() {
               <p className="text-base text-foreground/90">"Sebagai seorang profesional yang sibuk, fitur perbandingan produk sangat menghemat waktu saya. Saya bisa langsung menemukan produk terbaik tanpa riset berjam-jam."</p>
                <div className="flex items-center gap-4 mt-6">
                 <Avatar>
-                  <AvatarImage src="https://placehold.co/100x100.png" alt="User" data-ai-hint="male avatar" />
+                  <AvatarImage src="https://placehold.co/100x100.png" alt="Reza P." data-ai-hint="male avatar" />
                   <AvatarFallback>R</AvatarFallback>
                 </Avatar>
                 <div>
@@ -158,7 +158,7 @@ export default function Home() {
               <p className="text-base text-foreground/90">"Platform yang luar biasa untuk edukasi perawatan kulit. Memberdayakan pengguna untuk mengambil keputusan yang cerdas tentang kesehatan kulit mereka."</p>
                <div className="flex items-center gap-4 mt-6">
                 <Avatar>
-                  <AvatarImage src="https://placehold.co/100x100.png" alt="User" data-ai-hint="person face" />
+                  <AvatarImage src="https://placehold.co/100x100.png" alt="Dr. Evelyn" data-ai-hint="person face" />
                   <AvatarFallback>D</AvatarFallback>
                 </Avatar>
                 <div>

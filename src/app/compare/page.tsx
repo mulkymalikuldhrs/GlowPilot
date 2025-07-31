@@ -20,8 +20,8 @@ export default function ComparePage() {
         e.preventDefault();
         if (!product1 || !product2) {
             toast({
-                title: 'Missing Fields',
-                description: 'Please enter both product names.',
+                title: 'Kolom Belum Terisi',
+                description: 'Silakan masukkan kedua nama produk.',
                 variant: 'destructive'
             });
             return;
@@ -35,8 +35,8 @@ export default function ComparePage() {
         } catch (error) {
             console.error(error);
             toast({
-                title: 'Comparison Failed',
-                description: 'An error occurred while comparing products. Please try again.',
+                title: 'Perbandingan Gagal',
+                description: 'Terjadi kesalahan saat membandingkan produk. Silakan coba lagi.',
                 variant: 'destructive'
             });
         } finally {
@@ -62,9 +62,9 @@ export default function ComparePage() {
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                     <Scale className="h-8 w-8" />
                 </div>
-                <h1 className="text-4xl font-bold tracking-tight">Product Comparison</h1>
+                <h1 className="text-4xl font-bold tracking-tight">Perbandingan Produk</h1>
                 <p className="mt-2 max-w-2xl text-muted-foreground">
-                    Enter two product names below and let our AI provide a detailed comparison to help you choose the best one for your needs.
+                    Masukkan dua nama produk di bawah ini dan biarkan AI kami memberikan perbandingan mendetail untuk membantu Anda memilih yang terbaik.
                 </p>
             </div>
 
@@ -72,20 +72,20 @@ export default function ComparePage() {
                 <CardContent className="p-6">
                     <form onSubmit={handleSubmit} className="grid gap-6 md:grid-cols-2">
                         <div className="space-y-2">
-                            <Label htmlFor="product1">Product 1</Label>
+                            <Label htmlFor="product1">Produk 1</Label>
                             <Input 
                                 id="product1" 
-                                placeholder="e.g., CeraVe Hydrating Cleanser" 
+                                placeholder="cth., CeraVe Hydrating Cleanser" 
                                 value={product1}
                                 onChange={(e) => setProduct1(e.target.value)}
                                 disabled={loading}
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="product2">Product 2</Label>
+                            <Label htmlFor="product2">Produk 2</Label>
                             <Input 
                                 id="product2" 
-                                placeholder="e.g., La Roche-Posay Toleriane Cleanser"
+                                placeholder="cth., La Roche-Posay Toleriane Cleanser"
                                 value={product2}
                                 onChange={(e) => setProduct2(e.target.value)}
                                 disabled={loading}
@@ -96,11 +96,11 @@ export default function ComparePage() {
                                 {loading ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Comparing...
+                                        Membandingkan...
                                     </>
                                 ) : (
                                     <>
-                                        Compare Products
+                                        Bandingkan Produk
                                         <ArrowRight className="ml-2 h-4 w-4" />
                                     </>
                                 )}
@@ -113,17 +113,17 @@ export default function ComparePage() {
             {result && (
                 <Card className="mt-8 glass-card">
                     <CardHeader>
-                        <CardTitle>Comparison Result</CardTitle>
-                        <CardDescription>Here is the AI-generated comparison of {product1} and {product2}.</CardDescription>
+                        <CardTitle>Hasil Perbandingan</CardTitle>
+                        <CardDescription>Berikut adalah perbandingan yang dihasilkan AI dari {product1} dan {product2}.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <p className="whitespace-pre-wrap text-sm leading-relaxed">{result.comparison}</p>
-                        <ResultBadge label="Best Value" product={result.bestValue} />
-                        <ResultBadge label="Dermatologist Pick" product={result.dermatologistPick} />
-                        <ResultBadge label="Cheapest" product={result.cheapest} />
-                        <div className="flex gap-4 pt-4">
-                            <Button variant="outline" className="w-full">Buy {product1}</Button>
-                            <Button variant="outline" className="w-full">Buy {product2}</Button>
+                        <ResultBadge label="Nilai Terbaik" product={result.bestValue} />
+                        <ResultBadge label="Pilihan Dermatologis" product={result.dermatologistPick} />
+                        <ResultBadge label="Paling Murah" product={result.cheapest} />
+                        <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                            <Button variant="outline" className="w-full">Beli {product1}</Button>
+                            <Button variant="outline" className="w-full">Beli {product2}</Button>
                         </div>
                     </CardContent>
                 </Card>

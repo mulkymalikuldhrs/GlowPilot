@@ -21,8 +21,8 @@ export default function ProfilePage() {
         setTimeout(() => {
             setLoading(false);
             toast({
-                title: "Profile Updated",
-                description: "Your profile information has been saved.",
+                title: "Profil Diperbarui",
+                description: "Informasi profil Anda telah disimpan.",
             })
         }, 1000);
     }
@@ -33,73 +33,73 @@ export default function ProfilePage() {
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                     <User className="h-8 w-8" />
                 </div>
-                <h1 className="text-4xl font-bold tracking-tight">User Profile</h1>
+                <h1 className="text-4xl font-bold tracking-tight">Profil Pengguna</h1>
                 <p className="mt-2 max-w-2xl text-muted-foreground">
-                    Manage your profile information to get personalized skincare recommendations.
+                    Kelola informasi profil Anda untuk mendapatkan rekomendasi perawatan kulit yang dipersonalisasi.
                 </p>
             </div>
 
             <Card className="mt-8 glass-card">
                 <CardHeader>
-                    <CardTitle>Personal Information</CardTitle>
-                    <CardDescription>This information helps us tailor our advice to you.</CardDescription>
+                    <CardTitle>Informasi Pribadi</CardTitle>
+                    <CardDescription>Informasi ini membantu kami menyesuaikan saran untuk Anda.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid gap-6 md:grid-cols-2">
                              <div className="space-y-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input id="name" placeholder="Your Name" defaultValue="Mulky Malikul Dhaher"/>
+                                <Label htmlFor="name">Nama</Label>
+                                <Input id="name" placeholder="Nama Anda" defaultValue="Mulky Malikul Dhaher"/>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="age">Age</Label>
-                                <Input id="age" type="number" placeholder="Your Age" />
+                                <Label htmlFor="age">Usia</Label>
+                                <Input id="age" type="number" placeholder="Usia Anda" />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="skinType">Skin Type</Label>
+                            <Label htmlFor="skinType">Tipe Kulit</Label>
                              <Select>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select your skin type" />
+                                    <SelectValue placeholder="Pilih tipe kulit Anda" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="normal">Normal</SelectItem>
-                                    <SelectItem value="oily">Oily</SelectItem>
-                                    <SelectItem value="dry">Dry</SelectItem>
-                                    <SelectItem value="combination">Combination</SelectItem>
-                                    <SelectItem value="sensitive">Sensitive</SelectItem>
+                                    <SelectItem value="oily">Berminyak</SelectItem>
+                                    <SelectItem value="dry">Kering</SelectItem>
+                                    <SelectItem value="combination">Kombinasi</SelectItem>
+                                    <SelectItem value="sensitive">Sensitif</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                        
                         <div className="space-y-2">
-                            <Label htmlFor="concerns">Primary Skin Concerns</Label>
-                            <Textarea id="concerns" placeholder="e.g., Acne, Dark Spots, Wrinkles" />
+                            <Label htmlFor="concerns">Masalah Utama Kulit</Label>
+                            <Textarea id="concerns" placeholder="cth., Jerawat, Flek Hitam, Kerutan" />
                         </div>
 
                          <div className="space-y-2">
-                            <Label htmlFor="preferences">Product Preferences</Label>
-                            <Textarea id="preferences" placeholder="e.g., Vegan, Fragrance-free, Brands you like" />
+                            <Label htmlFor="preferences">Preferensi Produk</Label>
+                            <Textarea id="preferences" placeholder="cth., Vegan, Bebas Pewangi, Merek yang disukai" />
                         </div>
                         
                         <div className="space-y-2">
-                             <Label htmlFor="budget">Skincare Budget (Monthly)</Label>
+                             <Label htmlFor="budget">Anggaran Perawatan Kulit (Bulanan)</Label>
                              <Select>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select your budget" />
+                                    <SelectValue placeholder="Pilih anggaran Anda" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="<50">$0 - $50</SelectItem>
-                                    <SelectItem value="50-100">$50 - $100</SelectItem>
-                                    <SelectItem value="100-200">$100 - $200</SelectItem>
-                                    <SelectItem value=">200">$200+</SelectItem>
+                                    <SelectItem value="<50">Rp 0 - Rp 750.000</SelectItem>
+                                    <SelectItem value="50-100">Rp 750.000 - Rp 1.500.000</SelectItem>
+                                    <SelectItem value="100-200">Rp 1.500.000 - Rp 3.000.000</SelectItem>
+                                    <SelectItem value=">200">Rp 3.000.000+</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <Button type="submit" className="w-full" disabled={loading}>
-                            {loading ? "Saving..." : "Save Changes"}
+                            {loading ? "Menyimpan..." : "Simpan Perubahan"}
                             <Save className="ml-2 h-4 w-4" />
                         </Button>
                     </form>

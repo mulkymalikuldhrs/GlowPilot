@@ -33,7 +33,7 @@ import {
 
 export const metadata: Metadata = {
   title: 'GlowPilot Copilot',
-  description: 'Your personal AI skincare assistant.',
+  description: 'Asisten perawatan kulit AI pribadi Anda.',
 };
 
 export default function RootLayout({
@@ -80,7 +80,7 @@ export default function RootLayout({
                   </SidebarMenu>
                 </SidebarGroup>
                 <SidebarGroup>
-                  <SidebarGroupLabel>Features</SidebarGroupLabel>
+                  <SidebarGroupLabel>Fitur</SidebarGroupLabel>
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
@@ -94,20 +94,20 @@ export default function RootLayout({
                       <SidebarMenuButton asChild>
                         <Link href="/compare">
                           <Scale />
-                          Product Comparison
+                          Perbandingan Produk
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroup>
                  <SidebarGroup>
-                  <SidebarGroupLabel>Profile</SidebarGroupLabel>
+                  <SidebarGroupLabel>Profil</SidebarGroupLabel>
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
                         <Link href="/profile">
                           <User />
-                          User Profile
+                          Profil Pengguna
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -129,19 +129,19 @@ export default function RootLayout({
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="rounded-full">
                          <Avatar>
-                           <AvatarImage src="https://placehold.co/100x100.png" alt="User" data-ai-hint="user avatar" />
-                           <AvatarFallback>U</AvatarFallback>
+                           <AvatarImage src="https://placehold.co/100x100.png" alt="Mulky Malikul Dhaher" data-ai-hint="user avatar" />
+                           <AvatarFallback>M</AvatarFallback>
                          </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
-                      <DropdownMenuItem>History</DropdownMenuItem>
-                      <DropdownMenuItem>Settings</DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/profile">Profil</Link></DropdownMenuItem>
+                      <DropdownMenuItem>Riwayat</DropdownMenuItem>
+                      <DropdownMenuItem>Pengaturan</DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>Logout</DropdownMenuItem>
+                      <DropdownMenuItem>Keluar</DropdownMenuItem>
                     </DropdownMenuContent>
                  </DropdownMenu>
               </header>

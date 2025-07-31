@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, ArrowRight, Lightbulb, Scale, User, Wand2 } from "lucide-react";
+import { Activity, ArrowRight, Lightbulb, Scale, User, Wand2, ShieldCheck, Soup, Sun } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -42,28 +42,41 @@ export default function DashboardPage() {
                 </Button>
             </CardContent>
         </Card>
-        <Card className="glass-card transform hover:-translate-y-2 transition-transform duration-300">
+        <Card className="glass-card transform hover:-translate-y-2 transition-transform duration-300 md:col-span-2 lg:col-span-2">
             <CardHeader>
                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">Akses Cepat</CardTitle>
-                    <Wand2 className="h-6 w-6 text-primary"/>
+                    <CardTitle className="text-xl">Hubungi Dokter AI Spesialis</CardTitle>
+                    <ShieldCheck className="h-6 w-6 text-primary"/>
                 </div>
-                <CardDescription>Langsung ke fitur favorit Anda.</CardDescription>
+                <CardDescription>Dapatkan saran dari para ahli AI di bidangnya.</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-                <Button className="w-full justify-start" asChild>
-                     <Link href="/dermatologist">
-                        <Wand2 className="mr-2 h-4 w-4"/> AI Dermatologist
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Button className="w-full justify-start h-12" asChild>
+                     <Link href="/specialists/dermatologist">
+                        <Wand2 className="mr-2 h-5 w-5"/> AI Dermatologist Umum
                     </Link>
                 </Button>
-                 <Button className="w-full justify-start" variant="secondary" asChild>
+                 <Button className="w-full justify-start h-12" variant="secondary" asChild>
+                    <Link href="/specialists/nutritionist">
+                        <Soup className="mr-2 h-5 w-5"/> Ahli Nutrisi Kulit
+                    </Link>
+                </Button>
+                 <Button className="w-full justify-start h-12" variant="secondary" asChild>
+                    <Link href="/specialists/anti-aging">
+                        <Sun className="mr-2 h-5 w-5"/> Pakar Anti-Penuaan
+                    </Link>
+                </Button>
+                 <Button className="w-full justify-start h-12" variant="secondary" asChild>
                     <Link href="/compare">
-                        <Scale className="mr-2 h-4 w-4"/> Perbandingan Produk
+                        <Scale className="mr-2 h-5 w-5"/> Perbandingan Produk
                     </Link>
                 </Button>
             </CardContent>
         </Card>
-        <Card className="glass-card transform hover:-translate-y-2 transition-transform duration-300 md:col-span-2 lg:col-span-1">
+      </section>
+
+      <section className="grid gap-8 md:grid-cols-2">
+        <Card className="glass-card">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-xl">Tips Perawatan Hari Ini</CardTitle>
@@ -77,9 +90,6 @@ export default function DashboardPage() {
                 </p>
             </CardContent>
         </Card>
-      </section>
-
-      <section>
         <Card className="glass-card">
             <CardHeader>
                 <CardTitle>Riwayat Aktivitas Terbaru</CardTitle>

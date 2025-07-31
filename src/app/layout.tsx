@@ -17,7 +17,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Home, Scale, User, Wand2, History, Settings, LayoutDashboard } from 'lucide-react';
+import { History, LayoutDashboard, Scale, Settings, ShieldCheck, User, Wand2 } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -88,6 +88,14 @@ export default function RootLayout({
                         <Link href="/dermatologist">
                           <Wand2 />
                           AI Dermatologist
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/specialists">
+                          <ShieldCheck />
+                          AI Specialists
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

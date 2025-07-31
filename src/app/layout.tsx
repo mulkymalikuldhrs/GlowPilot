@@ -118,7 +118,7 @@ export default function RootLayout({
 
             <SidebarInset className="flex flex-col">
               <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-md sm:px-6">
-                 <SidebarTrigger asChild>
+                 <SidebarTrigger>
                    <Button variant="ghost" size="icon" className="md:hidden">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-panel-left-open"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
                    </Button>

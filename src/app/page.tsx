@@ -19,10 +19,12 @@ export default function Home() {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Wand2 className="h-6 w-6" />
               </div>
-              <CardTitle className="text-2xl font-semibold">AI Dermatologist</CardTitle>
+              <CardTitle>AI Dermatologist</CardTitle>
             </div>
-            <CardDescription className="pt-2">
+            <CardDescription>
+              <div className="pt-2">
               Get a diagnosis for skin issues and receive personalized AM/PM skincare routine recommendations.
+              </div>
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-grow">
@@ -52,10 +54,12 @@ export default function Home() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20 text-accent">
                   <Scale className="h-6 w-6" />
                 </div>
-              <CardTitle className="text-2xl font-semibold">Product Comparison</CardTitle>
+              <CardTitle>Product Comparison</CardTitle>
             </div>
-            <CardDescription className="pt-2">
+            <CardDescription>
+              <div className="pt-2">
               Compare skincare products on price, ratings, and ingredients to find your perfect match.
+              </div>
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-grow">

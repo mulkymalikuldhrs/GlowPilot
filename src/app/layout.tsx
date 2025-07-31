@@ -16,7 +16,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Home, Scale, Wand2 } from 'lucide-react';
+import { Home, Scale, User, Wand2 } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -100,6 +100,19 @@ export default function RootLayout({
                     </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroup>
+                 <SidebarGroup>
+                  <SidebarGroupLabel>Profile</SidebarGroupLabel>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/profile">
+                          <User />
+                          User Profile
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroup>
               </SidebarContent>
             </Sidebar>
 
@@ -124,7 +137,7 @@ export default function RootLayout({
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>My Account</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>Profile</DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
                       <DropdownMenuItem>History</DropdownMenuItem>
                       <DropdownMenuItem>Settings</DropdownMenuItem>
                       <DropdownMenuSeparator />

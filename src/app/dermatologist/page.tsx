@@ -1,29 +1,31 @@
 'use client';
 
 import { diagnoseSkinCondition, type SkinConditionDiagnosisOutput } from "@/ai/flows/skin-condition-diagnosis";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, Bot, Loader2, User, Volume2, Wand2 } from "lucide-react";
+import { Bot, Loader2, User, Volume2, Wand2 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ChatInput } from "./chat-input";
 
 type Message = {
     role: 'user' | 'assistant';
-    content: string | React.ReactNode;
-    audio?: string;
+    content: React.ReactNode;
+    rawContent?: string;
 };
 
 export default function DermatologistPage() {
     const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState<SkinConditionDiagnosisOutput | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const { toast } = useToast();
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const speak = (text: string) => {
         if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
             const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
             window.speechSynthesis.speak(utterance);
         } else {
             toast({ title: 'Browser Not Supported', description: 'Your browser does not support text-to-speech.', variant: 'destructive' });
@@ -42,34 +44,46 @@ export default function DermatologistPage() {
             return;
         }
 
-        setLoading(true);
-        setResult(null);
-
         const userMessage: Message = {
             role: 'user',
             content: (
                 <div className="flex flex-col gap-4">
                     <p>{description}</p>
-                    <Image src={photoDataUri} alt="User submission" width={200} height={200} className="rounded-lg object-cover" />
+                    {photoDataUri && <Image src={photoDataUri} alt="User submission" width={200} height={200} className="rounded-lg object-cover" />}
                 </div>
             )
         };
         setMessages(prev => [...prev, userMessage]);
+        setLoading(true);
 
         try {
             const res = await diagnoseSkinCondition({ photoDataUri, description });
-            setResult(res);
+            
             const assistantMessage: Message = {
                 role: 'assistant',
+                rawContent: `Diagnosis: ${res.diagnosis}. \n\n AM Routine: ${res.recommendations.amRoutine}. \n\n PM Routine: ${res.recommendations.pmRoutine}`,
                 content: (
-                     <div>
-                        <h3 className="font-semibold text-primary flex items-center justify-between mb-2">
-                            Diagnosis
-                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => speak(res.diagnosis)}>
-                                <Volume2 className="h-4 w-4" />
-                            </Button>
-                        </h3>
-                        <p className="text-sm text-primary/90 mt-1">{res.diagnosis}</p>
+                     <div className="space-y-6">
+                        <div className="space-y-2">
+                            <h3 className="font-semibold text-primary flex items-center justify-between mb-2">
+                                Diagnosis
+                                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => speak(res.diagnosis)}>
+                                    <Volume2 className="h-4 w-4" />
+                                </Button>
+                            </h3>
+                            <p className="text-sm text-primary/90 mt-1">{res.diagnosis}</p>
+                        </div>
+                        <div className="grid gap-6 md:grid-cols-2">
+                            <div className="space-y-2">
+                                <h3 className="font-semibold">AM Routine ☀️</h3>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{res.recommendations.amRoutine}</p>
+                            </div>
+                             <div className="space-y-2">
+                                <h3 className="font-semibold">PM Routine 🌙</h3>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{res.recommendations.pmRoutine}</p>
+                            </div>
+                        </div>
+                         <p className="text-center text-xs text-muted-foreground pt-4">Disclaimer: This AI diagnosis is for informational purposes only and is not a substitute for professional medical advice.</p>
                     </div>
                 )
             };
@@ -94,8 +108,9 @@ export default function DermatologistPage() {
 
     return (
         <div className="flex flex-col h-full max-h-[calc(100vh-4rem)]">
+             <audio ref={audioRef} className="hidden" />
             {messages.length === 0 && !loading && (
-                <div className="flex flex-col items-center text-center justify-center h-full">
+                <div className="flex flex-col items-center text-center justify-center h-full p-4">
                     <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                         <Wand2 className="h-8 w-8" />
                     </div>
@@ -110,51 +125,33 @@ export default function DermatologistPage() {
                 {messages.map((message, index) => (
                     <div key={index} className={`flex items-start gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
                        {message.role === 'assistant' && (
-                           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                           <Avatar className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
                                <Bot className="h-5 w-5 text-primary" />
-                           </span>
+                           </Avatar>
                        )}
-                       <div className={`rounded-lg p-4 max-w-lg glass-card ${message.role === 'user' ? 'bg-secondary' : 'bg-primary/10'}`}>
-                           {typeof message.content === 'string' ? <p className="text-sm">{message.content}</p> : message.content}
+                       <div className={`rounded-2xl p-4 max-w-lg glass-card ${message.role === 'user' ? 'bg-secondary text-secondary-foreground' : 'bg-primary/5'}`}>
+                           {message.content}
                        </div>
                        {message.role === 'user' && (
-                           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
+                           <Avatar className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
                                <User className="h-5 w-5 text-secondary-foreground" />
-                           </span>
+                           </Avatar>
                        )}
                    </div>
                 ))}
-                 {loading && !result && (
+                 {loading && (
                      <div className="flex items-start gap-4">
-                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                         <Avatar className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
                             <Bot className="h-5 w-5 text-primary" />
-                         </span>
-                         <div className="rounded-lg p-4 max-w-lg glass-card bg-primary/10 flex items-center space-x-2">
-                             <Loader2 className="h-5 w-5 animate-spin" />
-                             <p className="text-sm">Analyzing...</p>
+                         </Avatar>
+                         <div className="rounded-2xl p-4 max-w-lg glass-card bg-primary/5 flex items-center space-x-2">
+                             <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                             <p className="text-sm text-muted-foreground">Menganalisis kondisi kulit Anda...</p>
                          </div>
                      </div>
                  )}
             </div>
-
-            {result && (
-                 <Card className="mt-8 glass-card mx-4">
-                    <CardContent className="space-y-6 p-6">
-                        <div className="grid gap-6 md:grid-cols-2">
-                            <div className="space-y-2 glass-card p-4 rounded-lg">
-                                <h3 className="font-semibold">AM Routine ☀️</h3>
-                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{result.recommendations.amRoutine}</p>
-                            </div>
-                             <div className="space-y-2 glass-card p-4 rounded-lg">
-                                <h3 className="font-semibold">PM Routine 🌙</h3>
-                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{result.recommendations.pmRoutine}</p>
-                            </div>
-                        </div>
-                         <p className="text-center text-xs text-muted-foreground pt-4">Disclaimer: This AI diagnosis is for informational purposes only and is not a substitute for professional medical advice.</p>
-                    </CardContent>
-                 </Card>
-            )}
-
+            
             <div className="p-4 bg-background/80 backdrop-blur-md">
                 <ChatInput onSubmit={handleSubmit} isLoading={loading} />
             </div>

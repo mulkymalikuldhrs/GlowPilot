@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-20 md:gap-32">
       <section className="text-center pt-16 md:pt-24">
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary-foreground">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-primary via-primary/80 to-accent-foreground">
           GlowPilot Copilot
         </h1>
         <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground">
@@ -62,7 +62,7 @@ export default function Home() {
 
           <Card className="glass-card transform hover:-translate-y-2 transition-transform duration-300">
             <CardHeader className="flex-row items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/20 text-accent">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                 <Scale className="h-7 w-7" />
               </div>
               <div>

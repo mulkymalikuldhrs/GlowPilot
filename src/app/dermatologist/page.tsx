@@ -133,7 +133,7 @@ export default function DermatologistPage() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <Label htmlFor="photo">Upload Photo</Label>
-                            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-border px-6 py-10">
+                            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-border/50 px-6 py-10">
                                 <div className="text-center">
                                     {photoPreview ? (
                                         <Image src={photoPreview} alt="Preview" width={200} height={200} className="mx-auto h-32 w-32 rounded-lg object-cover" />
@@ -190,25 +190,25 @@ export default function DermatologistPage() {
             </Card>
 
             {result && (
-                 <Card className="mt-8">
+                 <Card className="mt-8 glass-card">
                     <CardHeader>
                         <CardTitle>AI Diagnosis & Recommendations</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="space-y-4">
                              <div className="flex items-start gap-4">
-                                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary">
-                                    <User className="h-4 w-4 text-secondary-foreground" />
+                                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
+                                    <User className="h-5 w-5 text-secondary-foreground" />
                                 </span>
-                                <div className="rounded-lg bg-secondary p-4 flex-1">
+                                <div className="rounded-lg bg-secondary p-4 flex-1 glass-card">
                                     <p className="text-sm">{description}</p>
                                 </div>
                              </div>
                              <div className="flex items-start gap-4">
-                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                                    <Bot className="h-4 w-4 text-primary" />
+                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                                    <Bot className="h-5 w-5 text-primary" />
                                 </span>
-                                <div className="rounded-lg bg-primary/10 p-4 flex-1">
+                                <div className="rounded-lg bg-primary/10 p-4 flex-1 glass-card">
                                     <h3 className="font-semibold text-primary flex items-center justify-between">
                                         Diagnosis
                                         <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => speak(result.diagnosis)}>
@@ -221,11 +221,11 @@ export default function DermatologistPage() {
                         </div>
 
                         <div className="grid gap-6 md:grid-cols-2">
-                            <div className="space-y-2">
+                            <div className="space-y-2 glass-card p-4 rounded-lg">
                                 <h3 className="font-semibold">AM Routine ☀️</h3>
                                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">{result.recommendations.amRoutine}</p>
                             </div>
-                             <div className="space-y-2">
+                             <div className="space-y-2 glass-card p-4 rounded-lg">
                                 <h3 className="font-semibold">PM Routine 🌙</h3>
                                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">{result.recommendations.pmRoutine}</p>
                             </div>

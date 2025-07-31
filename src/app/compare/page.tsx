@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, Badge, Loader2, Scale, Sparkles } from "lucide-react";
+import { ArrowRight, Loader2, Scale, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 export default function ComparePage() {
@@ -59,7 +59,7 @@ export default function ComparePage() {
     return (
         <div className="container mx-auto max-w-4xl py-8">
             <div className="flex flex-col items-center text-center">
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/20 text-accent">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                     <Scale className="h-8 w-8" />
                 </div>
                 <h1 className="text-4xl font-bold tracking-tight">Product Comparison</h1>
@@ -111,7 +111,7 @@ export default function ComparePage() {
             </Card>
 
             {result && (
-                <Card className="mt-8">
+                <Card className="mt-8 glass-card">
                     <CardHeader>
                         <CardTitle>Comparison Result</CardTitle>
                         <CardDescription>Here is the AI-generated comparison of {product1} and {product2}.</CardDescription>

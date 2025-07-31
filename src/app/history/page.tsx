@@ -1,3 +1,4 @@
+
 'use client'
 
 import { Button } from "@/components/ui/button";
@@ -10,14 +11,14 @@ import Link from "next/link";
 export default function HistoryPage() {
 
     const diagnosisHistory = [
-        { id: 1, type: "Diagnosis", title: "Jerawat Ringan", date: "3 hari yang lalu", icon: <Wand2 className="h-5 w-5 text-primary"/> },
-        { id: 3, type: "Diagnosis", title: "Kulit Kering & Kusam", date: "2 minggu yang lalu", icon: <Wand2 className="h-5 w-5 text-primary"/> },
-        { id: 5, type: "Diagnosis", title: "Analisis Rutinitas", date: "1 bulan yang lalu", icon: <Wand2 className="h-5 w-5 text-primary"/> },
+        { id: 1, type: "Diagnosis", title: "Jerawat Ringan", date: "3 hari yang lalu", icon: <Wand2 className="h-5 w-5 text-primary" style={{color: 'var(--primary-optimistic)'}}/> },
+        { id: 3, type: "Diagnosis", title: "Kulit Kering & Kusam", date: "2 minggu yang lalu", icon: <Wand2 className="h-5 w-5 text-primary" style={{color: 'var(--primary-optimistic)'}}/> },
+        { id: 5, type: "Diagnosis", title: "Analisis Rutinitas", date: "1 bulan yang lalu", icon: <Wand2 className="h-5 w-5 text-primary" style={{color: 'var(--primary-optimistic)'}}/> },
     ];
 
     const comparisonHistory = [
-        { id: 2, type: "Perbandingan", title: "CeraVe vs La Roche-Posay Cleanser", date: "5 hari yang lalu", icon: <Scale className="h-5 w-5 text-primary"/> },
-        { id: 4, type: "Perbandingan", title: "Sunscreen: Skin Aqua vs Biore", date: "3 minggu yang lalu", icon: <Scale className="h-5 w-5 text-primary"/> },
+        { id: 2, type: "Perbandingan", title: "CeraVe vs La Roche-Posay Cleanser", date: "5 hari yang lalu", icon: <Scale className="h-5 w-5 text-primary" style={{color: 'var(--primary-optimistic)'}}/> },
+        { id: 4, type: "Perbandingan", title: "Sunscreen: Skin Aqua vs Biore", date: "3 minggu yang lalu", icon: <Scale className="h-5 w-5 text-primary" style={{color: 'var(--primary-optimistic)'}}/> },
     ];
 
     const HistoryItem = ({ item }: { item: {id: number, type: string, title: string, date: string, icon: React.ReactNode} }) => (
@@ -36,12 +37,12 @@ export default function HistoryPage() {
     );
 
     return (
-        <div className="container mx-auto max-w-4xl py-8">
+        <div className="container mx-auto max-w-4xl py-8 md:py-12">
             <div className="flex flex-col items-center text-center">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <History className="h-8 w-8" />
+                    <History className="h-8 w-8" style={{color: 'var(--primary-optimistic)'}}/>
                 </div>
-                <h1 className="text-4xl font-bold tracking-tight">Riwayat Aktivitas</h1>
+                <h1 className="text-4xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>Riwayat Aktivitas</h1>
                 <p className="mt-2 max-w-2xl text-muted-foreground">
                     Jelajahi kembali semua diagnosis dan perbandingan produk yang pernah Anda lakukan.
                 </p>

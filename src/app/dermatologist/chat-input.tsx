@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -8,14 +9,14 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 interface ChatInputProps {
-    onSubmit: (values: { description: string; photo: File | null; photoDataUri: string | null; }) => void;
+    onSubmit: (values: { description: string; photoDataUri: string | null; }) => void;
     isLoading: boolean;
 }
 
 export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
     const [description, setDescription] = useState('');
-    const [photo, setPhoto] = useState<File | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+    const [photoDataUri, setPhotoDataUri] = useState<string | null>(null);
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<SpeechRecognition | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -25,21 +26,20 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
         if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
-            recognition.continuous = true; // Dengarkan terus menerus
-            recognition.lang = 'id-ID'; // Set bahasa ke Indonesia
-            recognition.interimResults = true; // Dapatkan hasil sementara
+            recognition.continuous = true;
+            recognition.lang = 'id-ID';
+            recognition.interimResults = true;
 
             recognition.onresult = (event) => {
-                let finalTranscript = '';
                 let interimTranscript = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
-                    } else {
-                        interimTranscript += event.results[i][0].transcript;
-                    }
+                     interimTranscript += event.results[i][0].transcript;
                 }
-                setDescription(prev => `${prev}${finalTranscript}`);
+                setDescription(prev => prev + interimTranscript);
+            };
+            
+            recognition.onend = () => {
+              setIsListening(false);
             };
 
             recognition.onerror = (event) => {
@@ -53,10 +53,6 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
                 toast({ title: 'Kesalahan Suara', description: errorMessage, variant: 'destructive' });
                 setIsListening(false);
             };
-
-            recognition.onend = () => {
-                setIsListening(false);
-            };
             
             recognitionRef.current = recognition;
         }
@@ -66,7 +62,6 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            // Validasi tipe file
             if (!file.type.startsWith('image/')) {
                 toast({
                     title: 'File Tidak Valid',
@@ -75,24 +70,16 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
                 });
                 return;
             }
-            setPhoto(file);
             const reader = new FileReader();
             reader.onloadend = () => {
-                setPhotoPreview(reader.result as string);
+                const result = reader.result as string;
+                setPhotoPreview(result);
+                setPhotoDataUri(result);
             };
             reader.readAsDataURL(file);
         }
     };
     
-    const fileToBase64 = (file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = error => reject(error);
-        });
-    };
-
     const handleMicClick = () => {
         if (!recognitionRef.current) {
             toast({ title: 'Browser Tidak Didukung', description: 'Browser Anda tidak mendukung pengenalan suara.', variant: 'destructive' });
@@ -100,7 +87,6 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
         }
         if (isListening) {
             recognitionRef.current.stop();
-            setIsListening(false);
         } else {
             recognitionRef.current.start();
             setIsListening(true);
@@ -110,23 +96,22 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
     const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (isLoading) return;
-        if (!description && !photo) return;
+        if (!description && !photoDataUri) return;
         
-        const photoDataUri = photo ? await fileToBase64(photo) : null;
-        onSubmit({ description, photo, photoDataUri });
+        onSubmit({ description, photoDataUri });
 
         // Reset form setelah submit
         setDescription('');
-        setPhoto(null);
         setPhotoPreview(null);
+        setPhotoDataUri(null);
         if(fileInputRef.current) {
             fileInputRef.current.value = "";
         }
     };
 
     const handleRemoveImage = () => {
-        setPhoto(null);
         setPhotoPreview(null);
+        setPhotoDataUri(null);
         if(fileInputRef.current) {
             fileInputRef.current.value = "";
         }
@@ -152,11 +137,11 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
                  <Textarea
                      id="description"
                      rows={1}
-                     placeholder="Unggah foto & jelaskan masalah kulit Anda..."
+                     placeholder="Unggah foto (opsional) & jelaskan masalah kulit Anda..."
                      value={description}
                      onChange={(e) => setDescription(e.target.value)}
                      disabled={isLoading}
-                     className="pr-32 resize-none min-h-[40px] flex items-center"
+                     className="pr-36 resize-none min-h-[40px] flex items-center"
                      onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
@@ -194,7 +179,7 @@ export function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
                     >
                         <Mic className="h-4 w-4"/>
                     </Button>
-                     <Button type="submit" size="icon" disabled={isLoading || (!description && !photo)} aria-label="Kirim Pesan">
+                     <Button type="submit" size="icon" disabled={isLoading || (!description && !photoDataUri)} aria-label="Kirim Pesan">
                         <SendHorizonal className="h-5 w-5" />
                      </Button>
                  </div>

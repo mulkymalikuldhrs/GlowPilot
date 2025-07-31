@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { id } from "date-fns/locale";
 
 export default function TrackingPage() {
     const [date, setDate] = useState<Date | undefined>(new Date());
@@ -40,16 +41,16 @@ export default function TrackingPage() {
     ];
     
     return (
-        <div className="flex flex-col gap-8 p-4 sm:p-6">
+        <div className="flex flex-col gap-8 p-4 sm:p-6 md:p-8">
              <section>
                 <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                     <div>
                         <div className="flex items-center gap-3">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                                <LineChart className="h-7 w-7" />
+                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                                <LineChart className="h-8 w-8" style={{color: 'var(--primary-optimistic)'}}/>
                             </div>
                             <div>
-                                <h1 className="text-4xl font-bold tracking-tight">Jurnal Pelacakan</h1>
+                                <h1 className="text-4xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>Jurnal Pelacakan</h1>
                                 <p className="mt-1 text-muted-foreground">Monitor progres, rutinitas, dan tujuan kulit Anda di sini.</p>
                             </div>
                         </div>
@@ -65,9 +66,9 @@ export default function TrackingPage() {
                             <CardTitle>Rutinitas Harian</CardTitle>
                             <CardDescription>Tandai rutinitas yang telah Anda selesaikan hari ini.</CardDescription>
                         </CardHeader>
-                        <CardContent className="grid gap-6 md:grid-cols-2">
+                        <CardContent className="grid gap-8 md:grid-cols-2">
                              <div className="space-y-4">
-                                <h3 className="font-semibold flex items-center gap-2"><Sun className="text-yellow-500"/> Rutinitas Pagi</h3>
+                                <h3 className="font-semibold flex items-center gap-2 text-lg"><Sun className="text-yellow-400"/> Rutinitas Pagi</h3>
                                 <div className="space-y-3">
                                     {amRoutine.map(item => (
                                         <div key={item.id} className="flex items-center gap-3">
@@ -78,7 +79,7 @@ export default function TrackingPage() {
                                 </div>
                             </div>
                             <div className="space-y-4">
-                                 <h3 className="font-semibold flex items-center gap-2"><Moon className="text-blue-400"/> Rutinitas Malam</h3>
+                                 <h3 className="font-semibold flex items-center gap-2 text-lg"><Moon className="text-blue-300"/> Rutinitas Malam</h3>
                                  <div className="space-y-3">
                                     {pmRoutine.map(item => (
                                         <div key={item.id} className="flex items-center gap-3">
@@ -107,7 +108,7 @@ export default function TrackingPage() {
                                         <p className="font-medium text-sm flex items-center gap-2">
                                             <Flag className="h-4 w-4"/> {goal.title}
                                         </p>
-                                        <p className="text-sm font-bold text-primary">{goal.value}%</p>
+                                        <p className="text-sm font-bold text-primary" style={{color: 'var(--primary-optimistic)'}}>{goal.value}%</p>
                                     </div>
                                     <Progress value={goal.value} className="h-2"/>
                                     <p className="text-xs text-muted-foreground mt-1 text-right">Target: {goal.target}</p>
@@ -129,7 +130,7 @@ export default function TrackingPage() {
                                          <Image 
                                              src={`https://placehold.co/200x200.png`} 
                                              alt={`Progress ${index + 1}`} 
-                                             layout="fill" 
+                                             fill
                                              className="rounded-lg object-cover" 
                                              data-ai-hint={hint} 
                                          />
@@ -147,49 +148,52 @@ export default function TrackingPage() {
                 </div>
 
                 {/* Daily Log Section */}
-                <div className="lg:col-span-1">
-                    <Card className="glass-card sticky top-4">
-                        <CardHeader>
-                            <CardTitle>Log Harian</CardTitle>
-                             <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                    variant={"outline"}
-                                    className="w-full justify-start text-left font-normal"
-                                    >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {date ? format(date, "PPP") : <span>Pilih tanggal</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar
-                                    mode="single"
-                                    selected={date}
-                                    onSelect={setDate}
-                                    initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="skin-condition">Bagaimana kondisi kulit Anda hari ini?</Label>
-                                <Textarea id="skin-condition" placeholder="cth., Sedikit kemerahan di pipi, tidak ada jerawat baru." />
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="new-products">Produk baru yang dicoba?</Label>
-                                <Input id="new-products" placeholder="cth., Serum Hyaluronic Acid dari Merek X" />
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="notes">Catatan Lainnya</Label>
-                                <Textarea id="notes" placeholder="cth., Cukup tidur, minum banyak air." />
-                            </div>
-                        </CardContent>
-                        <CardFooter>
-                            <Button className="w-full">Simpan Catatan</Button>
-                        </CardFooter>
-                    </Card>
-                </div>
+                <aside className="lg:col-span-1">
+                    <div className="sticky top-4">
+                        <Card className="glass-card">
+                            <CardHeader>
+                                <CardTitle>Log Harian</CardTitle>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                        variant={"outline"}
+                                        className="w-full justify-start text-left font-normal mt-2"
+                                        >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {date ? format(date, "PPP", { locale: id }) : <span>Pilih tanggal</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <Calendar
+                                        mode="single"
+                                        selected={date}
+                                        onSelect={setDate}
+                                        initialFocus
+                                        locale={id}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="skin-condition">Bagaimana kondisi kulit Anda hari ini?</Label>
+                                    <Textarea id="skin-condition" placeholder="cth., Sedikit kemerahan di pipi, tidak ada jerawat baru." />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="new-products">Produk baru yang dicoba?</Label>
+                                    <Input id="new-products" placeholder="cth., Serum Hyaluronic Acid dari Merek X" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="notes">Catatan Lainnya</Label>
+                                    <Textarea id="notes" placeholder="cth., Cukup tidur, minum banyak air." />
+                                </div>
+                            </CardContent>
+                            <CardFooter>
+                                <Button className="w-full">Simpan Catatan</Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
+                </aside>
             </section>
         </div>
     )

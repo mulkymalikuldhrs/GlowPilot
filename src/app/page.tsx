@@ -19,7 +19,7 @@ export default function WelcomePage() {
       <main className="flex-1">
         <section className="container mx-auto px-4 py-20 md:py-32 flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2 text-center md:text-left">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter leading-tight">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter leading-tight" style={{ fontFamily: 'Sora, sans-serif' }}>
               Panduan Cerdas untuk Kulit Sehat & Bercahaya
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto md:mx-0">
@@ -55,7 +55,7 @@ export default function WelcomePage() {
 
         <section className="bg-secondary/50 py-20">
             <div className="container mx-auto px-4 text-center">
-                 <h2 className="text-3xl font-bold tracking-tight">Semua yang Anda Butuhkan untuk Kulit Terbaik Anda</h2>
+                 <h2 className="text-3xl font-bold tracking-tight" style={{ fontFamily: 'Sora, sans-serif' }}>Semua yang Anda Butuhkan untuk Kulit Terbaik Anda</h2>
                  <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
                     Dari analisis mendalam hingga perbandingan produk, GlowPilot memberikan alat yang Anda butuhkan untuk membuat keputusan perawatan kulit yang lebih cerdas.
                  </p>
@@ -73,7 +73,7 @@ export default function WelcomePage() {
         </section>
 
          <section className="container mx-auto px-4 py-20 md:py-32 text-center">
-            <h2 className="text-3xl font-bold tracking-tight">Siap Mengambil Kendali Perawatan Kulit Anda?</h2>
+            <h2 className="text-3xl font-bold tracking-tight" style={{ fontFamily: 'Sora, sans-serif' }}>Siap Mengambil Kendali Perawatan Kulit Anda?</h2>
             <p className="mt-4 text-lg text-muted-foreground">
                 Bergabunglah dengan ribuan pengguna yang telah menemukan rutinitas sempurna mereka.
             </p>

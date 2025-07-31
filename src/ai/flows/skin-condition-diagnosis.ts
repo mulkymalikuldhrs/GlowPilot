@@ -15,7 +15,7 @@ import {z} from 'genkit';
 const SkinConditionDiagnosisInputSchema = z.object({
   photoDataUri: z
     .string()
-    .optional()
+    .nullable()
     .describe(
       "An optional photo of the skin issue, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),

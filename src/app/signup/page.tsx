@@ -6,8 +6,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Loader2, SendHorizonal, User, Sparkles, ArrowRight } from "lucide-react";
-import Image from "next/image";
+import { Bot, Loader2, SendHorizonal, User, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -47,7 +46,8 @@ export default function SignupPage() {
             }
         };
         startConversation();
-    }, [toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -98,7 +98,7 @@ export default function SignupPage() {
         <div className="flex flex-col h-screen bg-background items-center justify-center p-4">
              <div className="w-full max-w-2xl h-full max-h-[700px] flex flex-col rounded-2xl glass-card overflow-hidden">
                 <header className="p-4 border-b text-center">
-                    <h1 className="text-2xl font-bold tracking-tight flex items-center justify-center gap-2">
+                    <h1 className="text-2xl font-bold tracking-tight flex items-center justify-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
                         <Sparkles className="text-primary"/>
                         Selamat Datang di GlowPilot
                     </h1>
@@ -110,7 +110,7 @@ export default function SignupPage() {
                         <div key={index} className={`flex items-start gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
                            {message.role === 'model' && (
                                <Avatar className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                                   <Bot className="h-6 w-6 text-primary"/>
+                                   <Bot className="h-6 w-6 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
                                </Avatar>
                            )}
                            <div className={`rounded-2xl p-4 max-w-md w-fit ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
@@ -126,7 +126,7 @@ export default function SignupPage() {
                      {loading && messages.length > 0 && (
                          <div className="flex items-start gap-4">
                              <Avatar className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                                 <Bot className="h-6 w-6 text-primary"/>
+                                 <Bot className="h-6 w-6 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
                              </Avatar>
                              <div className="rounded-2xl p-4 max-w-lg bg-secondary flex items-center space-x-2">
                                  <Loader2 className="h-5 w-5 animate-spin text-primary" />

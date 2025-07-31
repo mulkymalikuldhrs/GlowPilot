@@ -1,3 +1,4 @@
+
 'use client'
 
 import { Button } from "@/components/ui/button";
@@ -29,12 +30,12 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="container mx-auto max-w-4xl py-8">
+        <div className="container mx-auto max-w-4xl py-8 md:py-12">
             <div className="flex flex-col items-center text-center">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <User className="h-8 w-8" />
+                    <User className="h-8 w-8" style={{color: 'var(--primary-optimistic)'}}/>
                 </div>
-                <h1 className="text-4xl font-bold tracking-tight">Profil Pengguna</h1>
+                <h1 className="text-4xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>Profil Pengguna</h1>
                 <p className="mt-2 max-w-2xl text-muted-foreground">
                     Personalisasikan pengalaman Anda dengan melengkapi profil kulit Anda.
                 </p>

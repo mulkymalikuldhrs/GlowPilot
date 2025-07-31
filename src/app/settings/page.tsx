@@ -1,3 +1,4 @@
+
 'use client'
 
 import { Button } from "@/components/ui/button";
@@ -27,12 +28,12 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="container mx-auto max-w-4xl py-8">
+        <div className="container mx-auto max-w-4xl py-8 md:py-12">
             <div className="flex flex-col items-center text-center">
                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Settings className="h-8 w-8" />
+                    <Settings className="h-8 w-8" style={{color: 'var(--primary-optimistic)'}}/>
                 </div>
-                <h1 className="text-4xl font-bold tracking-tight">Pengaturan</h1>
+                <h1 className="text-4xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>Pengaturan</h1>
                 <p className="mt-2 max-w-2xl text-muted-foreground">
                     Kelola preferensi akun, notifikasi, dan keamanan Anda.
                 </p>
@@ -62,6 +63,15 @@ export default function SettingsPage() {
                                 </span>
                             </Label>
                             <Switch id="promo-notifications" />
+                        </div>
+                         <div className="flex items-center justify-between rounded-lg border p-4">
+                             <Label htmlFor="progress-notifications" className="flex flex-col gap-1">
+                                <span>Update Progres & Tujuan</span>
+                                <span className="font-normal leading-snug text-muted-foreground">
+                                    Dapatkan notifikasi tentang pencapaian tujuan perawatan Anda.
+                                </span>
+                            </Label>
+                            <Switch id="progress-notifications" defaultChecked />
                         </div>
                     </CardContent>
                 </Card>

@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent that handles user onboarding through a conversation.
@@ -44,13 +45,13 @@ You need to collect three pieces of information:
 2. Their skin type (e.g., oily, dry, combination, sensitive, normal).
 3. Their primary skin concerns (e.g., acne, wrinkles, dark spots, redness).
 
-Keep your responses concise, friendly, and conversational. Ask one question at a time.
+Keep your responses concise, friendly, and conversational in Bahasa Indonesia. Ask one question at a time.
 
 Conversation Flow:
-1. Start by greeting the user and asking for their name.
+1. Start by greeting the user warmly and asking for their name.
 2. Once they provide their name, ask about their skin type.
 3. After they provide their skin type, ask for their main skin concerns.
-4. Once you have all three pieces of information, confirm the details with them, set 'isComplete' to true, populate the 'userData' object, and say something encouraging to transition them to the dashboard, like "Great, we're all set! Let's head to your personalized dashboard."
+4. Once you have all three pieces of information, confirm the details with them, set 'isComplete' to true, populate the 'userData' object, and say something encouraging to transition them to the dashboard, like "Luar biasa! Profil Anda sudah siap. Mari kita lihat dashboard pribadi Anda!"
 
 Analyze the provided conversation history and generate the next appropriate response.
 

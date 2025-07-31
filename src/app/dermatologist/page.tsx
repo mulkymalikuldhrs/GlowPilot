@@ -9,7 +9,7 @@ import { Bot, Loader2, User, Volume2, Wand2, ShoppingCart, Info } from "lucide-r
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { ChatInput } from "./chat-input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 
 type Message = {
@@ -22,24 +22,30 @@ export default function DermatologistPage() {
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
     const { toast } = useToast();
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [isSpeaking, setIsSpeaking] = useState(false);
 
     const speak = (text: string) => {
         if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
+            if (isSpeaking) {
+                window.speechSynthesis.cancel();
+                setIsSpeaking(false);
+                return;
+            }
             
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'id-ID';
-            // In a real app, you would select different voices based on the doctor
-            // const voices = window.speechSynthesis.getVoices();
-            // utterance.voice = voices.find(v => v.name === 'Google Bahasa Indonesia');
+            utterance.onstart = () => setIsSpeaking(true);
+            utterance.onend = () => setIsSpeaking(false);
+            utterance.onerror = () => setIsSpeaking(false);
+            
             window.speechSynthesis.speak(utterance);
         } else {
             toast({ title: 'Browser Tidak Didukung', description: 'Browser Anda tidak mendukung text-to-speech.', variant: 'destructive' });
         }
     }
 
-    const handleSubmit = async (values: { description: string; photo: File | null; photoDataUri: string | null }) => {
+    const handleSubmit = async (values: { description: string; photoDataUri: string | null }) => {
         const { description, photoDataUri } = values;
 
         if (!description) {
@@ -62,10 +68,12 @@ export default function DermatologistPage() {
         };
         setMessages(prev => [...prev, userMessage]);
         setLoading(true);
+        
+        // Scroll to bottom after adding new message
+        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
 
         try {
-            // Photo is optional, so we can pass an empty string or handle null in the flow
-            const res = await diagnoseSkinCondition({ photoDataUri: photoDataUri || '', description });
+            const res = await diagnoseSkinCondition({ photoDataUri, description });
             
             const diagnosisText = `Diagnosis: ${res.diagnosis}.`;
             const amRoutineText = `Rekomendasi Pagi: ${res.recommendations.amRoutine}.`;
@@ -81,7 +89,7 @@ export default function DermatologistPage() {
                             <h3 className="font-semibold text-primary flex items-center justify-between mb-2">
                                 Diagnosis
                                 <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => speak(diagnosisText)}>
-                                    <Volume2 className="h-4 w-4" />
+                                    <Volume2 className={`h-4 w-4 ${isSpeaking ? 'text-primary animate-pulse' : ''}`} />
                                 </Button>
                             </h3>
                             <p className="text-sm text-foreground/90 mt-1">{res.diagnosis}</p>
@@ -140,12 +148,12 @@ export default function DermatologistPage() {
             });
         } finally {
             setLoading(false);
+            setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
         }
     };
 
     return (
         <div className="flex flex-col h-full max-h-[calc(100vh-4rem)]">
-             <audio ref={audioRef} className="hidden" />
             {messages.length === 0 && !loading && (
                 <div className="flex flex-col items-center text-center justify-center h-full p-4">
                     <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -166,7 +174,7 @@ export default function DermatologistPage() {
                                <Image src="https://placehold.co/100x100.png" alt="AI Doctor" width={40} height={40} className="rounded-full" data-ai-hint="doctor avatar" />
                            </Avatar>
                        )}
-                       <div className={`rounded-2xl p-4 max-w-2xl w-full glass-card ${message.role === 'user' ? 'bg-secondary text-secondary-foreground' : 'bg-background/80'}`}>
+                       <div className={`rounded-2xl p-4 max-w-2xl w-fit ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'glass-card'}`}>
                            {message.content}
                        </div>
                        {message.role === 'user' && (
@@ -181,15 +189,16 @@ export default function DermatologistPage() {
                          <Avatar className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
                             <Image src="https://placehold.co/100x100.png" alt="AI Doctor" width={40} height={40} className="rounded-full" data-ai-hint="doctor avatar" />
                          </Avatar>
-                         <div className="rounded-2xl p-4 max-w-lg glass-card bg-background/80 flex items-center space-x-2">
+                         <div className="rounded-2xl p-4 max-w-lg glass-card flex items-center space-x-2">
                              <Loader2 className="h-5 w-5 animate-spin text-primary" />
                              <p className="text-sm text-muted-foreground">Menganalisis kondisi kulit Anda...</p>
                          </div>
                      </div>
                  )}
+                 <div ref={messagesEndRef} />
             </div>
             
-            <div className="p-4 bg-background/80 backdrop-blur-md">
+            <div className="p-4 bg-background/80 backdrop-blur-md sticky bottom-0">
                 <ChatInput onSubmit={handleSubmit} isLoading={loading} />
             </div>
         </div>

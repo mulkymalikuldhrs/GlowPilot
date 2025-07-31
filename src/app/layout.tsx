@@ -1,7 +1,6 @@
 
 'use client';
 
-import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuroraBackground } from '@/components/aurora-background';
@@ -42,18 +41,19 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
 
-  // Hide sidebar and header for landing and login pages
-  if (pathname === '/' || pathname === '/login' || pathname === '/signup') {
+  const noSidebarRoutes = ['/', '/login', '/signup'];
+  if (noSidebarRoutes.includes(pathname)) {
     return (
       <html lang="id" suppressHydrationWarning>
         <head>
           <title>GlowPilot Copilot</title>
           <meta name="description" content="Asisten perawatan kulit AI pribadi Anda." />
+          <link rel="icon" href="/favicon.ico" sizes="any" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
           <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
         </head>
-        <body className="font-body antialiased">
+        <body className="antialiased" style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
             <AuroraBackground />
             {children}
@@ -69,11 +69,12 @@ export default function RootLayout({
       <head>
         <title>GlowPilot Copilot</title>
         <meta name="description" content="Asisten perawatan kulit AI pribadi Anda." />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased">
+      <body className="antialiased" style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <AuroraBackground />
           <SidebarProvider>
@@ -82,7 +83,7 @@ export default function RootLayout({
                 <Link href="/dashboard" className="flex items-center gap-2">
                   <Logo />
                   <div className="flex flex-col">
-                    <h2 className="text-lg font-semibold tracking-tight" style={{color: 'var(--primary-optimistic)'}}>GlowPilot</h2>
+                    <h2 className="text-lg font-semibold tracking-tight" style={{color: 'var(--primary-optimistic)', fontFamily: 'Sora, sans-serif'}}>GlowPilot</h2>
                     <p className="text-xs text-muted-foreground">AI Copilot</p>
                   </div>
                 </Link>
@@ -92,7 +93,7 @@ export default function RootLayout({
                   <SidebarGroupLabel>Menu</SidebarGroupLabel>
                   <SidebarMenu>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild isActive={pathname === '/dashboard'}>
                         <Link href="/dashboard">
                           <LayoutDashboard />
                           Dashboard
@@ -100,7 +101,7 @@ export default function RootLayout({
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild isActive={pathname === '/tracking'}>
                         <Link href="/tracking">
                           <LineChart />
                           Pelacakan
@@ -110,10 +111,10 @@ export default function RootLayout({
                   </SidebarMenu>
                 </SidebarGroup>
                 <SidebarGroup>
-                  <SidebarGroupLabel>Fitur</SidebarGroupLabel>
+                  <SidebarGroupLabel>Fitur AI</SidebarGroupLabel>
                   <SidebarMenu>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild isActive={pathname === '/dermatologist'}>
                         <Link href="/dermatologist">
                           <Wand2 />
                           AI Dermatologist
@@ -121,7 +122,7 @@ export default function RootLayout({
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild isActive={pathname.startsWith('/specialists')}>
                         <Link href="/specialists">
                           <ShieldCheck />
                           AI Specialists
@@ -129,10 +130,10 @@ export default function RootLayout({
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild isActive={pathname === '/compare'}>
                         <Link href="/compare">
                           <Scale />
-                          Perbandingan Produk
+                          Perbandingan
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -142,7 +143,7 @@ export default function RootLayout({
                   <SidebarGroupLabel>Akun</SidebarGroupLabel>
                   <SidebarMenu>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild isActive={pathname === '/profile'}>
                         <Link href="/profile">
                           <User />
                           Profil
@@ -150,7 +151,7 @@ export default function RootLayout({
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild isActive={pathname === '/history'}>
                         <Link href="/history">
                           <History />
                           Riwayat
@@ -158,7 +159,7 @@ export default function RootLayout({
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild isActive={pathname === '/referral'}>
                         <Link href="/referral">
                           <Gift />
                           Referral
@@ -166,7 +167,7 @@ export default function RootLayout({
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild isActive={pathname === '/settings'}>
                         <Link href="/settings">
                           <Settings />
                           Pengaturan
@@ -175,31 +176,20 @@ export default function RootLayout({
                     </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroup>
-                 <SidebarGroup>
-                  <SidebarGroupLabel>Lainnya</SidebarGroupLabel>
+                 <SidebarGroup className="mt-auto">
                   <SidebarMenu>
                      <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <Link href="/newsletter">
-                          <Newspaper />
-                          Newsletter
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild isActive={pathname === '/upgrade'}>
                         <Link href="/upgrade">
                           <Rocket />
-                          Upgrade
+                          Upgrade ke Pro
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <Link href="/help">
+                      <SidebarMenuButton>
                           <LifeBuoy />
-                          Bantuan
-                        </Link>
+                          Bantuan & Dukungan
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenu>
@@ -208,14 +198,14 @@ export default function RootLayout({
             </Sidebar>
 
             <SidebarInset className="flex flex-col">
-              <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-md sm:px-6">
-                 <SidebarTrigger>
-                   <Button variant="ghost" size="icon" className="md:hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-panel-left-open"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
-                   </Button>
-                 </SidebarTrigger>
+              <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background/60 px-4 backdrop-blur-md sm:px-6">
+                 <SidebarTrigger className="md:hidden"/>
                  <div className="flex-1"></div>
                  <ThemeToggle />
+                 {/* Language Toggle Placeholder */}
+                 <Button variant="ghost" size="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                 </Button>
                  <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="rounded-full">

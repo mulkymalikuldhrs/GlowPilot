@@ -1,3 +1,4 @@
+
 'use client';
 
 import { compareProducts, type ProductComparisonOutput } from "@/ai/flows/product-comparison";
@@ -46,13 +47,21 @@ export default function ComparePage() {
 
     const ResultBadge = ({ label, product }: { label: string | undefined, product: string | undefined }) => {
         if (!label || !product) return null;
+        
         let icon = <Sparkles className="mr-2 h-4 w-4" />;
-        // You can customize icons based on labels here if you want
-        // if (label === "Nilai Terbaik") icon = ...
+        let colorClass = "bg-primary/10 text-primary";
+
+        if (label === "Pilihan Dermatologis") {
+            colorClass = "bg-blue-500/10 text-blue-400";
+        } else if (label === "Nilai Terbaik") {
+            colorClass = "bg-green-500/10 text-green-400";
+        } else if (label === "Paling Murah") {
+            colorClass = "bg-yellow-500/10 text-yellow-400";
+        }
 
         return (
              <div className="mt-2 flex items-center justify-center">
-                 <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+                 <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${colorClass}`}>
                     {icon}
                     <strong>{label}:</strong><span className="ml-1.5">{product}</span>
                 </span>
@@ -61,12 +70,12 @@ export default function ComparePage() {
     }
 
     return (
-        <div className="container mx-auto max-w-4xl py-8">
+        <div className="container mx-auto max-w-4xl py-8 md:py-12">
             <div className="flex flex-col items-center text-center">
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                    <Scale className="h-8 w-8" />
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Scale className="h-8 w-8" style={{color: 'var(--primary-optimistic)'}}/>
                 </div>
-                <h1 className="text-4xl font-bold tracking-tight">Perbandingan Produk</h1>
+                <h1 className="text-4xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>Perbandingan Produk</h1>
                 <p className="mt-2 max-w-2xl text-muted-foreground">
                     Bingung memilih produk? Masukkan dua nama produk di bawah ini dan biarkan AI kami memberikan perbandingan mendalam untuk membantu Anda.
                 </p>
@@ -123,7 +132,7 @@ export default function ComparePage() {
                     <CardContent className="space-y-4">
                         <p className="whitespace-pre-wrap text-sm leading-relaxed">{result.comparison}</p>
                         
-                        <div className="flex flex-col items-center justify-center gap-2 pt-4">
+                        <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
                            <ResultBadge label="Nilai Terbaik" product={result.bestValue} />
                            <ResultBadge label="Pilihan Dermatologis" product={result.dermatologistPick} />
                            <ResultBadge label="Paling Murah" product={result.cheapest} />

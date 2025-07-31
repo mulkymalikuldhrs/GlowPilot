@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent specializing in skin nutrition.
@@ -34,7 +35,7 @@ const prompt = ai.definePrompt({
   name: 'skinNutritionPrompt',
   input: {schema: SkinNutritionInputSchema},
   output: {schema: SkinNutritionOutputSchema},
-  prompt: `You are an AI nutritionist specializing in skin health. Based on the user's diet and skin concerns, provide a detailed analysis and actionable recommendations.
+  prompt: `You are an AI nutritionist specializing in skin health. Based on the user's diet and skin concerns, provide a detailed analysis and actionable recommendations in Bahasa Indonesia.
 
 User's Diet: {{{currentDiet}}}
 Skin Concerns: {{{skinConcerns}}}

@@ -14,7 +14,7 @@ export default function SpecialistsPage() {
         {
             name: "AI Dermatologist Umum",
             description: "Dapatkan diagnosis dan rekomendasi rutin untuk masalah kulit umum seperti jerawat, eksim, dan lainnya.",
-            icon: <Wand2 className="h-8 w-8 text-primary"/>,
+            icon: <Wand2 className="h-8 w-8 text-primary" style={{color: 'var(--primary-optimistic)'}}/>,
             link: "/dermatologist",
             image: "https://placehold.co/400x300.png",
             aiHint: "dermatology lab",
@@ -23,25 +23,25 @@ export default function SpecialistsPage() {
         {
             name: "Ahli Nutrisi Kulit",
             description: "Pelajari bagaimana diet Anda memengaruhi kulit Anda dan dapatkan saran makanan untuk kulit yang bercahaya.",
-            icon: <Soup className="h-8 w-8 text-primary"/>,
+            icon: <Soup className="h-8 w-8 text-primary" style={{color: 'var(--primary-optimistic)'}}/>,
             link: "/specialists/nutritionist",
             image: "https://placehold.co/400x300.png",
             aiHint: "healthy food",
-            isLocked: false, // Unlocked via referral
+            isLocked: false, // This would be dynamic in a real app
         },
         {
             name: "Pakar Anti-Penuaan",
             description: "Dapatkan rutinitas dan tips gaya hidup yang dipersonalisasi untuk mengatasi garis halus, kerutan, dan tanda-tanda penuaan.",
-            icon: <Sun className="h-8 w-8 text-primary"/>,
+            icon: <Sun className="h-8 w-8 text-primary" style={{color: 'var(--primary-optimistic)'}}/>,
             link: "/specialists/anti-aging",
             image: "https://placehold.co/400x300.png",
             aiHint: "serum cosmetics",
-            isLocked: false, // Unlocked via referral
+            isLocked: false, // This would be dynamic in a real app
         }
     ]
 
     return (
-        <div className="container mx-auto max-w-6xl py-8">
+        <div className="container mx-auto max-w-6xl py-8 md:py-12">
             <div className="flex flex-col items-center text-center">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <ShieldCheck className="h-8 w-8" style={{color: 'var(--primary-optimistic)'}}/>
@@ -62,11 +62,11 @@ export default function SpecialistsPage() {
                             </div>
                             <CardTitle>{specialist.name}</CardTitle>
                         </CardHeader>
-                        <CardContent className="flex-grow flex flex-col text-center">
+                        <CardContent className="flex-grow flex flex-col text-center p-4">
                            <Image src={specialist.image} alt={specialist.name} width={400} height={300} className="rounded-lg mb-4 aspect-[4/3] object-cover" data-ai-hint={specialist.aiHint} />
                             <CardDescription className="flex-grow">{specialist.description}</CardDescription>
                             <Button className="mt-6 w-full" asChild disabled={specialist.isLocked} style={!specialist.isLocked ? {backgroundColor: 'var(--primary-optimistic)', color: 'white'}: {}}>
-                                <Link href={specialist.link}>{specialist.isLocked ? 'Terkunci' : 'Hubungi Sekarang'}</Link>
+                                <Link href={specialist.link}>{specialist.isLocked ? 'Buka dengan Referral/Pro' : 'Hubungi Sekarang'}</Link>
                             </Button>
                         </CardContent>
                     </Card>

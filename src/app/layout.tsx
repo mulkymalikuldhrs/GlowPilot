@@ -16,7 +16,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Home, Scale, User, Wand2 } from 'lucide-react';
+import { Home, Scale, User, Wand2, History, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -101,13 +101,29 @@ export default function RootLayout({
                   </SidebarMenu>
                 </SidebarGroup>
                  <SidebarGroup>
-                  <SidebarGroupLabel>Profil</SidebarGroupLabel>
+                  <SidebarGroupLabel>Akun</SidebarGroupLabel>
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
                         <Link href="/profile">
                           <User />
-                          Profil Pengguna
+                          Profil
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/history">
+                          <History />
+                          Riwayat
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/settings">
+                          <Settings />
+                          Pengaturan
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -138,8 +154,8 @@ export default function RootLayout({
                       <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild><Link href="/profile">Profil</Link></DropdownMenuItem>
-                      <DropdownMenuItem>Riwayat</DropdownMenuItem>
-                      <DropdownMenuItem>Pengaturan</DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/history">Riwayat</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/settings">Pengaturan</Link></DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem>Keluar</DropdownMenuItem>
                     </DropdownMenuContent>

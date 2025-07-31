@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -14,8 +15,9 @@ import {z} from 'genkit';
 const SkinConditionDiagnosisInputSchema = z.object({
   photoDataUri: z
     .string()
+    .optional()
     .describe(
-      "A photo of the skin issue, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "An optional photo of the skin issue, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
   description: z.string().describe('A description of the skin issue.'),
 });
@@ -46,7 +48,11 @@ const prompt = ai.definePrompt({
   prompt: `You are an AI dermatologist. Provide a diagnosis of the skin condition, personalized skincare routine recommendations, and a list of 3-5 specific (but generic, well-known) product recommendations. For each product, explain why it's suitable.
 
   Description: {{{description}}}
+  {{#if photoDataUri}}
   Photo: {{media url=photoDataUri}}
+  {{/if}}
+
+  Base your diagnosis on the provided description, and the photo if available. If no photo is provided, rely solely on the description.
 
   Format your output as a JSON object with "diagnosis", "recommendations", and "productRecommendations" fields.
   `,

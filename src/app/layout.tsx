@@ -1,4 +1,6 @@
 
+'use client';
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -17,7 +19,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { History, LayoutDashboard, LineChart, Scale, Settings, ShieldCheck, User, Wand2 } from 'lucide-react';
+import { Gift, History, LayoutDashboard, LineChart, LogIn, LogOut, Scale, Settings, ShieldCheck, User, Wand2, Newspaper, LifeBuoy, Rocket } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -31,26 +33,45 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
-export const metadata: Metadata = {
-  title: 'GlowPilot Copilot',
-  description: 'Asisten perawatan kulit AI pribadi Anda.',
-};
+import { usePathname } from 'next/navigation';
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+
+  // Hide sidebar and header for landing and login pages
+  if (pathname === '/' || pathname === '/login' || pathname === '/signup') {
+    return (
+      <html lang="id" suppressHydrationWarning>
+        <head>
+          <title>GlowPilot Copilot</title>
+          <meta name="description" content="Asisten perawatan kulit AI pribadi Anda." />
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+        </head>
+        <body className="font-body antialiased">
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+            <AuroraBackground />
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </body>
+      </html>
+    );
+  }
+
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
+        <title>GlowPilot Copilot</title>
+        <meta name="description" content="Asisten perawatan kulit AI pribadi Anda." />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap"
-          rel="stylesheet"
-        />
+        <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
@@ -58,10 +79,10 @@ export default function RootLayout({
           <SidebarProvider>
             <Sidebar>
               <SidebarHeader>
-                <Link href="/" className="flex items-center gap-2">
+                <Link href="/dashboard" className="flex items-center gap-2">
                   <Logo />
                   <div className="flex flex-col">
-                    <h2 className="text-lg font-semibold tracking-tight text-primary">GlowPilot</h2>
+                    <h2 className="text-lg font-semibold tracking-tight" style={{color: 'var(--primary-optimistic)'}}>GlowPilot</h2>
                     <p className="text-xs text-muted-foreground">AI Copilot</p>
                   </div>
                 </Link>
@@ -117,7 +138,7 @@ export default function RootLayout({
                     </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroup>
-                 <SidebarGroup>
+                <SidebarGroup>
                   <SidebarGroupLabel>Akun</SidebarGroupLabel>
                   <SidebarMenu>
                     <SidebarMenuItem>
@@ -136,11 +157,48 @@ export default function RootLayout({
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
+                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/referral">
+                          <Gift />
+                          Referral
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
                         <Link href="/settings">
                           <Settings />
                           Pengaturan
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroup>
+                 <SidebarGroup>
+                  <SidebarGroupLabel>Lainnya</SidebarGroupLabel>
+                  <SidebarMenu>
+                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/newsletter">
+                          <Newspaper />
+                          Newsletter
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/upgrade">
+                          <Rocket />
+                          Upgrade
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/help">
+                          <LifeBuoy />
+                          Bantuan
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -174,7 +232,7 @@ export default function RootLayout({
                       <DropdownMenuItem asChild><Link href="/history">Riwayat</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/settings">Pengaturan</Link></DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>Keluar</DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/login"><LogOut className="mr-2 h-4 w-4" />Keluar</Link></DropdownMenuItem>
                     </DropdownMenuContent>
                  </DropdownMenu>
               </header>

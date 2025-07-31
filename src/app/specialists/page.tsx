@@ -3,9 +3,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, Soup, Sun, Wand2 } from "lucide-react";
+import { ShieldCheck, Soup, Sun, Wand2, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
 
 export default function SpecialistsPage() {
 
@@ -16,7 +17,8 @@ export default function SpecialistsPage() {
             icon: <Wand2 className="h-8 w-8 text-primary"/>,
             link: "/dermatologist",
             image: "https://placehold.co/400x300.png",
-            aiHint: "dermatology lab"
+            aiHint: "dermatology lab",
+            isLocked: false,
         },
         {
             name: "Ahli Nutrisi Kulit",
@@ -24,7 +26,8 @@ export default function SpecialistsPage() {
             icon: <Soup className="h-8 w-8 text-primary"/>,
             link: "/specialists/nutritionist",
             image: "https://placehold.co/400x300.png",
-            aiHint: "healthy food"
+            aiHint: "healthy food",
+            isLocked: false, // Unlocked via referral
         },
         {
             name: "Pakar Anti-Penuaan",
@@ -32,7 +35,8 @@ export default function SpecialistsPage() {
             icon: <Sun className="h-8 w-8 text-primary"/>,
             link: "/specialists/anti-aging",
             image: "https://placehold.co/400x300.png",
-            aiHint: "serum cosmetics"
+            aiHint: "serum cosmetics",
+            isLocked: false, // Unlocked via referral
         }
     ]
 
@@ -40,18 +44,19 @@ export default function SpecialistsPage() {
         <div className="container mx-auto max-w-6xl py-8">
             <div className="flex flex-col items-center text-center">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <ShieldCheck className="h-8 w-8" />
+                    <ShieldCheck className="h-8 w-8" style={{color: 'var(--primary-optimistic)'}}/>
                 </div>
-                <h1 className="text-4xl font-bold tracking-tight">Temui Dokter AI Spesialis Anda</h1>
+                <h1 className="text-4xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>Temui Dokter AI Spesialis Anda</h1>
                 <p className="mt-2 max-w-2xl text-muted-foreground">
-                    Pilih seorang spesialis untuk mendapatkan saran yang ditargetkan untuk kebutuhan unik perawatan kulit Anda.
+                    Pilih seorang spesialis untuk mendapatkan saran yang ditargetkan. Undang teman atau upgrade ke Pro untuk membuka semua spesialis.
                 </p>
             </div>
 
             <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {specialists.map((specialist) => (
-                    <Card key={specialist.name} className="glass-card transform hover:-translate-y-2 transition-transform duration-300 flex flex-col">
+                    <Card key={specialist.name} className={`glass-card transform hover:-translate-y-2 transition-transform duration-300 flex flex-col ${specialist.isLocked ? 'opacity-60' : ''}`}>
                         <CardHeader className="items-center text-center">
+                            {specialist.isLocked && <Badge variant="destructive" className="absolute top-4 right-4"><Lock className="mr-1 h-3 w-3" /> Terkunci</Badge>}
                             <div className="p-3 rounded-full bg-primary/10 mb-2">
                                {specialist.icon}
                             </div>
@@ -60,8 +65,8 @@ export default function SpecialistsPage() {
                         <CardContent className="flex-grow flex flex-col text-center">
                            <Image src={specialist.image} alt={specialist.name} width={400} height={300} className="rounded-lg mb-4 aspect-[4/3] object-cover" data-ai-hint={specialist.aiHint} />
                             <CardDescription className="flex-grow">{specialist.description}</CardDescription>
-                            <Button className="mt-6 w-full" asChild>
-                                <Link href={specialist.link}>Hubungi Sekarang</Link>
+                            <Button className="mt-6 w-full" asChild disabled={specialist.isLocked} style={!specialist.isLocked ? {backgroundColor: 'var(--primary-optimistic)', color: 'white'}: {}}>
+                                <Link href={specialist.link}>{specialist.isLocked ? 'Terkunci' : 'Hubungi Sekarang'}</Link>
                             </Button>
                         </CardContent>
                     </Card>

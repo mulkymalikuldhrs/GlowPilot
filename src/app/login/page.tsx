@@ -33,7 +33,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-center min-h-screen p-4">
             <Card className="w-full max-w-sm glass-card">
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl" style={{fontFamily: 'Sora, sans-serif'}}>Selamat Datang Kembali!</CardTitle>
+                    <CardTitle className="text-2xl font-bold tracking-tight">Selamat Datang Kembali!</CardTitle>
                     <CardDescription>Masuk ke akun GlowPilot Anda untuk melanjutkan.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -46,7 +46,7 @@ export default function LoginPage() {
                             <Label htmlFor="password">Kata Sandi</Label>
                             <Input id="password" type="password" placeholder="••••••••" required disabled={loading}/>
                         </div>
-                        <Button type="submit" className="w-full" disabled={loading} style={{backgroundColor: 'var(--primary-optimistic)', color: 'white'}}>
+                        <Button type="submit" className="w-full" disabled={loading}>
                             {loading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
@@ -61,7 +61,7 @@ export default function LoginPage() {
                     </form>
                     <div className="mt-4 text-center text-sm">
                         Belum punya akun?{" "}
-                        <Link href="/signup" className="underline" style={{color: 'var(--primary-optimistic)'}}>
+                        <Link href="/signup" className="underline text-primary">
                             Daftar di sini
                         </Link>
                     </div>

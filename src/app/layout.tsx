@@ -17,7 +17,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { History, LayoutDashboard, Scale, Settings, ShieldCheck, User, Wand2 } from 'lucide-react';
+import { History, LayoutDashboard, LineChart, Scale, Settings, ShieldCheck, User, Wand2 } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -43,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -75,6 +75,14 @@ export default function RootLayout({
                         <Link href="/dashboard">
                           <LayoutDashboard />
                           Dashboard
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/tracking">
+                          <LineChart />
+                          Pelacakan
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

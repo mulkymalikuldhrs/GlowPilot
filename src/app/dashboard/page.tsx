@@ -1,8 +1,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, ArrowRight, Lightbulb, Scale, User, Wand2, ShieldCheck, Soup, Sun } from "lucide-react";
+import { Activity, ArrowRight, Lightbulb, Scale, User, Wand2, ShieldCheck, Soup, Sun, LineChart } from "lucide-react";
 import Link from "next/link";
+import { Progress } from "@/components/ui/progress";
 
 export default function DashboardPage() {
   return (
@@ -42,7 +43,40 @@ export default function DashboardPage() {
                 </Button>
             </CardContent>
         </Card>
-        <Card className="glass-card transform hover:-translate-y-2 transition-transform duration-300 md:col-span-2 lg:col-span-2">
+        <Card className="glass-card transform hover:-translate-y-2 transition-transform duration-300 md:col-span-2">
+            <CardHeader>
+                 <div className="flex items-center justify-between">
+                    <CardTitle className="text-xl">Jurnal Perawatan Kulit</CardTitle>
+                    <LineChart className="h-6 w-6 text-primary"/>
+                </div>
+                <CardDescription>Lacak progres, rutinitas, dan tujuan kulit Anda.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    <div>
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-sm font-medium">Tujuan: Kurangi Jerawat</span>
+                            <span className="text-sm font-bold text-primary">60%</span>
+                        </div>
+                        <Progress value={60} className="h-2" />
+                        <p className="text-xs text-muted-foreground mt-1">18 dari 30 hari selesai</p>
+                    </div>
+                    <div>
+                        <p className="text-sm font-medium">Rutinitas Hari Ini (AM/PM)</p>
+                        <p className="text-xs text-muted-foreground">Selesai: 1 dari 2</p>
+                    </div>
+                </div>
+                 <Button className="mt-4 w-full" asChild>
+                    <Link href="/tracking">
+                        Buka Jurnal Pelacakan <ArrowRight className="ml-2 h-4 w-4"/>
+                    </Link>
+                </Button>
+            </CardContent>
+        </Card>
+      </section>
+
+      <section className="grid gap-8 lg:grid-cols-3">
+        <Card className="glass-card lg:col-span-2">
             <CardHeader>
                  <div className="flex items-center justify-between">
                     <CardTitle className="text-xl">Hubungi Dokter AI Spesialis</CardTitle>
@@ -52,7 +86,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Button className="w-full justify-start h-12" asChild>
-                     <Link href="/specialists/dermatologist">
+                     <Link href="/dermatologist">
                         <Wand2 className="mr-2 h-5 w-5"/> AI Dermatologist Umum
                     </Link>
                 </Button>
@@ -73,9 +107,6 @@ export default function DashboardPage() {
                 </Button>
             </CardContent>
         </Card>
-      </section>
-
-      <section className="grid gap-8 md:grid-cols-2">
         <Card className="glass-card">
             <CardHeader>
                 <div className="flex items-center justify-between">
@@ -88,45 +119,9 @@ export default function DashboardPage() {
                 <p className="text-sm text-foreground/90">
                     "Jangan lupa gunakan tabir surya bahkan saat cuaca mendung. Sinar UV tetap dapat menembus awan dan merusak kulit Anda."
                 </p>
-            </CardContent>
-        </Card>
-        <Card className="glass-card">
-            <CardHeader>
-                <CardTitle>Riwayat Aktivitas Terbaru</CardTitle>
-                <CardDescription>Lihat kembali diagnosis dan perbandingan terakhir Anda.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
-                        <div className="flex items-center gap-4">
-                            <Activity className="h-5 w-5 text-primary"/>
-                            <div>
-                                <p className="font-semibold">Diagnosis: Jerawat Ringan</p>
-                                <p className="text-xs text-muted-foreground">3 hari yang lalu</p>
-                            </div>
-                        </div>
-                        <Button variant="ghost" size="sm" asChild>
-                            <Link href="/history/1">Lihat Detail</Link>
-                        </Button>
-                    </div>
-                     <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
-                        <div className="flex items-center gap-4">
-                            <Scale className="h-5 w-5 text-primary"/>
-                            <div>
-                                <p className="font-semibold">Perbandingan: CeraVe vs La Roche-Posay</p>
-                                <p className="text-xs text-muted-foreground">5 hari yang lalu</p>
-                            </div>
-                        </div>
-                        <Button variant="ghost" size="sm" asChild>
-                            <Link href="/history/2">Lihat Detail</Link>
-                        </Button>
-                    </div>
-                </div>
-                <Button variant="outline" className="mt-6 w-full" asChild>
-                    <Link href="/history">
-                        Lihat Semua Riwayat
-                    </Link>
-                </Button>
+                 <p className="text-sm text-foreground/90 mt-4">
+                    "Minum cukup air membantu menjaga elastisitas dan hidrasi kulit dari dalam."
+                </p>
             </CardContent>
         </Card>
       </section>

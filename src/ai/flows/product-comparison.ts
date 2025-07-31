@@ -27,7 +27,7 @@ const productComparisonPrompt = ai.definePrompt({
   name: 'productComparisonPrompt',
   input: {schema: ProductComparisonInputSchema},
   output: {schema: ProductComparisonOutputSchema},
-  prompt: `Compare the following two skincare products based on price, rating, and ingredients.  Provide a detailed comparison, and then label one as \'Best Value\', \'Dermatologist Pick\', or \'Cheapest\' if applicable.\n\nProduct 1: {{{product1}}}\nProduct 2: {{{product2}}}`, 
+  prompt: `Bandingkan dua produk perawatan kulit berikut berdasarkan harga, peringkat, dan bahan-bahannya. Berikan perbandingan terperinci, lalu beri label pada salah satunya sebagai 'Nilai Terbaik', 'Pilihan Dermatologis', atau 'Paling Murah' jika berlaku.\n\nProduk 1: {{{product1}}}\nProduk 2: {{{product2}}}`,
 });
 
 const productComparisonFlow = ai.defineFlow(

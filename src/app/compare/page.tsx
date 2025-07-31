@@ -46,11 +46,15 @@ export default function ComparePage() {
 
     const ResultBadge = ({ label, product }: { label: string | undefined, product: string | undefined }) => {
         if (!label || !product) return null;
+        let icon = <Sparkles className="mr-2 h-4 w-4" />;
+        // You can customize icons based on labels here if you want
+        // if (label === "Nilai Terbaik") icon = ...
+
         return (
-            <div className="mt-4 flex items-center justify-center">
+             <div className="mt-2 flex items-center justify-center">
                  <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    {label}: {product}
+                    {icon}
+                    <strong>{label}:</strong><span className="ml-1.5">{product}</span>
                 </span>
             </div>
         );
@@ -64,7 +68,7 @@ export default function ComparePage() {
                 </div>
                 <h1 className="text-4xl font-bold tracking-tight">Perbandingan Produk</h1>
                 <p className="mt-2 max-w-2xl text-muted-foreground">
-                    Masukkan dua nama produk di bawah ini dan biarkan AI kami memberikan perbandingan mendetail untuk membantu Anda memilih yang terbaik.
+                    Bingung memilih produk? Masukkan dua nama produk di bawah ini dan biarkan AI kami memberikan perbandingan mendalam untuk membantu Anda.
                 </p>
             </div>
 
@@ -114,16 +118,20 @@ export default function ComparePage() {
                 <Card className="mt-8 glass-card">
                     <CardHeader>
                         <CardTitle>Hasil Perbandingan</CardTitle>
-                        <CardDescription>Berikut adalah perbandingan yang dihasilkan AI dari {product1} dan {product2}.</CardDescription>
+                        <CardDescription>Berikut adalah perbandingan yang dihasilkan AI dari <strong>{product1}</strong> dan <strong>{product2}</strong>.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <p className="whitespace-pre-wrap text-sm leading-relaxed">{result.comparison}</p>
-                        <ResultBadge label="Nilai Terbaik" product={result.bestValue} />
-                        <ResultBadge label="Pilihan Dermatologis" product={result.dermatologistPick} />
-                        <ResultBadge label="Paling Murah" product={result.cheapest} />
+                        
+                        <div className="flex flex-col items-center justify-center gap-2 pt-4">
+                           <ResultBadge label="Nilai Terbaik" product={result.bestValue} />
+                           <ResultBadge label="Pilihan Dermatologis" product={result.dermatologistPick} />
+                           <ResultBadge label="Paling Murah" product={result.cheapest} />
+                        </div>
+                        
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                            <Button variant="outline" className="w-full">Beli {product1}</Button>
-                            <Button variant="outline" className="w-full">Beli {product2}</Button>
+                            <Button variant="outline" className="w-full">Cek Detail {product1}</Button>
+                            <Button variant="outline" className="w-full">Cek Detail {product2}</Button>
                         </div>
                     </CardContent>
                 </Card>

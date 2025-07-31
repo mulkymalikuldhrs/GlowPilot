@@ -1,126 +1,87 @@
+
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, ArrowRight, Lightbulb, Scale, User, Wand2 } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export default function DashboardPage() {
+export default function WelcomePage() {
+  const features = [
+    "Analisis Kulit Berbasis AI",
+    "Rekomendasi Produk Personal",
+    "Perbandingan Produk Cerdas",
+    "Pelacakan Kemajuan Kulit",
+  ];
+
   return (
-    <div className="flex flex-col gap-8">
-      <section>
-        <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-            <div>
-                <h1 className="text-4xl font-bold tracking-tight">Selamat Datang, Mulky!</h1>
-                <p className="mt-2 text-muted-foreground">Ini adalah ringkasan perjalanan kulit sehat Anda. Mari kita mulai!</p>
-            </div>
-            <Button asChild>
-                <Link href="/dermatologist">
-                    Mulai Analisis Baru <Wand2 className="ml-2 h-4 w-4"/>
+    <div className="w-full min-h-screen bg-background text-foreground flex flex-col">
+      <main className="flex-1">
+        <section className="container mx-auto px-4 py-20 md:py-32 flex flex-col md:flex-row items-center gap-12">
+          <div className="md:w-1/2 text-center md:text-left">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter leading-tight">
+              Panduan Cerdas untuk Kulit Sehat & Bercahaya
+            </h1>
+            <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto md:mx-0">
+              GlowPilot adalah co-pilot perawatan kulit pribadi Anda. Dapatkan diagnosis instan, rekomendasi produk yang dipersonalisasi, dan lacak perjalanan kulit Anda dengan kekuatan AI.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <Button size="lg" asChild>
+                <Link href="/dashboard">
+                  Mulai Gratis <ArrowRight className="ml-2" />
                 </Link>
-            </Button>
-        </div>
-      </section>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                 <Link href="/compare">
+                    Lihat Fitur
+                </Link>
+              </Button>
+            </div>
+          </div>
+          <div className="md:w-1/2">
+            <Image 
+              src="https://placehold.co/600x600.png"
+              alt="Hero Image"
+              width={600}
+              height={600}
+              className="rounded-3xl shadow-2xl shadow-primary/20 object-cover aspect-square"
+              data-ai-hint="skincare products"
+            />
+          </div>
+        </section>
 
-      <section className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-         <Card className="glass-card transform hover:-translate-y-2 transition-transform duration-300">
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">Profil Kulit Anda</CardTitle>
-                    <User className="h-6 w-6 text-primary"/>
-                </div>
-                <CardDescription>Personalisasi untuk hasil terbaik.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                    <p><strong>Tipe Kulit:</strong> <span className="text-foreground">Kombinasi</span></p>
-                    <p><strong>Masalah Utama:</strong> <span className="text-foreground">Jerawat, Kemerahan</span></p>
-                </div>
-                 <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
-                    <Link href="/profile">
-                        Lengkapi Profil <ArrowRight className="ml-2 h-4 w-4"/>
-                    </Link>
-                </Button>
-            </CardContent>
-        </Card>
-        <Card className="glass-card transform hover:-translate-y-2 transition-transform duration-300">
-            <CardHeader>
-                 <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">Akses Cepat</CardTitle>
-                    <Wand2 className="h-6 w-6 text-primary"/>
-                </div>
-                <CardDescription>Langsung ke fitur favorit Anda.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-                <Button className="w-full justify-start" asChild>
-                     <Link href="/dermatologist">
-                        <Wand2 className="mr-2 h-4 w-4"/> AI Dermatologist
-                    </Link>
-                </Button>
-                 <Button className="w-full justify-start" variant="secondary" asChild>
-                    <Link href="/compare">
-                        <Scale className="mr-2 h-4 w-4"/> Perbandingan Produk
-                    </Link>
-                </Button>
-            </CardContent>
-        </Card>
-        <Card className="glass-card transform hover:-translate-y-2 transition-transform duration-300 md:col-span-2 lg:col-span-1">
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">Tips Perawatan Hari Ini</CardTitle>
-                    <Lightbulb className="h-6 w-6 text-primary"/>
-                </div>
-                <CardDescription>Satu langkah kecil setiap hari.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className="text-sm text-foreground/90">
-                    "Jangan lupa gunakan tabir surya bahkan saat cuaca mendung. Sinar UV tetap dapat menembus awan dan merusak kulit Anda."
-                </p>
-            </CardContent>
-        </Card>
-      </section>
+        <section className="bg-secondary/50 py-20">
+            <div className="container mx-auto px-4 text-center">
+                 <h2 className="text-3xl font-bold tracking-tight">Semua yang Anda Butuhkan untuk Kulit Terbaik Anda</h2>
+                 <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
+                    Dari analisis mendalam hingga perbandingan produk, GlowPilot memberikan alat yang Anda butuhkan untuk membuat keputusan perawatan kulit yang lebih cerdas.
+                 </p>
+                 <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+                    {features.map((feature, index) => (
+                        <div key={index} className="flex flex-col items-center gap-3">
+                            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 text-primary">
+                                <CheckCircle2 className="h-6 w-6"/>
+                            </div>
+                            <p className="font-semibold text-center">{feature}</p>
+                        </div>
+                    ))}
+                 </div>
+            </div>
+        </section>
 
-      <section>
-        <Card className="glass-card">
-            <CardHeader>
-                <CardTitle>Riwayat Aktivitas Terbaru</CardTitle>
-                <CardDescription>Lihat kembali diagnosis dan perbandingan terakhir Anda.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
-                        <div className="flex items-center gap-4">
-                            <Activity className="h-5 w-5 text-primary"/>
-                            <div>
-                                <p className="font-semibold">Diagnosis: Jerawat Ringan</p>
-                                <p className="text-xs text-muted-foreground">3 hari yang lalu</p>
-                            </div>
-                        </div>
-                        <Button variant="ghost" size="sm" asChild>
-                            <Link href="/history/1">Lihat Detail</Link>
-                        </Button>
-                    </div>
-                     <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
-                        <div className="flex items-center gap-4">
-                            <Scale className="h-5 w-5 text-primary"/>
-                            <div>
-                                <p className="font-semibold">Perbandingan: CeraVe vs La Roche-Posay</p>
-                                <p className="text-xs text-muted-foreground">5 hari yang lalu</p>
-                            </div>
-                        </div>
-                        <Button variant="ghost" size="sm" asChild>
-                            <Link href="/history/2">Lihat Detail</Link>
-                        </Button>
-                    </div>
-                </div>
-                <Button variant="outline" className="mt-6 w-full" asChild>
-                    <Link href="/history">
-                        Lihat Semua Riwayat
+         <section className="container mx-auto px-4 py-20 md:py-32 text-center">
+            <h2 className="text-3xl font-bold tracking-tight">Siap Mengambil Kendali Perawatan Kulit Anda?</h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+                Bergabunglah dengan ribuan pengguna yang telah menemukan rutinitas sempurna mereka.
+            </p>
+            <div className="mt-8">
+                 <Button size="lg" asChild className="transform hover:scale-105 transition-transform">
+                    <Link href="/dashboard">
+                        Dapatkan Analisis Gratis Anda
                     </Link>
                 </Button>
-            </CardContent>
-        </Card>
-      </section>
-       <footer className="text-center py-4 border-t border-border/20 mt-8">
+            </div>
+        </section>
+      </main>
+       <footer className="text-center py-6 border-t border-border/20">
          <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} GlowPilot. Semua ada di tangan Anda. ✨</p>
        </footer>
     </div>

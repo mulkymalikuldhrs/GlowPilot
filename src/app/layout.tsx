@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -16,7 +17,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Home, Scale, User, Wand2, History, Settings } from 'lucide-react';
+import { Home, Scale, User, Wand2, History, Settings, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -57,22 +58,22 @@ export default function RootLayout({
           <SidebarProvider>
             <Sidebar>
               <SidebarHeader>
-                <div className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2">
                   <Logo />
                   <div className="flex flex-col">
                     <h2 className="text-lg font-semibold tracking-tight text-primary">GlowPilot</h2>
                     <p className="text-xs text-muted-foreground">AI Copilot</p>
                   </div>
-                </div>
+                </Link>
               </SidebarHeader>
               <SidebarContent>
-                <SidebarGroup>
+                 <SidebarGroup>
                   <SidebarGroupLabel>Menu</SidebarGroupLabel>
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <Link href="/">
-                          <Home />
+                        <Link href="/dashboard">
+                          <LayoutDashboard />
                           Dashboard
                         </Link>
                       </SidebarMenuButton>
@@ -161,7 +162,7 @@ export default function RootLayout({
                     </DropdownMenuContent>
                  </DropdownMenu>
               </header>
-              <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
+              <main className="flex-1 overflow-auto">{children}</main>
             </SidebarInset>
           </SidebarProvider>
           <Toaster />

@@ -18,7 +18,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Gift, History, LayoutDashboard, LineChart, LogIn, LogOut, Scale, Settings, ShieldCheck, User, Wand2, Newspaper, LifeBuoy, Rocket } from 'lucide-react';
+import { Gift, History, LayoutDashboard, LineChart, LogIn, LogOut, Scale, Settings, ShieldCheck, User, Wand2, Newspaper, LifeBuoy, Rocket, Film } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -134,6 +134,14 @@ export default function RootLayout({
                         <Link href="/compare">
                           <Scale />
                           Perbandingan
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={pathname === '/scroll-video'}>
+                        <Link href="/scroll-video">
+                          <Film />
+                          Video Scroller
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

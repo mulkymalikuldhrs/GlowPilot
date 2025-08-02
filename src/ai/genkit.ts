@@ -1,9 +1,9 @@
 import {genkit} from 'genkit';
-import {openai} from 'genkit-plugin-openai';
+import {openAI} from 'genkitx-openai';
 
 export const ai = genkit({
   plugins: [
-    openai({
+    openAI({
       apiKey: 'unused',
       baseURL: 'https://api.llm7.io/v1',
     }),

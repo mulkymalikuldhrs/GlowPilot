@@ -4,31 +4,11 @@
  * @fileOverview An AI agent that handles user onboarding through a conversation.
  *
  * - conductOnboarding - A function that handles the onboarding conversation.
- * - OnboardingInput - The input type for the conductOnboarding function.
- * - OnboardingOutput - The return type for the conductOnboarding function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { OnboardingInputSchema, OnboardingOutputSchema, type OnboardingInput, type OnboardingOutput } from '@/ai/schemas/onboarding-schemas';
 
-export const OnboardingInputSchema = z.object({
-  currentHistory: z.array(z.object({
-    role: z.enum(['user', 'model']),
-    content: z.string(),
-  })).describe('The current conversation history.'),
-});
-export type OnboardingInput = z.infer<typeof OnboardingInputSchema>;
-
-export const OnboardingOutputSchema = z.object({
-  response: z.string().describe('The next message from the AI assistant.'),
-  isComplete: z.boolean().describe('Whether the onboarding process is complete.'),
-  userData: z.object({
-    name: z.string().optional().describe("The user's name."),
-    skinType: z.string().optional().describe("The user's skin type."),
-    skinConcerns: z.string().optional().describe("The user's primary skin concerns."),
-  }).optional().describe('The collected user data once onboarding is complete.'),
-});
-export type OnboardingOutput = z.infer<typeof OnboardingOutputSchema>;
 
 export async function conductOnboarding(input: OnboardingInput): Promise<OnboardingOutput> {
   return onboardingFlow(input);

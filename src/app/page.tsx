@@ -32,8 +32,8 @@ export default function WelcomePage() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                 <Link href="/compare">
-                    Lihat Fitur
+                 <Link href="/dermatologist">
+                    Coba Analisis AI
                 </Link>
               </Button>
             </div>
@@ -87,7 +87,15 @@ export default function WelcomePage() {
         </section>
       </main>
        <footer className="text-center py-6 border-t border-border/20">
-         <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} GlowPilot. Semua ada di tangan Anda. ✨</p>
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} GlowPilot. Semua ada di tangan Anda. ✨</p>
+            <div className="flex items-center gap-4">
+              <Link href="/terms" className="text-xs text-muted-foreground hover:text-primary">Syarat & Ketentuan</Link>
+              <Link href="/privacy" className="text-xs text-muted-foreground hover:text-primary">Kebijakan Privasi</Link>
+            </div>
+          </div>
+        </div>
        </footer>
     </div>
   );

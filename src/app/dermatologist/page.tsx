@@ -69,7 +69,6 @@ export default function DermatologistPage() {
         setMessages(prev => [...prev, userMessage]);
         setLoading(true);
         
-        // Scroll to bottom after adding new message
         setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
 
         try {
@@ -107,7 +106,7 @@ export default function DermatologistPage() {
                         {res.productRecommendations && res.productRecommendations.length > 0 && (
                             <div className="space-y-4">
                                 <h3 className="font-semibold text-primary">Rekomendasi Produk</h3>
-                                <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                     {res.productRecommendations.map((product, index) => (
                                         <Card key={index} className="glass-card">
                                             <CardContent className="p-4">
@@ -116,7 +115,7 @@ export default function DermatologistPage() {
                                                 <p className="text-xs text-foreground/80">{product.reason}</p>
                                                 <Button variant="outline" size="sm" className="w-full mt-3 text-xs" asChild>
                                                     <Link href="#">
-                                                        Lihat Produk <ShoppingCart className="ml-2 h-3 w-3"/>
+                                                        Beli di E-commerce <ShoppingCart className="ml-2 h-3 w-3"/>
                                                     </Link>
                                                 </Button>
                                             </CardContent>
@@ -159,9 +158,9 @@ export default function DermatologistPage() {
                     <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
                         <Wand2 className="h-8 w-8" style={{color: 'var(--primary-optimistic)'}}/>
                     </div>
-                    <h1 className="text-4xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>AI Dermatologist</h1>
+                    <h1 className="text-4xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>AI Dermatologist Umum</h1>
                     <p className="mt-2 max-w-2xl text-muted-foreground">
-                        Jelaskan masalah kulit Anda (Anda juga bisa mengunggah foto jika mau). AI kami akan memberikan diagnosis, rutinitas, dan rekomendasi produk.
+                        Selamat datang di GlowPilot! Jelaskan masalah kulit Anda untuk memulai. Anda juga bisa mengunggah foto jika mau. AI kami akan memberikan analisis awal dan rekomendasi.
                     </p>
                 </div>
             )}

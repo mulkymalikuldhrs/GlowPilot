@@ -18,7 +18,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Gift, History, LayoutDashboard, LineChart, LogIn, LogOut, Scale, Settings, ShieldCheck, User, Wand2, Newspaper, LifeBuoy, Rocket, Film } from 'lucide-react';
+import { Gift, History, LayoutDashboard, LineChart, LogOut, Scale, Settings, ShieldCheck, User, Wand2, Rocket, Film, Sparkles, BookCopy } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
@@ -41,8 +41,9 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
 
-  const noSidebarRoutes = ['/', '/login', '/signup'];
-  if (noSidebarRoutes.includes(pathname)) {
+  const noSidebarRoutes = ['/login', '/signup'];
+  // The root path "/" is now the landing page, which might not need a sidebar
+  if (noSidebarRoutes.includes(pathname) || pathname === '/') {
     return (
       <html lang="id" suppressHydrationWarning>
         <head>
@@ -90,7 +91,7 @@ export default function RootLayout({
               </SidebarHeader>
               <SidebarContent>
                  <SidebarGroup>
-                  <SidebarGroupLabel>Menu</SidebarGroupLabel>
+                  <SidebarGroupLabel>Menu Utama</SidebarGroupLabel>
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={pathname === '/dashboard'}>
@@ -104,7 +105,7 @@ export default function RootLayout({
                       <SidebarMenuButton asChild isActive={pathname === '/tracking'}>
                         <Link href="/tracking">
                           <LineChart />
-                          Pelacakan
+                          Jurnal & Progres
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -117,15 +118,15 @@ export default function RootLayout({
                       <SidebarMenuButton asChild isActive={pathname === '/dermatologist'}>
                         <Link href="/dermatologist">
                           <Wand2 />
-                          AI Dermatologist
+                          Dermatologist Umum
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={pathname.startsWith('/specialists')}>
                         <Link href="/specialists">
-                          <ShieldCheck />
-                          AI Specialists
+                          <Sparkles />
+                          AI Spesialis
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -133,28 +134,28 @@ export default function RootLayout({
                       <SidebarMenuButton asChild isActive={pathname === '/compare'}>
                         <Link href="/compare">
                           <Scale />
-                          Perbandingan
+                          Bandingkan Produk
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                      <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={pathname === '/scroll-video'}>
-                        <Link href="/scroll-video">
-                          <Film />
-                          Video Scroller
+                      <SidebarMenuButton asChild isActive={pathname === '/catalog'}>
+                        <Link href="/catalog">
+                          <BookCopy />
+                          Katalog Produk
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroup>
                 <SidebarGroup>
-                  <SidebarGroupLabel>Akun</SidebarGroupLabel>
+                  <SidebarGroupLabel>Akun & Lainnya</SidebarGroupLabel>
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={pathname === '/profile'}>
                         <Link href="/profile">
                           <User />
-                          Profil
+                          Profil Saya
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -170,7 +171,7 @@ export default function RootLayout({
                       <SidebarMenuButton asChild isActive={pathname === '/referral'}>
                         <Link href="/referral">
                           <Gift />
-                          Referral
+                          Undang & Dapatkan
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -194,12 +195,6 @@ export default function RootLayout({
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                     <SidebarMenuItem>
-                      <SidebarMenuButton>
-                          <LifeBuoy />
-                          Bantuan & Dukungan
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroup>
               </SidebarContent>
@@ -210,7 +205,6 @@ export default function RootLayout({
                  <SidebarTrigger className="md:hidden"/>
                  <div className="flex-1"></div>
                  <ThemeToggle />
-                 {/* Language Toggle Placeholder */}
                  <Button variant="ghost" size="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
                  </Button>
@@ -230,7 +224,7 @@ export default function RootLayout({
                       <DropdownMenuItem asChild><Link href="/history">Riwayat</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/settings">Pengaturan</Link></DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild><Link href="/login"><LogOut className="mr-2 h-4 w-4" />Keluar</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/"><LogOut className="mr-2 h-4 w-4" />Keluar</Link></DropdownMenuItem>
                     </DropdownMenuContent>
                  </DropdownMenu>
               </header>

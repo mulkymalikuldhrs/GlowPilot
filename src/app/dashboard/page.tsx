@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Lightbulb, Scale, User, Wand2, ShieldCheck, Soup, Sun, LineChart } from "lucide-react";
+import { ArrowRight, Lightbulb, Scale, User, Wand2, ShieldCheck, Soup, Sun, LineChart, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
 
@@ -79,10 +79,10 @@ export default function DashboardPage() {
         <Card className="glass-card lg:col-span-2">
             <CardHeader>
                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">Hubungi Dokter AI Spesialis</CardTitle>
-                    <ShieldCheck className="h-6 w-6 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
+                    <CardTitle className="text-xl">Akses Fitur AI Canggih</CardTitle>
+                    <Sparkles className="h-6 w-6 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
                 </div>
-                <CardDescription>Dapatkan saran dari para ahli AI di bidangnya.</CardDescription>
+                <CardDescription>Dapatkan analisis mendalam dan solusi dari para ahli AI kami.</CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Button className="w-full justify-start h-12" asChild>
@@ -91,18 +91,18 @@ export default function DashboardPage() {
                     </Link>
                 </Button>
                  <Button className="w-full justify-start h-12" variant="secondary" asChild>
-                    <Link href="/specialists/nutritionist">
-                        <Soup className="mr-2 h-5 w-5"/> Ahli Nutrisi Kulit
-                    </Link>
-                </Button>
-                 <Button className="w-full justify-start h-12" variant="secondary" asChild>
-                    <Link href="/specialists/anti-aging">
-                        <Sun className="mr-2 h-5 w-5"/> Pakar Anti-Penuaan
+                    <Link href="/specialists">
+                        <ShieldCheck className="mr-2 h-5 w-5"/> Konsultasi Spesialis
                     </Link>
                 </Button>
                  <Button className="w-full justify-start h-12" variant="secondary" asChild>
                     <Link href="/compare">
                         <Scale className="mr-2 h-5 w-5"/> Perbandingan Produk
+                    </Link>
+                </Button>
+                 <Button className="w-full justify-start h-12" variant="secondary" asChild>
+                    <Link href="/catalog">
+                        <Scale className="mr-2 h-5 w-5"/> Katalog Produk
                     </Link>
                 </Button>
             </CardContent>

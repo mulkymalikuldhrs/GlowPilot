@@ -160,4 +160,5 @@
   -webkit-backdrop-filter: blur(24px) saturate(150%);
   border: 1px solid hsl(var(--border) / 0.2);
   box-shadow: 0 8px 32px 0 hsla(0, 0%, 0%, 0.1);
+  border-radius: var(--radius);
 }

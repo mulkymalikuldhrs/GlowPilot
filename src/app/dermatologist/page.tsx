@@ -5,8 +5,7 @@ import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/c
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Loader2, User, Volume2, Wand2, ShoppingCart, Info, Sparkles, SendHorizonal, ArrowLeft, MoreVertical } from "lucide-react";
-import Image from "next/image";
+import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, ArrowLeft, MoreVertical, Paperclip } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
@@ -30,13 +29,14 @@ export default function DermatologistPage() {
     const [input, setInput] = useState('');
     const { toast } = useToast();
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const startConversation = async () => {
             if (messages.length > 0) return;
             setLoading(true);
             try {
-                const res = await conductDiagnosis({ currentHistory: [] });
+                const res = await conductDiagnosis({ currentHistory: [], photoDataUri: null });
                 const initialMessage: Message = { role: 'model', content: res.response };
                 setMessages([initialMessage]);
                 setDiagnosisMessages([{ role: 'model', content: res.response }]);
@@ -107,9 +107,53 @@ export default function DermatologistPage() {
         )
     }
 
+    const handleImageUpload = (file: File) => {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const photoDataUri = e.target?.result as string;
+            
+            const imageMessage: Message = { role: 'user', content: <img src={photoDataUri} alt="Uploaded skin condition" className="rounded-lg max-w-xs" /> };
+            setMessages(prev => [...prev, imageMessage]);
+            setLoading(true);
+
+            try {
+                const res = await conductDiagnosis({ 
+                    currentHistory: diagnosisMessages,
+                    photoDataUri: photoDataUri 
+                });
+    
+                const assistantMessage: Message = {
+                    role: 'model',
+                    content: res.isComplete && res.diagnosisResult 
+                        ? renderDiagnosis(res.diagnosisResult)
+                        : res.response
+                };
+                setMessages(prev => [...prev, assistantMessage]);
+                setDiagnosisMessages(prev => [...prev, {role: 'model', content: res.response}])
+    
+            } catch (error) {
+                console.error(error);
+                toast({ title: 'Error', description: 'Gagal menganalisis gambar.', variant: 'destructive' });
+            } finally {
+                setLoading(false);
+            }
+        };
+        reader.readAsDataURL(file);
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!input.trim() || loading) return;
+
+        const file = fileInputRef.current?.files?.[0];
+
+        if (file) {
+            handleImageUpload(file);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+        }
+        
+        if (!input.trim()) return;
 
         const userMessage: Message = { role: 'user', content: input };
         const userDiagnosisMessage: DiagnosisMessage = { role: 'user', content: input };
@@ -152,7 +196,7 @@ export default function DermatologistPage() {
     };
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-background">
             <header className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-background/80 backdrop-blur-sm">
                 <Button variant="ghost" size="icon" asChild>
                     <Link href="/dashboard"><ArrowLeft/></Link>
@@ -180,10 +224,10 @@ export default function DermatologistPage() {
                                <Bot className="h-5 w-5 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
                            </Avatar>
                        )}
-                       <div className={`rounded-2xl p-3 max-w-lg w-fit text-sm ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                           {typeof message.content === 'string' ? <p>{message.content}</p> : message.content}
+                       <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                           {typeof message.content === 'string' ? <p className="whitespace-pre-wrap">{message.content}</p> : message.content}
                        </div>
-                       {message.role === 'user' && (
+                       {message.role === 'user' && typeof message.content === 'string' && (
                            <Avatar className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary">
                                <User className="h-5 w-5 text-secondary-foreground" />
                            </Avatar>
@@ -205,17 +249,32 @@ export default function DermatologistPage() {
             </main>
             
             <footer className="p-4 bg-background/80 backdrop-blur-md sticky bottom-16 border-t">
-                 <form onSubmit={handleSubmit} className="relative flex items-center w-full">
+                 <form onSubmit={handleSubmit} className="relative flex items-center w-full gap-2">
+                    <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => fileInputRef.current?.click()}>
+                        <Paperclip className="w-5 h-5"/>
+                        <span className="sr-only">Attach image</span>
+                    </Button>
+                    <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                                handleImageUpload(e.target.files[0]);
+                            }
+                        }}
+                    />
                      <Input
                          id="message"
-                         placeholder="Ketik pesan Anda..."
+                         placeholder="Ketik pesan Anda atau unggah gambar..."
                          value={input}
                          onChange={(e) => setInput(e.target.value)}
                          disabled={loading}
                          className="pr-12 rounded-full"
                          autoComplete="off"
                      />
-                     <Button type="submit" size="icon" disabled={loading || !input.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full">
+                     <Button type="submit" size="icon" disabled={loading || (!input.trim() && !fileInputRef.current?.files?.length)} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full">
                         <SendHorizonal className="h-4 w-4" />
                      </Button>
                 </form>

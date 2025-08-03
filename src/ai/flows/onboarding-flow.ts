@@ -37,11 +37,7 @@ Analyze the provided conversation history and generate the next appropriate resp
 
 Current Conversation:
 {{#each currentHistory}}
-{{#if (eq role 'user')}}
-User: {{{content}}}
-{{else}}
-AI: {{{content}}}
-{{/if}}
+{{role}}: {{{content}}}
 {{/each}}
 `,
 });

@@ -2,20 +2,19 @@
 'use client';
 
 import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/conversational-diagnosis-flow";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Loader2, User, Volume2, Wand2, ShoppingCart, Info, Sparkles } from "lucide-react";
+import { Bot, Loader2, User, Volume2, Wand2, ShoppingCart, Info, Sparkles, SendHorizonal, ArrowLeft, MoreVertical } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { ChatInput } from "./chat-input";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
 
 type Message = {
     role: 'user' | 'model';
     content: React.ReactNode;
-    rawContent?: string;
 };
 
 type DiagnosisMessage = {
@@ -28,9 +27,9 @@ export default function DermatologistPage() {
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
     const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
+    const [input, setInput] = useState('');
     const { toast } = useToast();
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const [isSpeaking, setIsSpeaking] = useState(false);
 
     useEffect(() => {
         const startConversation = async () => {
@@ -60,39 +59,12 @@ export default function DermatologistPage() {
         scrollToBottom();
     }, [messages, loading]);
 
-    const speak = (text: string) => {
-        if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-            if (isSpeaking) {
-                window.speechSynthesis.cancel();
-                setIsSpeaking(false);
-                return;
-            }
-            
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
-            utterance.onstart = () => setIsSpeaking(true);
-            utterance.onend = () => setIsSpeaking(false);
-            utterance.onerror = () => setIsSpeaking(false);
-            
-            window.speechSynthesis.speak(utterance);
-        } else {
-            toast({ title: 'Browser Tidak Didukung', description: 'Browser Anda tidak mendukung text-to-speech.', variant: 'destructive' });
-        }
-    }
-
     const renderDiagnosis = (res: NonNullable<DiagnosisConversationOutput['diagnosisResult']>) => {
-        const diagnosisText = `Diagnosis: ${res.diagnosis}.`;
-        const amRoutineText = `Rekomendasi Pagi: ${res.recommendations.amRoutine}.`;
-        const pmRoutineText = `Rekomendasi Malam: ${res.recommendations.pmRoutine}.`;
-
         return (
-            <div className="space-y-6">
+            <div className="space-y-6 rounded-xl border bg-background p-4 shadow-sm">
                 <div className="space-y-2">
                     <h3 className="font-semibold text-primary flex items-center justify-between mb-2">
                         Diagnosis
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => speak(diagnosisText)}>
-                            <Volume2 className={`h-4 w-4 ${isSpeaking ? 'text-primary animate-pulse' : ''}`} />
-                        </Button>
                     </h3>
                     <p className="text-sm text-foreground/90 mt-1">{res.diagnosis}</p>
                 </div>
@@ -117,7 +89,7 @@ export default function DermatologistPage() {
                                         <p className="text-xs text-muted-foreground mb-2">{product.category}</p>
                                         <p className="text-xs text-foreground/80">{product.reason}</p>
                                         <Button variant="outline" size="sm" className="w-full mt-3 text-xs" asChild>
-                                            <Link href="#">
+                                            <Link href="/catalog">
                                                 Beli di E-commerce <ShoppingCart className="ml-2 h-3 w-3"/>
                                             </Link>
                                         </Button>
@@ -135,36 +107,26 @@ export default function DermatologistPage() {
         )
     }
 
-    const handleSubmit = async (values: { description: string; photoDataUri: string | null }) => {
-        const { description, photoDataUri } = values;
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!input.trim() || loading) return;
 
-        if (!description) {
-            return;
-        }
-
-        const userMessageContent = (
-            <div className="flex flex-col gap-2">
-                <p>{description}</p>
-                {photoDataUri && <Image src={photoDataUri} alt="User submission" width={150} height={150} className="rounded-lg object-cover" />}
-            </div>
-        );
-
-        const userMessage: Message = { role: 'user', content: userMessageContent };
-        const userDiagnosisMessage: DiagnosisMessage = { role: 'user', content: description };
+        const userMessage: Message = { role: 'user', content: input };
+        const userDiagnosisMessage: DiagnosisMessage = { role: 'user', content: input };
 
         setMessages(prev => [...prev, userMessage]);
         setDiagnosisMessages(prev => [...prev, userDiagnosisMessage]);
+        setInput('');
         setLoading(true);
 
         try {
             const res = await conductDiagnosis({ 
                 currentHistory: [...diagnosisMessages, userDiagnosisMessage],
-                photoDataUri 
+                photoDataUri: null 
             });
 
             const assistantMessage: Message = {
                 role: 'model',
-                rawContent: res.response,
                 content: res.isComplete && res.diagnosisResult 
                     ? renderDiagnosis(res.diagnosisResult)
                     : res.response
@@ -190,42 +152,74 @@ export default function DermatologistPage() {
     };
 
     return (
-        <div className="flex flex-col h-full max-h-[calc(100vh-4rem)]">
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div className="flex flex-col h-full">
+            <header className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-background/80 backdrop-blur-sm">
+                <Button variant="ghost" size="icon" asChild>
+                    <Link href="/dashboard"><ArrowLeft/></Link>
+                </Button>
+                <div className="flex items-center gap-3">
+                    <Avatar>
+                        <AvatarImage src="https://placehold.co/100x100.png" alt="Dr. Sari Kulit" data-ai-hint="female doctor" />
+                        <AvatarFallback>DS</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <p className="font-bold">Dr. Sari Kulit</p>
+                        <p className="text-xs text-muted-foreground">Spesialis Jerawat</p>
+                    </div>
+                </div>
+                <Button variant="ghost" size="icon">
+                    <MoreVertical/>
+                </Button>
+            </header>
+
+            <main className="flex-1 overflow-y-auto p-4 space-y-6">
                 {messages.map((message, index) => (
-                    <div key={index} className={`flex items-start gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
+                    <div key={index} className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
                        {message.role === 'model' && (
-                           <Avatar className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                               <Sparkles className="h-6 w-6 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
+                           <Avatar className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                               <Bot className="h-5 w-5 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
                            </Avatar>
                        )}
-                       <div className={`rounded-2xl p-4 max-w-2xl w-fit ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'glass-card'}`}>
-                           {message.content}
+                       <div className={`rounded-2xl p-3 max-w-lg w-fit text-sm ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                           {typeof message.content === 'string' ? <p>{message.content}</p> : message.content}
                        </div>
                        {message.role === 'user' && (
-                           <Avatar className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
+                           <Avatar className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary">
                                <User className="h-5 w-5 text-secondary-foreground" />
                            </Avatar>
                        )}
                    </div>
                 ))}
                  {loading && (
-                     <div className="flex items-start gap-4">
-                         <Avatar className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                            <Sparkles className="h-6 w-6 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
+                     <div className="flex items-start gap-3">
+                         <Avatar className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                            <Bot className="h-5 w-5 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
                          </Avatar>
-                         <div className="rounded-2xl p-4 max-w-lg glass-card flex items-center space-x-2">
-                             <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                         <div className="rounded-2xl p-3 max-w-lg bg-muted flex items-center space-x-2">
+                             <Loader2 className="h-4 w-4 animate-spin text-primary" />
                              <p className="text-sm text-muted-foreground">Menganalisis...</p>
                          </div>
                      </div>
                  )}
                  <div ref={messagesEndRef} />
-            </div>
+            </main>
             
-            <div className="p-4 bg-background/80 backdrop-blur-md sticky bottom-0">
-                <ChatInput onSubmit={handleSubmit} isLoading={loading} />
-            </div>
+            <footer className="p-4 bg-background/80 backdrop-blur-md sticky bottom-16 border-t">
+                 <form onSubmit={handleSubmit} className="relative flex items-center w-full">
+                     <Input
+                         id="message"
+                         placeholder="Ketik pesan Anda..."
+                         value={input}
+                         onChange={(e) => setInput(e.target.value)}
+                         disabled={loading}
+                         className="pr-12 rounded-full"
+                         autoComplete="off"
+                     />
+                     <Button type="submit" size="icon" disabled={loading || !input.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full">
+                        <SendHorizonal className="h-4 w-4" />
+                     </Button>
+                </form>
+            </footer>
         </div>
     )
 }

@@ -6,3 +6,4 @@ import '@/ai/flows/skin-condition-diagnosis.ts';
 import '@/ai/flows/skin-nutrition-flow.ts';
 import '@/ai/flows/anti-aging-flow.ts';
 import '@/ai/flows/onboarding-flow.ts';
+import '@/ai/flows/conversational-diagnosis-flow.ts';

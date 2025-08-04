@@ -39,7 +39,7 @@ export default function LandingPage() {
                     GlowPilot
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-xl">
-                    Panduan cerdas Anda untuk kulit sehat & bercahaya. Dapatkan analisis dan rekomendasi instan dari AI dermatologist kami.
+                    Panduan cerdas Anda untuk kulit sehat &amp; bercahaya. Dapatkan analisis dan rekomendasi instan dari AI dermatologist kami.
                 </p>
             </div>
 
@@ -51,7 +51,7 @@ export default function LandingPage() {
                 </Button>
                 <p className="text-xs text-muted-foreground px-4">
                     Dengan melanjutkan, Anda menyetujui {' '}
-                    <Link href="/terms" className="underline hover:text-primary">Syarat & Ketentuan</Link>
+                    <Link href="/terms" className="underline hover:text-primary">Syarat &amp; Ketentuan</Link>
                     {' '}dan{' '}
                     <Link href="/privacy" className="underline hover:text-primary">Kebijakan Privasi</Link>.
                 </p>

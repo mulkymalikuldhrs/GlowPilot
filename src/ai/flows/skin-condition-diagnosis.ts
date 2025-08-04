@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const SkinConditionDiagnosisInputSchema = z.object({
+export const SkinConditionDiagnosisInputSchema = z.object({
   photoDataUri: z
     .string()
     .nullable()
@@ -23,7 +23,7 @@ const SkinConditionDiagnosisInputSchema = z.object({
 });
 export type SkinConditionDiagnosisInput = z.infer<typeof SkinConditionDiagnosisInputSchema>;
 
-const SkinConditionDiagnosisOutputSchema = z.object({
+export const SkinConditionDiagnosisOutputSchema = z.object({
   diagnosis: z.string().describe('The diagnosis of the skin condition.'),
   recommendations: z.object({
     amRoutine: z.string().describe('The recommended morning skincare routine.'),

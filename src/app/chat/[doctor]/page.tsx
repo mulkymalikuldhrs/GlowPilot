@@ -1,15 +1,20 @@
 
 'use client';
 
+// This is a placeholder for the dynamic doctor chat page.
+// The actual implementation will come in the next step.
+
 import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/conversational-diagnosis-flow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, ArrowLeft, MoreVertical, Paperclip } from "lucide-react";
+import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, MoreVertical, Paperclip, Sparkles, Shield, FlaskConical, Languages } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import { useParams, useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type Message = {
     role: 'user' | 'model';
@@ -21,17 +26,40 @@ type DiagnosisMessage = {
     content: string;
 };
 
+const doctors: Record<string, { name: string; specialty: string; avatarHint: string; icon: React.ElementType, isPro: boolean }> = {
+    general: { name: 'Dr. Rina General', specialty: 'AI Konsultan Umum', avatarHint: 'female doctor avatar', icon: Sparkles, isPro: false },
+    acne: { name: 'Dr. Andi Jerawat', specialty: 'Spesialis Jerawat', avatarHint: 'male doctor avatar', icon: Shield, isPro: true },
+    aging: { name: 'Dr. Citra Awet Muda', specialty: 'Spesialis Anti-Aging', avatarHint: 'female doctor professional', icon: Sparkles, isPro: true },
+    ingredients: { name: 'Dr. Budi Bahan', specialty: 'Spesialis Bahan Skincare', avatarHint: 'male doctor scientist', icon: FlaskConical, isPro: true },
+};
 
-export default function DermatologistPage() {
+
+export default function DoctorChatPage() {
+    const params = useParams();
+    const router = useRouter();
+    const doctorSlug = typeof params.doctor === 'string' ? params.doctor : 'general';
+    const doctor = doctors[doctorSlug] || doctors.general;
+
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
     const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
     const [input, setInput] = useState('');
     const { toast } = useToast();
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
+         if (doctor.isPro) {
+            // Here you would implement a subscription gate.
+            // For now, we'll just show a toast and redirect.
+            toast({
+                title: 'Fitur Pro',
+                description: `Konsultasi dengan ${doctor.name} memerlukan langganan GlowPilot Pro.`,
+                variant: 'destructive',
+            });
+            router.push('/chat/general');
+            return;
+        }
+
         const startConversation = async () => {
             if (messages.length > 0) return;
             setLoading(true);
@@ -47,9 +75,11 @@ export default function DermatologistPage() {
                 setLoading(false);
             }
         };
+
         startConversation();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [doctor.isPro, doctor.name, router]);
+
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -61,7 +91,7 @@ export default function DermatologistPage() {
 
     const renderDiagnosis = (res: NonNullable<DiagnosisConversationOutput['diagnosisResult']>) => {
         return (
-            <div className="space-y-6 rounded-xl border bg-background p-4 shadow-sm">
+            <div className="space-y-6 rounded-xl border bg-background/50 p-4 shadow-sm glass-card">
                 <div className="space-y-2">
                     <h3 className="font-semibold text-primary flex items-center justify-between mb-2">
                         Diagnosis
@@ -107,51 +137,8 @@ export default function DermatologistPage() {
         )
     }
 
-    const handleImageUpload = (file: File) => {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const photoDataUri = e.target?.result as string;
-            
-            const imageMessage: Message = { role: 'user', content: <img src={photoDataUri} alt="Uploaded skin condition" className="rounded-lg max-w-xs" /> };
-            setMessages(prev => [...prev, imageMessage]);
-            setLoading(true);
-
-            try {
-                const res = await conductDiagnosis({ 
-                    currentHistory: diagnosisMessages,
-                    photoDataUri: photoDataUri 
-                });
-    
-                const assistantMessage: Message = {
-                    role: 'model',
-                    content: res.isComplete && res.diagnosisResult 
-                        ? renderDiagnosis(res.diagnosisResult)
-                        : res.response
-                };
-                setMessages(prev => [...prev, assistantMessage]);
-                setDiagnosisMessages(prev => [...prev, {role: 'model', content: res.response}])
-    
-            } catch (error) {
-                console.error(error);
-                toast({ title: 'Error', description: 'Gagal menganalisis gambar.', variant: 'destructive' });
-            } finally {
-                setLoading(false);
-            }
-        };
-        reader.readAsDataURL(file);
-    };
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        const file = fileInputRef.current?.files?.[0];
-
-        if (file) {
-            handleImageUpload(file);
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
-            }
-        }
         
         if (!input.trim()) return;
 
@@ -176,7 +163,9 @@ export default function DermatologistPage() {
                     : res.response
             };
             setMessages(prev => [...prev, assistantMessage]);
-            setDiagnosisMessages(prev => [...prev, {role: 'model', content: res.response}])
+            if (res.response) {
+                setDiagnosisMessages(prev => [...prev, {role: 'model', content: res.response}])
+            }
 
         } catch (error) {
             console.error(error);
@@ -196,24 +185,27 @@ export default function DermatologistPage() {
     };
 
     return (
-        <div className="flex flex-col h-full bg-background">
-            <header className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-background/80 backdrop-blur-sm">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href="/dashboard"><ArrowLeft/></Link>
-                </Button>
+        <div className="flex flex-col h-screen bg-background">
+            <header className="sticky top-0 z-10 flex items-center justify-between p-2 border-b bg-background/80 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
-                    <Avatar>
-                        <AvatarImage src="https://placehold.co/100x100.png" alt="Dr. Sari Kulit" data-ai-hint="female doctor" />
-                        <AvatarFallback>DS</AvatarFallback>
+                    <Avatar className="w-10 h-10 border-2 border-primary/50">
+                        <AvatarImage src={`https://placehold.co/100x100.png`} alt={doctor.name} data-ai-hint={doctor.avatarHint} />
+                        <AvatarFallback>{doctor.name.substring(0, 1)}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <p className="font-bold">Dr. Sari Kulit</p>
-                        <p className="text-xs text-muted-foreground">Spesialis Jerawat</p>
+                        <p className="font-bold">{doctor.name}</p>
+                        <p className="text-xs text-muted-foreground">{doctor.specialty}</p>
                     </div>
                 </div>
-                <Button variant="ghost" size="icon">
-                    <MoreVertical/>
-                </Button>
+                <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon">
+                        <Languages className="w-5 h-5"/>
+                    </Button>
+                    <ThemeToggle />
+                    <Button variant="ghost" size="icon">
+                        <MoreVertical className="w-5 h-5"/>
+                    </Button>
+                </div>
             </header>
 
             <main className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -224,10 +216,10 @@ export default function DermatologistPage() {
                                <Bot className="h-5 w-5 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
                            </Avatar>
                        )}
-                       <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                       <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm shadow-md ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card glass-card border-0'}`}>
                            {typeof message.content === 'string' ? <p className="whitespace-pre-wrap">{message.content}</p> : message.content}
                        </div>
-                       {message.role === 'user' && typeof message.content === 'string' && (
+                       {message.role === 'user' && (
                            <Avatar className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary">
                                <User className="h-5 w-5 text-secondary-foreground" />
                            </Avatar>
@@ -250,31 +242,20 @@ export default function DermatologistPage() {
             
             <footer className="p-4 bg-background/80 backdrop-blur-md sticky bottom-16 border-t">
                  <form onSubmit={handleSubmit} className="relative flex items-center w-full gap-2">
-                    <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => fileInputRef.current?.click()}>
+                    <Button type="button" variant="ghost" size="icon" className="shrink-0">
                         <Paperclip className="w-5 h-5"/>
                         <span className="sr-only">Attach image</span>
                     </Button>
-                    <input 
-                        type="file" 
-                        ref={fileInputRef} 
-                        className="hidden" 
-                        accept="image/*"
-                        onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                                handleImageUpload(e.target.files[0]);
-                            }
-                        }}
-                    />
                      <Input
                          id="message"
-                         placeholder="Ketik pesan Anda atau unggah gambar..."
+                         placeholder="Ketik pesan Anda..."
                          value={input}
                          onChange={(e) => setInput(e.target.value)}
                          disabled={loading}
                          className="pr-12 rounded-full"
                          autoComplete="off"
                      />
-                     <Button type="submit" size="icon" disabled={loading || (!input.trim() && !fileInputRef.current?.files?.length)} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full">
+                     <Button type="submit" size="icon" disabled={loading || !input.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full">
                         <SendHorizonal className="h-4 w-4" />
                      </Button>
                 </form>
@@ -282,3 +263,4 @@ export default function DermatologistPage() {
         </div>
     )
 }
+

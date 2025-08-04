@@ -19,7 +19,6 @@ const prompt = ai.definePrompt({
   name: 'antiAgingPrompt',
   input: {schema: AntiAgingInputSchema},
   output: {schema: AntiAgingOutputSchema},
-  model: 'googleai/gemini-pro',
   prompt: `You are an AI anti-aging specialist. Based on the user's age, skin type, concerns, and current routine, provide a comprehensive anti-aging plan in Bahasa Indonesia.
 
 User's Age: {{{age}}}

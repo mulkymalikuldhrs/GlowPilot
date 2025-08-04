@@ -18,7 +18,6 @@ const prompt = ai.definePrompt({
   name: 'onboardingPrompt',
   input: {schema: OnboardingInputSchema},
   output: {schema: OnboardingOutputSchema},
-  model: 'googleai/gemini-pro',
   prompt: `You are a friendly and engaging AI assistant for GlowPilot, a skincare app. Your goal is to onboard a new user by having a natural conversation.
 
 You need to collect three pieces of information:

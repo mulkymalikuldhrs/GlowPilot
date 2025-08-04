@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,7 @@ export default function LandingPage() {
         <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
             <div className="absolute top-1/4 flex flex-col items-center">
                  <div className="flex items-center justify-center h-20 w-20 rounded-full bg-primary/10 text-primary mb-6">
-                    <Sparkles className="h-10 w-10" style={{color: 'var(--primary-optimistic)'}}/>
+                    <Sparkles className="h-10 w-10" style={{color: 'hsl(var(--primary-optimistic))'}}/>
                 </div>
                 <h1 className="text-5xl md:text-7xl font-bold tracking-tighter" style={{ fontFamily: 'Sora, sans-serif' }}>
                     GlowPilot

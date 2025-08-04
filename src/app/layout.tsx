@@ -15,8 +15,9 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
 
-  // Show nav only on main app pages
-  const showNav = ['/chat/general', '/catalog', '/progress'].some(p => pathname.startsWith(p));
+  const noNavRoutes = ['/', '/scroll-video'];
+  const showNav = !noNavRoutes.includes(pathname);
+
 
   return (
     <html lang="id" suppressHydrationWarning>
@@ -29,7 +30,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="antialiased" style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <AuroraBackground />
            <div className="relative flex flex-col min-h-screen">
                 <main className="flex-1 pb-20">{children}</main>

@@ -1,14 +1,12 @@
 
 'use client';
 
-// This is a placeholder for the dynamic doctor chat page.
-// The actual implementation will come in the next step.
-
 import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/conversational-diagnosis-flow";
+import { textToSpeech } from "@/ai/flows/tts-flow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, MoreVertical, Paperclip, Sparkles, Shield, FlaskConical, Languages } from "lucide-react";
+import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, MoreVertical, Paperclip, Sparkles, Shield, FlaskConical, Languages, Volume2, PlayCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
@@ -19,6 +17,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 type Message = {
     role: 'user' | 'model';
     content: React.ReactNode;
+    audioUrl?: string;
+    textForTts?: string;
 };
 
 type DiagnosisMessage = {
@@ -26,11 +26,41 @@ type DiagnosisMessage = {
     content: string;
 };
 
-const doctors: Record<string, { name: string; specialty: string; avatarHint: string; icon: React.ElementType, isPro: boolean }> = {
-    general: { name: 'Dr. Rina General', specialty: 'AI Konsultan Umum', avatarHint: 'female doctor avatar', icon: Sparkles, isPro: false },
-    acne: { name: 'Dr. Andi Jerawat', specialty: 'Spesialis Jerawat', avatarHint: 'male doctor avatar', icon: Shield, isPro: true },
-    aging: { name: 'Dr. Citra Awet Muda', specialty: 'Spesialis Anti-Aging', avatarHint: 'female doctor professional', icon: Sparkles, isPro: true },
-    ingredients: { name: 'Dr. Budi Bahan', specialty: 'Spesialis Bahan Skincare', avatarHint: 'male doctor scientist', icon: FlaskConical, isPro: true },
+type DoctorType = 'nova' | 'shimmer' | 'echo';
+
+const doctors: Record<string, { name: string; specialty: string; avatarHint: string; icon: React.ElementType, voice: DoctorType, systemPrompt: string }> = {
+    general: { 
+        name: 'Dr. Rina General', 
+        specialty: 'AI Konsultan Umum', 
+        avatarHint: 'female doctor avatar', 
+        icon: Sparkles, 
+        voice: 'nova',
+        systemPrompt: "You are Dr. Rina, a general AI skincare consultant. Your tone is friendly, professional, and reassuring. You are speaking to a user in Indonesia. Your goal is to provide a preliminary analysis of general skin concerns. You must use the product catalog tool to recommend products."
+    },
+    acne: { 
+        name: 'Dr. Andi Jerawat', 
+        specialty: 'Spesialis Jerawat', 
+        avatarHint: 'male doctor avatar', 
+        icon: Shield, 
+        voice: 'echo',
+        systemPrompt: "You are Dr. Andi, an AI dermatologist specializing in acne. Your tone is direct, knowledgeable, and empathetic. You are speaking to a user in Indonesia. Your goal is to diagnose the type of acne and provide a targeted routine. You must use the product catalog tool to recommend products specifically for acne."
+    },
+    aging: { 
+        name: 'Dr. Citra Awet Muda', 
+        specialty: 'Spesialis Anti-Aging', 
+        avatarHint: 'female doctor professional', 
+        icon: Sparkles, 
+        voice: 'shimmer',
+        systemPrompt: "You are Dr. Citra, an AI dermatologist specializing in anti-aging. Your tone is elegant, scientific, and encouraging. You are speaking to a user in Indonesia. Your goal is to create a preventative and corrective routine for signs of aging. You must use the product catalog tool to recommend anti-aging products."
+    },
+    ingredients: { 
+        name: 'Dr. Budi Bahan', 
+        specialty: 'Spesialis Bahan Skincare', 
+        avatarHint: 'male doctor scientist', 
+        icon: FlaskConical, 
+        voice: 'echo',
+        systemPrompt: "You are Dr. Budi, an AI skincare chemist. Your tone is educational, precise, and a bit nerdy. You are speaking to a user in Indonesia. Your goal is to analyze product ingredients and explain their function. When asked for recommendations, you must use the product catalog tool to find products containing specific ingredients the user is interested in."
+    },
 };
 
 
@@ -46,26 +76,20 @@ export default function DoctorChatPage() {
     const [input, setInput] = useState('');
     const { toast } = useToast();
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const [playingMessageIndex, setPlayingMessageIndex] = useState<number | null>(null);
 
     useEffect(() => {
-         if (doctor.isPro) {
-            // Here you would implement a subscription gate.
-            // For now, we'll just show a toast and redirect.
-            toast({
-                title: 'Fitur Pro',
-                description: `Konsultasi dengan ${doctor.name} memerlukan langganan GlowPilot Pro.`,
-                variant: 'destructive',
-            });
-            router.push('/chat/general');
-            return;
-        }
-
         const startConversation = async () => {
             if (messages.length > 0) return;
             setLoading(true);
             try {
-                const res = await conductDiagnosis({ currentHistory: [], photoDataUri: null });
-                const initialMessage: Message = { role: 'model', content: res.response };
+                const res = await conductDiagnosis({ 
+                    currentHistory: [], 
+                    photoDataUri: null, 
+                    systemPrompt: doctor.systemPrompt 
+                });
+                const initialMessage: Message = { role: 'model', content: res.response, textForTts: res.response };
                 setMessages([initialMessage]);
                 setDiagnosisMessages([{ role: 'model', content: res.response }]);
             } catch (error) {
@@ -78,7 +102,7 @@ export default function DoctorChatPage() {
 
         startConversation();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [doctor.isPro, doctor.name, router]);
+    }, [doctor.systemPrompt]);
 
 
     const scrollToBottom = () => {
@@ -88,6 +112,46 @@ export default function DoctorChatPage() {
     useEffect(() => {
         scrollToBottom();
     }, [messages, loading]);
+
+    const playAudio = (audioUrl: string, index: number) => {
+        if (audioRef.current) {
+            if (playingMessageIndex === index) {
+                audioRef.current.pause();
+                setPlayingMessageIndex(null);
+            } else {
+                audioRef.current.src = audioUrl;
+                audioRef.current.play();
+                setPlayingMessageIndex(index);
+            }
+        }
+    };
+    
+    useEffect(() => {
+        const audioElement = audioRef.current;
+        const handleAudioEnd = () => setPlayingMessageIndex(null);
+    
+        if (audioElement) {
+            audioElement.addEventListener('ended', handleAudioEnd);
+            return () => {
+                audioElement.removeEventListener('ended', handleAudioEnd);
+            };
+        }
+    }, []);
+
+    const handleGenerateAudio = async (text: string, index: number) => {
+        try {
+            const res = await textToSpeech({ text, voice: doctor.voice });
+            setMessages(prev => {
+                const newMessages = [...prev];
+                newMessages[index].audioUrl = res.audioDataUri;
+                return newMessages;
+            });
+            playAudio(res.audioDataUri, index);
+        } catch (error) {
+            console.error("TTS Error:", error);
+            toast({ title: "Audio Error", description: "Gagal menghasilkan audio.", variant: "destructive" });
+        }
+    };
 
     const renderDiagnosis = (res: NonNullable<DiagnosisConversationOutput['diagnosisResult']>) => {
         return (
@@ -153,14 +217,16 @@ export default function DoctorChatPage() {
         try {
             const res = await conductDiagnosis({ 
                 currentHistory: [...diagnosisMessages, userDiagnosisMessage],
-                photoDataUri: null 
+                photoDataUri: null,
+                systemPrompt: doctor.systemPrompt,
             });
 
             const assistantMessage: Message = {
                 role: 'model',
                 content: res.isComplete && res.diagnosisResult 
                     ? renderDiagnosis(res.diagnosisResult)
-                    : res.response
+                    : res.response,
+                textForTts: res.isComplete && res.diagnosisResult ? `Berikut adalah diagnosis dan rekomendasi untuk Anda.` : res.response,
             };
             setMessages(prev => [...prev, assistantMessage]);
             if (res.response) {
@@ -188,9 +254,10 @@ export default function DoctorChatPage() {
         <div className="flex flex-col h-screen bg-background">
             <header className="sticky top-0 z-10 flex items-center justify-between p-2 border-b bg-background/80 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
-                    <Avatar className="w-10 h-10 border-2 border-primary/50">
-                        <AvatarImage src={`https://placehold.co/100x100.png`} alt={doctor.name} data-ai-hint={doctor.avatarHint} />
-                        <AvatarFallback>{doctor.name.substring(0, 1)}</AvatarFallback>
+                     <Avatar className="w-10 h-10 border-2 border-primary/50">
+                        <div className="w-full h-full flex items-center justify-center bg-muted">
+                           <doctor.icon className="w-6 h-6 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
+                        </div>
                     </Avatar>
                     <div>
                         <p className="font-bold">{doctor.name}</p>
@@ -218,6 +285,12 @@ export default function DoctorChatPage() {
                        )}
                        <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm shadow-md ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card glass-card border-0'}`}>
                            {typeof message.content === 'string' ? <p className="whitespace-pre-wrap">{message.content}</p> : message.content}
+                            {message.role === 'model' && message.textForTts && (
+                                <button onClick={() => message.audioUrl ? playAudio(message.audioUrl, index) : handleGenerateAudio(message.textForTts!, index)} className="mt-2 text-primary/80 hover:text-primary transition-colors flex items-center gap-1 text-xs">
+                                    {playingMessageIndex === index ? <Volume2 className="h-4 w-4" /> : <PlayCircle className="h-4 w-4" />}
+                                    <span>{playingMessageIndex === index ? 'Playing...' : 'Play Audio'}</span>
+                                </button>
+                            )}
                        </div>
                        {message.role === 'user' && (
                            <Avatar className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary">
@@ -260,7 +333,7 @@ export default function DoctorChatPage() {
                      </Button>
                 </form>
             </footer>
+            <audio ref={audioRef} />
         </div>
     )
 }
-

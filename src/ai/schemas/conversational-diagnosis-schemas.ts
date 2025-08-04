@@ -24,6 +24,7 @@ export const DiagnosisConversationInputSchema = z.object({
     .describe(
       "An optional photo of the skin issue, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  systemPrompt: z.string().describe('The system prompt that defines the AI\'s persona and specialization.'),
 });
 export type DiagnosisConversationInput = z.infer<
   typeof DiagnosisConversationInputSchema

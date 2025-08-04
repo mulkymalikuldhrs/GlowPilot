@@ -17,43 +17,42 @@ import {
 
 // This prompt is dynamically generated based on user input.
 const catalogPromptTemplate = (productQuery: string, platform: string = "Shopee") => `
-Kamu adalah GlowPilot Catalog Agent, AI spesialis yang bertugas menambahkan produk skincare dari ${platform} ke katalog GlowPilot.
+You are GlowPilot Catalog Agent, an expert AI that adds skincare products from ${platform} to GlowPilot's catalog.
 
-# Tujuan:
-Ambil produk skincare yang sesuai dengan kata kunci: "${productQuery}", lalu buat data produk dan hasilkan link affiliate yang valid.
+# Goal:
+Fetch skincare products that match the keyword: "${productQuery}", create product data, and generate valid affiliate links.
 
-# Langkah:
-1. Cari 3–5 produk terbaik dari platform ${platform} yang relevan.
-2. Ambil informasi berikut:
-   - Nama Produk
-   - Harga
-   - Deskripsi Singkat
-   - Link Gambar Produk
+# Steps:
+1. Search for 3-5 of the most relevant and best-rated products on the ${platform} platform.
+2. Extract the following information:
+   - Product Name
+   - Price
+   - A brief, compelling description
+   - Product Image URL
    - Rating
-   - Link Asli Produk
-3. Konversi link asli menjadi link affiliate GlowPilot (gunakan template berikut sesuai platform):
+   - The original, direct product link
+3. Convert the original product link into a GlowPilot affiliate link using the appropriate template:
    - Shopee: https://shopee.co.id/universal-link?af_click_id=YOUR_AFF_ID&af_siteid=YOUR_SITE_ID&url={encoded_product_url}
    - Tokopedia: https://ta.tokopedia.link?af_click_id=YOUR_AFF_ID&af_siteid=YOUR_SITE_ID&url={encoded_product_url}
-4. Tulis hasil akhir sebagai JSON array seperti ini:
+4. Write the final result as a valid JSON array. Do not include any products that are out of stock or have a rating below 4.7.
 
-[
+# Example JSON Object:
   {
     "title": "SOMETHINC Niacinamide + Moisture Beet Serum",
     "price": "Rp89.000",
-    "description": "Serum dengan kandungan niacinamide untuk mengatasi kulit kusam dan mencerahkan wajah.",
-    "image_url": "https://cf.shopee.co.id/file/abcdef123456.jpg",
+    "description": "A serum with niacinamide to address dullness and brighten the face.",
+    "image_url": "https://cf.shopee.co.id/file/some_valid_image_hash.jpg",
     "rating": "4.9",
     "affiliate_link": "https://shopee.co.id/universal-link?af_click_id=XXXX&url=..."
   }
-]
 
-# Catatan:
-- Gunakan bahasa Indonesia.
-- Hanya ambil produk yang rating-nya 4.7 ke atas.
-- Jangan tampilkan produk tanpa affiliate link.
-- Link affiliate HARUS diarahkan dari link asli yang dikonversi, bukan link palsu.
 
-Tampilkan hasilnya dengan format JSON valid saja, tanpa penjelasan.
+# Important Notes:
+- Use Bahasa Indonesia for all user-facing text (like descriptions).
+- Only retrieve products with a rating of 4.7 or higher.
+- Do not show any product without a valid, generated affiliate link.
+- The affiliate link MUST be converted from a real, original product URL. Do not invent links.
+- The final output must be ONLY the valid JSON array, with no additional text or explanations.
 `;
 
 export async function getCatalogProducts(

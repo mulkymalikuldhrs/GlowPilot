@@ -4,16 +4,17 @@
 import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/conversational-diagnosis-flow";
 import { textToSpeech } from "@/ai/flows/tts-flow";
 import type { TextToSpeechInput } from "@/ai/schemas/tts-schemas";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, MoreVertical, Paperclip, Sparkles, Shield, FlaskConical, Languages, Volume2, PlayCircle } from "lucide-react";
+import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, MoreVertical, Paperclip, Sparkles, Shield, FlaskConical, Languages, Volume2, PlayCircle, Mic, MicOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { useParams, useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useAuth } from "@/hooks/use-auth";
 
 type Message = {
     role: 'user' | 'model';
@@ -29,43 +30,40 @@ type DiagnosisMessage = {
 
 type DoctorType = TextToSpeechInput['voice'];
 
-const doctors: Record<string, { name: string; specialty: string; avatarHint: string; icon: React.ElementType, voice: DoctorType, systemPrompt: string }> = {
+const doctors: Record<string, { name: string; specialty: string; avatar: React.ElementType, voice: DoctorType, systemPrompt: string }> = {
     general: { 
         name: 'Dr. Rina General', 
         specialty: 'AI Konsultan Umum', 
-        avatarHint: 'female doctor avatar', 
-        icon: Sparkles, 
+        avatar: Sparkles, 
         voice: 'nova',
-        systemPrompt: "You are Dr. Rina, a general AI skincare consultant. Your tone is friendly, professional, and reassuring. You are speaking to a user in Indonesia. Your goal is to provide a preliminary analysis of general skin concerns. You must use the product catalog tool to recommend products."
+        systemPrompt: "You are Dr. Rina, a general AI skincare consultant. Your tone is friendly, professional, and reassuring. You are speaking to a user in Indonesia. Your goal is to provide a preliminary analysis of general skin concerns. You must use the productCatalogTool to recommend products."
     },
     acne: { 
         name: 'Dr. Andi Jerawat', 
         specialty: 'Spesialis Jerawat', 
-        avatarHint: 'male doctor avatar', 
-        icon: Shield, 
+        avatar: Shield, 
         voice: 'echo',
-        systemPrompt: "You are Dr. Andi, an AI dermatologist specializing in acne. Your tone is direct, knowledgeable, and empathetic. You are speaking to a user in Indonesia. Your goal is to diagnose the type of acne and provide a targeted routine. You must use the product catalog tool to recommend products specifically for acne."
+        systemPrompt: "You are Dr. Andi, an AI dermatologist specializing in acne. Your tone is direct, knowledgeable, and empathetic. You are speaking to a user in Indonesia. Your goal is to diagnose the type of acne and provide a targeted routine. You must use the productCatalogTool to recommend products specifically for acne."
     },
     aging: { 
         name: 'Dr. Citra Awet Muda', 
         specialty: 'Spesialis Anti-Aging', 
-        avatarHint: 'female doctor professional', 
-        icon: Sparkles, 
+        avatar: Sparkles, 
         voice: 'shimmer',
-        systemPrompt: "You are Dr. Citra, an AI dermatologist specializing in anti-aging. Your tone is elegant, scientific, and encouraging. You are speaking to a user in Indonesia. Your goal is to create a preventative and corrective routine for signs of aging. You must use the product catalog tool to recommend anti-aging products."
+        systemPrompt: "You are Dr. Citra, an AI dermatologist specializing in anti-aging. Your tone is elegant, scientific, and encouraging. You are speaking to a user in Indonesia. Your goal is to create a preventative and corrective routine for signs of aging. You must use the productCatalogTool to recommend anti-aging products."
     },
     ingredients: { 
         name: 'Dr. Budi Bahan', 
         specialty: 'Spesialis Bahan Skincare', 
-        avatarHint: 'male doctor scientist', 
-        icon: FlaskConical, 
+        avatar: FlaskConical, 
         voice: 'echo',
-        systemPrompt: "You are Dr. Budi, an AI skincare chemist. Your tone is educational, precise, and a bit nerdy. You are speaking to a user in Indonesia. Your goal is to analyze product ingredients and explain their function. When asked for recommendations, you must use the product catalog tool to find products containing specific ingredients the user is interested in."
+        systemPrompt: "You are Dr. Budi, an AI skincare chemist. Your tone is educational, precise, and a bit nerdy. You are speaking to a user in Indonesia. Your goal is to analyze product ingredients and explain their function. When asked for recommendations, you must use the productCatalogTool to find products containing specific ingredients the user is interested in."
     },
 };
 
 
 export default function DoctorChatPage() {
+    const { user, loading: authLoading } = useAuth();
     const params = useParams();
     const router = useRouter();
     const doctorSlug = typeof params.doctor === 'string' ? params.doctor : 'general';
@@ -81,6 +79,14 @@ export default function DoctorChatPage() {
     const [playingMessageIndex, setPlayingMessageIndex] = useState<number | null>(null);
 
     useEffect(() => {
+        if (!authLoading && !user) {
+            router.push('/login');
+        }
+    }, [user, authLoading, router]);
+
+    useEffect(() => {
+        if (!user) return; // Don't start conversation if not logged in
+
         const startConversation = async () => {
             if (messages.length > 0) return;
             setLoading(true);
@@ -103,7 +109,7 @@ export default function DoctorChatPage() {
 
         startConversation();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [doctor.systemPrompt]);
+    }, [doctor.systemPrompt, user]);
 
 
     const scrollToBottom = () => {
@@ -250,6 +256,11 @@ export default function DoctorChatPage() {
             setLoading(false);
         }
     };
+    
+    if (authLoading) {
+        return <div className="flex items-center justify-center h-screen"><Loader2 className="h-8 w-8 animate-spin"/></div>
+    }
+
 
     return (
         <div className="flex flex-col h-screen bg-background">
@@ -257,7 +268,7 @@ export default function DoctorChatPage() {
                 <div className="flex items-center gap-3">
                      <Avatar className="w-10 h-10 border-2 border-primary/50">
                         <div className="w-full h-full flex items-center justify-center bg-muted">
-                           <doctor.icon className="w-6 h-6 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
+                           <doctor.avatar className="w-6 h-6 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
                         </div>
                     </Avatar>
                     <div>
@@ -319,6 +330,10 @@ export default function DoctorChatPage() {
                     <Button type="button" variant="ghost" size="icon" className="shrink-0">
                         <Paperclip className="w-5 h-5"/>
                         <span className="sr-only">Attach image</span>
+                    </Button>
+                    <Button type="button" variant="ghost" size="icon" className="shrink-0">
+                        <Mic className="w-5 h-5"/>
+                        <span className="sr-only">Use Microphone</span>
                     </Button>
                      <Input
                          id="message"

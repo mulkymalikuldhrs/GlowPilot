@@ -4,14 +4,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Check, Target, Plus } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { Check, Target, Plus, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-
-export default function ProgressPage() {
-
-    const goals = [
-        {
+// In a real app, this would come from a user-specific database record
+const userGoals: Record<string, {title: string; progress: number; targetDate: string}[]> = {
+    "default": [
+         {
             title: "Mengurangi Jerawat Hormonal",
             progress: 40,
             targetDate: "30 Sep 2024"
@@ -21,7 +23,26 @@ export default function ProgressPage() {
             progress: 75,
             targetDate: "15 Okt 2024"
         }
-    ];
+    ]
+}
+
+
+export default function ProgressPage() {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+    const [goals, setGoals] = useState(userGoals.default);
+
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/login');
+        }
+        // In a real app, you would fetch goals based on user.uid
+        // For now, we just use the default
+    }, [user, loading, router]);
+
+    if (loading || !user) {
+        return <div className="flex items-center justify-center h-screen"><Loader2 className="h-8 w-8 animate-spin"/></div>
+    }
     
     return (
         <div className="p-4">
@@ -32,7 +53,7 @@ export default function ProgressPage() {
             <div className="space-y-6">
                 <Card className="glass-card">
                     <CardHeader>
-                        <CardTitle>Consistency Score</CardTitle>
+                        <CardTitle>Skor Konsistensi</CardTitle>
                         <CardDescription>Skor Anda dalam 7 hari terakhir.</CardDescription>
                     </CardHeader>
                     <CardContent>

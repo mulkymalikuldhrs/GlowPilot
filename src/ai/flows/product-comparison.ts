@@ -5,26 +5,12 @@
  * @fileOverview Compares two skincare products and provides a detailed analysis with labels.
  *
  * - compareProducts - A function that handles the product comparison.
- * - ProductComparisonInput - The input type for the compareProducts function.
- * - ProductComparisonOutput - The return type for the compareProducts function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import type { ProductComparisonInput, ProductComparisonOutput } from '@/ai/schemas/product-comparison-schemas';
+import { ProductComparisonInputSchema, ProductComparisonOutputSchema } from '@/ai/schemas/product-comparison-schemas';
 
-export const ProductComparisonInputSchema = z.object({
-  product1: z.string().describe('Name of the first product.'),
-  product2: z.string().describe('Name of the second product.'),
-});
-export type ProductComparisonInput = z.infer<typeof ProductComparisonInputSchema>;
-
-export const ProductComparisonOutputSchema = z.object({
-  comparison: z.string().describe('A detailed comparison of the two products, covering price, rating, and key ingredients.'),
-  bestValue: z.string().optional().describe('The name of the product identified as the \'Best Value\'.'),
-  dermatologistPick: z.string().optional().describe('The name of the product identified as the \'Dermatologist Pick\'.'),
-  cheapest: z.string().optional().describe('The name of the product identified as the \'Cheapest\'.'),
-});
-export type ProductComparisonOutput = z.infer<typeof ProductComparisonOutputSchema>;
 
 export async function compareProducts(input: ProductComparisonInput): Promise<ProductComparisonOutput> {
   return productComparisonFlow(input);

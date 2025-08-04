@@ -5,34 +5,11 @@
  * @fileOverview Conducts a conversational diagnosis for skin conditions.
  *
  * - conductDiagnosis - Handles the conversational diagnosis process.
- * - DiagnosisConversationInput - The input type for the conductDiagnosis function.
- * - DiagnosisConversationOutput - The return type for the conductDiagnosis function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
-import { SkinConditionDiagnosisOutputSchema } from './skin-condition-diagnosis';
-
-export const DiagnosisConversationInputSchema = z.object({
-  currentHistory: z.array(z.object({
-    role: z.enum(['user', 'model']),
-    content: z.string(),
-  })).describe('The current conversation history.'),
-  photoDataUri: z
-    .string()
-    .nullable()
-    .describe(
-      "An optional photo of the skin issue, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ),
-});
-export type DiagnosisConversationInput = z.infer<typeof DiagnosisConversationInputSchema>;
-
-export const DiagnosisConversationOutputSchema = z.object({
-  response: z.string().describe('The next message from the AI assistant.'),
-  isComplete: z.boolean().describe('Whether the diagnosis process is complete.'),
-  diagnosisResult: SkinConditionDiagnosisOutputSchema.nullable().describe('The final diagnosis result, provided only when isComplete is true.'),
-});
-export type DiagnosisConversationOutput = z.infer<typeof DiagnosisConversationOutputSchema>;
+import type { DiagnosisConversationInput, DiagnosisConversationOutput } from '@/ai/schemas/conversational-diagnosis-schemas';
+import { DiagnosisConversationInputSchema, DiagnosisConversationOutputSchema } from '@/ai/schemas/conversational-diagnosis-schemas';
 
 
 export async function conductDiagnosis(input: DiagnosisConversationInput): Promise<DiagnosisConversationOutput> {

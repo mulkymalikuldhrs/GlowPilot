@@ -21,6 +21,7 @@ const prompt = ai.definePrompt({
   name: 'conversationalDiagnosisPrompt',
   input: {schema: DiagnosisConversationInputSchema},
   output: {schema: DiagnosisConversationOutputSchema},
+  model: 'googleai/gemini-pro',
   tools: [productCatalogTool],
   prompt: `You are GlowPilot, a friendly and empathetic AI dermatology assistant. 
 Your persona and specialization are defined by the system prompt below. 

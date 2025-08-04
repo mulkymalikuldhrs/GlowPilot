@@ -20,6 +20,7 @@ const prompt = ai.definePrompt({
   name: 'skinConditionDiagnosisPrompt',
   input: {schema: SkinConditionDiagnosisInputSchema},
   output: {schema: SkinConditionDiagnosisOutputSchema},
+  model: 'googleai/gemini-pro',
   prompt: `You are GlowPilot Copilot, a non-medical virtual dermatology assistant. Your task is to analyze user input to provide a preliminary skin diagnosis, a detailed skincare routine, and specific product recommendations.
 
 User Information:

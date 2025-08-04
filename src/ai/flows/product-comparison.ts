@@ -20,6 +20,7 @@ const productComparisonPrompt = ai.definePrompt({
   name: 'productComparisonPrompt',
   input: {schema: ProductComparisonInputSchema},
   output: {schema: ProductComparisonOutputSchema},
+  model: 'googleai/gemini-pro',
   prompt: `You are a skincare comparison copilot. Your task is to compare two skincare products based on their potential price range, user ratings, and key ingredients.
 Provide a detailed comparison in a paragraph. Then, analyze the comparison and label one of the products as 'Nilai Terbaik', 'Pilihan Dermatologis', or 'Paling Murah' where appropriate.
 If a product is a clear winner in terms of price-to-ingredients ratio, label it 'Nilai Terbaik'.

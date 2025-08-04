@@ -3,6 +3,7 @@
 
 import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/conversational-diagnosis-flow";
 import { textToSpeech } from "@/ai/flows/tts-flow";
+import type { TextToSpeechInput } from "@/ai/schemas/tts-schemas";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -26,7 +27,7 @@ type DiagnosisMessage = {
     content: string;
 };
 
-type DoctorType = 'nova' | 'shimmer' | 'echo';
+type DoctorType = TextToSpeechInput['voice'];
 
 const doctors: Record<string, { name: string; specialty: string; avatarHint: string; icon: React.ElementType, voice: DoctorType, systemPrompt: string }> = {
     general: { 

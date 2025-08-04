@@ -4,30 +4,16 @@
  * @fileOverview A flow for converting text to speech using different voices.
  *
  * - textToSpeech - A function that converts text to a speech data URI.
- * - TextToSpeechInput - The input type for the textToSpeech function.
- * - TextToSpeechOutput - The return type for the textToSpeech function.
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import {
+  TextToSpeechInputSchema,
+  TextToSpeechOutputSchema,
+  type TextToSpeechInput,
+  type TextToSpeechOutput,
+} from '@/ai/schemas/tts-schemas';
 import wav from 'wav';
-
-export const TextToSpeechInputSchema = z.object({
-  text: z.string().describe('The text to be converted to speech.'),
-  voice: z
-    .enum(['nova', 'shimmer', 'echo'])
-    .describe('The voice to use for the speech.'),
-});
-export type TextToSpeechInput = z.infer<typeof TextToSpeechInputSchema>;
-
-export const TextToSpeechOutputSchema = z.object({
-  audioDataUri: z
-    .string()
-    .describe(
-      "The generated audio as a data URI. Expected format: 'data:audio/wav;base64,<encoded_data>'."
-    ),
-});
-export type TextToSpeechOutput = z.infer<typeof TextToSpeechOutputSchema>;
 
 export async function textToSpeech(
   input: TextToSpeechInput

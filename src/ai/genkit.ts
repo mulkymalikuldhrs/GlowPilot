@@ -8,5 +8,5 @@ export const ai = genkit({
       baseURL: 'https://api.llm7.io/v1',
     }),
   ],
-  model: 'gpt-3.5-turbo',
+  model: 'openai/gpt-3.5-turbo',
 });

@@ -10,10 +10,7 @@ export default function LandingPage() {
     const router = useRouter();
 
     const startConsultation = () => {
-        // This simulates the initial interaction. After a brief moment,
-        // it redirects to the doctor selection page.
-        // In a real scenario, this might happen after 1-2 chat messages.
-        router.push('/doctors');
+        router.push('/onboarding');
     };
     
     return (

@@ -63,7 +63,6 @@ const doctors: Record<string, { name: string; specialty: string; avatar: React.E
 
 
 export default function DoctorChatPage() {
-    const { user, loading: authLoading } = useAuth();
     const params = useParams();
     const router = useRouter();
     const doctorSlug = typeof params.doctor === 'string' ? params.doctor : 'general';
@@ -79,14 +78,6 @@ export default function DoctorChatPage() {
     const [playingMessageIndex, setPlayingMessageIndex] = useState<number | null>(null);
 
     useEffect(() => {
-        if (!authLoading && !user) {
-            router.push('/login');
-        }
-    }, [user, authLoading, router]);
-
-    useEffect(() => {
-        if (!user) return; // Don't start conversation if not logged in
-
         const startConversation = async () => {
             if (messages.length > 0) return;
             setLoading(true);
@@ -109,7 +100,7 @@ export default function DoctorChatPage() {
 
         startConversation();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [doctor.systemPrompt, user]);
+    }, [doctor.systemPrompt]);
 
 
     const scrollToBottom = () => {
@@ -256,11 +247,6 @@ export default function DoctorChatPage() {
             setLoading(false);
         }
     };
-    
-    if (authLoading) {
-        return <div className="flex items-center justify-center h-screen"><Loader2 className="h-8 w-8 animate-spin"/></div>
-    }
-
 
     return (
         <div className="flex flex-col h-screen bg-background">

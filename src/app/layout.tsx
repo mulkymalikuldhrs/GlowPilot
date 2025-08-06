@@ -7,29 +7,12 @@ import { AuroraBackground } from '@/components/aurora-background';
 import { Toaster } from '@/components/ui/toaster';
 import { usePathname } from 'next/navigation';
 import { BottomNav } from '@/components/bottom-nav';
-import { AuthProvider, useAuth } from '@/hooks/use-auth';
-import { Skeleton } from '@/components/ui/skeleton';
+import { AuthProvider } from '@/hooks/use-auth';
 
 function AppContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { loading, user } = useAuth();
-  
   const noNavRoutes = ['/login', '/', '/scroll-video'];
-  // Show nav if the path is not in noNavRoutes and the user is logged in
-  const showNav = !noNavRoutes.includes(pathname) && user;
-
-  if (loading && !noNavRoutes.includes(pathname) && pathname !== '/login') {
-    return (
-       <div className="flex flex-col h-screen">
-        <main className="flex-1 p-4">
-          <Skeleton className="h-16 w-full mb-4" />
-          <Skeleton className="h-32 w-full mb-4" />
-          <Skeleton className="h-32 w-full" />
-        </main>
-        <Skeleton className="h-16 w-full fixed bottom-0" />
-      </div>
-    )
-  }
+  const showNav = !noNavRoutes.includes(pathname);
 
   return (
     <div className="relative flex flex-col min-h-screen">

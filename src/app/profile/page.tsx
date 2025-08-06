@@ -1,41 +1,19 @@
 
 'use client';
 
-import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { History, Shield, LogOut, User } from 'lucide-react';
+import { History, Shield, LogOut, User, Mail, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
-    const { user, loading, logout } = useAuth();
-    const router = useRouter();
-
-    useEffect(() => {
-        if (!loading && !user) {
-            router.push('/login');
-        }
-    }, [user, loading, router]);
-
-    if (loading || !user) {
-        return (
-            <div className="p-4 space-y-6">
-                <div className="flex items-center gap-4">
-                    <Skeleton className="h-20 w-20 rounded-full" />
-                    <div className="space-y-2">
-                        <Skeleton className="h-6 w-40" />
-                        <Skeleton className="h-4 w-60" />
-                    </div>
-                </div>
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-            </div>
-        )
+    
+    // Placeholder data since login is disabled
+    const user = {
+        displayName: 'Mulky Malikul Dhaher',
+        email: 'mulkymalikuldhr@mail.com',
+        photoURL: 'https://placehold.co/100x100.png'
     }
 
     return (
@@ -78,7 +56,20 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
                 
-                <Button onClick={logout} variant="destructive" className="w-full">
+                 <Card className="glass-card bg-primary/10">
+                    <CardContent className="p-4 text-center">
+                        <div className='flex flex-col items-center gap-2 text-xs text-muted-foreground'>
+                            <Sparkles className="w-5 h-5 text-primary" style={{color: 'hsl(var(--primary-optimistic))'}}/>
+                            <span className="font-medium">Dikembangkan oleh Mulky Malikul Dhaher</span>
+                            <span>mulkymalikuldhr@mail.com</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Button onClick={() => {
+                    // Placeholder for logout functionality
+                    alert("Logout functionality is currently disabled.");
+                }} variant="destructive" className="w-full">
                     <LogOut className="mr-2 h-4 w-4"/>
                     Keluar
                 </Button>

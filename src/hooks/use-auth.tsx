@@ -2,9 +2,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
+import { User } from 'firebase/auth';
 
 interface AuthContextType {
     user: User | null;
@@ -16,39 +14,19 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+    // Simulate a logged-out state since we're disabling login for now
     const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
-    const router = useRouter();
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setUser(user);
-            setLoading(false);
-        });
-        return () => unsubscribe();
-    }, []);
+    const [loading, setLoading] = useState(false); // Set loading to false immediately
 
     const signInWithGoogle = async () => {
-        setLoading(true);
-        try {
-            await signInWithPopup(auth, googleProvider);
-            // onAuthStateChanged will handle the user state update and redirect
-        } catch (error) {
-            console.error("Error signing in with Google: ", error);
-            setLoading(false);
-        }
+        console.log("Sign-in is currently disabled.");
+        // In a real scenario, this would interact with Firebase
+        alert("Login functionality is temporarily disabled.");
     };
 
     const logout = async () => {
-        setLoading(true);
-        try {
-            await signOut(auth);
-            router.push('/login');
-        } catch (error) {
-            console.error("Error signing out: ", error);
-        } finally {
-            setLoading(false);
-        }
+        console.log("Logout is currently disabled.");
+        alert("Logout functionality is temporarily disabled.");
     };
 
     const value = { user, loading, signInWithGoogle, logout };

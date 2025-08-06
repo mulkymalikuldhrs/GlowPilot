@@ -70,7 +70,7 @@ export default function OnboardingPage() {
                     description: 'Data Anda telah disimpan. Selamat datang di GlowPilot!',
                 });
                 setTimeout(() => {
-                    router.push('/doctors');
+                    router.push('/');
                 }, 1500);
             }
         } catch (error) {
@@ -144,3 +144,5 @@ export default function OnboardingPage() {
         </div>
     )
 }
+
+    

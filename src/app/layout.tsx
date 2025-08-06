@@ -10,7 +10,7 @@ import { BottomNav } from '@/components/bottom-nav';
 
 function AppContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const noNavRoutes = ['/', '/onboarding'];
+  const noNavRoutes = ['/onboarding', '/landing-placeholder'];
   const showNav = !noNavRoutes.includes(pathname);
 
   return (
@@ -48,3 +48,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    

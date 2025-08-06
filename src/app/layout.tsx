@@ -7,11 +7,10 @@ import { AuroraBackground } from '@/components/aurora-background';
 import { Toaster } from '@/components/ui/toaster';
 import { usePathname } from 'next/navigation';
 import { BottomNav } from '@/components/bottom-nav';
-import { AuthProvider } from '@/hooks/use-auth';
 
 function AppContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const noNavRoutes = ['/login', '/', '/scroll-video'];
+  const noNavRoutes = ['/'];
   const showNav = !noNavRoutes.includes(pathname);
 
   return (
@@ -41,11 +40,9 @@ export default function RootLayout({
       </head>
       <body className="antialiased" style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <AuthProvider>
             <AuroraBackground />
             <AppContent>{children}</AppContent>
             <Toaster />
-          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

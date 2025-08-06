@@ -14,7 +14,6 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { useParams, useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useAuth } from "@/hooks/use-auth";
 
 type Message = {
     role: 'user' | 'model';

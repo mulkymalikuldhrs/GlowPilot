@@ -10,14 +10,6 @@ import { useRouter } from 'next/navigation';
 
 const specialists = [
     { 
-        slug: 'general',
-        name: 'Dr. Rina', 
-        specialty: 'AI Konsultan Umum', 
-        description: 'Mulai dari sini untuk analisis awal atau pertanyaan umum seputar perawatan kulit.',
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'woman smiling'
-    },
-    { 
         slug: 'acne',
         name: 'Dr. Andi', 
         specialty: 'Spesialis Jerawat', 

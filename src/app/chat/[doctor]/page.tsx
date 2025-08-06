@@ -38,14 +38,6 @@ type Goal = {
 type DoctorType = TextToSpeechInput['voice'];
 
 const doctors: Record<string, { name: string; specialty: string; avatar: string; dataAiHint: string; voice: DoctorType, systemPrompt: string }> = {
-    general: { 
-        name: 'Andi (Dokter Virtual)', 
-        specialty: 'Dokter Virtual Umum', 
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'man smiling',
-        voice: 'echo',
-        systemPrompt: "You are Andi (Dokter Virtual), a general AI skincare consultant. Your tone is friendly, professional, and reassuring. You are speaking to a user in Indonesia. After one or two interactions, if the user mentions a specific problem like 'jerawat' (acne) or 'kerutan' (wrinkles), you MUST redirect them to a specialist by saying: 'Tentu, untuk masalah itu, saya sarankan Anda berbicara dengan spesialis kami. Silakan pilih dokter yang sesuai.' and do not provide any more information."
-    },
     acne: { 
         name: 'Dr. Andi', 
         specialty: 'Spesialis Jerawat', 
@@ -76,8 +68,8 @@ const doctors: Record<string, { name: string; specialty: string; avatar: string;
 export default function DoctorChatPage() {
     const params = useParams();
     const router = useRouter();
-    const doctorSlug = typeof params.doctor === 'string' ? params.doctor : 'general';
-    const doctor = doctors[doctorSlug] || doctors.general;
+    const doctorSlug = typeof params.doctor === 'string' ? params.doctor : '';
+    const doctor = doctors[doctorSlug];
 
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
@@ -91,8 +83,12 @@ export default function DoctorChatPage() {
     const [attachedImage, setAttachedImage] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-
     useEffect(() => {
+        if (!doctor) {
+            router.push('/doctors');
+            return;
+        }
+
         const startConversation = async () => {
             if (messages.length > 0) return;
             setLoading(true);
@@ -115,7 +111,12 @@ export default function DoctorChatPage() {
 
         startConversation();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [doctor.systemPrompt]);
+    }, [doctor]);
+
+    if (!doctor) {
+        // You can return a loader here while redirecting
+        return <div className="flex items-center justify-center h-screen"><Loader2 className="h-8 w-8 animate-spin"/></div>;
+    }
 
 
     const scrollToBottom = () => {
@@ -459,5 +460,3 @@ export default function DoctorChatPage() {
         </div>
     )
 }
-
-    

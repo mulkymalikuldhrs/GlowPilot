@@ -18,7 +18,7 @@ export function BottomNav() {
 
     const isActive = (itemHref: string) => {
          if (itemHref === "/doctors") {
-            // Also active for specific doctor chats, but not the main chat
+            // Also active for specific doctor chats
             return pathname.startsWith('/chat/') || pathname === '/doctors';
         }
         return pathname.startsWith(itemHref);

@@ -24,7 +24,10 @@ export const OnboardingOutputSchema = z.object({
       name: z.string().optional().describe("The user's name."),
       skinType: z.string().optional().describe("The user's skin type."),
       skinConcerns: z.string().optional().describe("The user's primary skin concerns."),
+      currentRoutine: z.string().optional().describe("The user's current skincare routine."),
+      lifestyleFactors: z.string().optional().describe("The user's lifestyle factors (sun, sleep, stress)."),
     }).optional().describe('The collected user data once onboarding is complete.'),
+    routineAnalysis: z.string().optional().describe("A brief, one-sentence analysis of the user's routine and lifestyle."),
   });
 export type OnboardingOutput = z.infer<typeof OnboardingOutputSchema>;
   

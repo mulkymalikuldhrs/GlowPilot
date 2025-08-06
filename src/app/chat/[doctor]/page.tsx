@@ -4,7 +4,7 @@
 import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/conversational-diagnosis-flow";
 import { textToSpeech } from "@/ai/flows/tts-flow";
 import type { TextToSpeechInput } from "@/ai/schemas/tts-schemas";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, MoreVertical, Paperclip, Sparkles, Shield, FlaskConical, Languages, Volume2, PlayCircle, Mic } from "lucide-react";
@@ -14,7 +14,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { useParams, useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
-import Image from "next/image";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type Message = {
     role: 'user' | 'model';
@@ -284,7 +284,8 @@ export default function DoctorChatPage() {
             <header className="sticky top-0 z-10 flex items-center justify-between p-2 border-b bg-background/80 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                      <Avatar className="w-10 h-10 border-2 border-primary/50">
-                        <Image src={doctor.avatar} alt={doctor.name} width={40} height={40} className="rounded-full" data-ai-hint={doctor.dataAiHint} />
+                        <AvatarImage src={doctor.avatar} alt={doctor.name} data-ai-hint={doctor.dataAiHint} />
+                        <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
                         <p className="font-bold">{doctor.name}</p>
@@ -292,13 +293,32 @@ export default function DoctorChatPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon">
-                        <Languages className="w-5 h-5"/>
-                    </Button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <Languages className="w-5 h-5"/>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem>Bahasa Indonesia</DropdownMenuItem>
+                            <DropdownMenuItem disabled>English</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
                     <ThemeToggle />
-                    <Button variant="ghost" size="icon">
-                        <MoreVertical className="w-5 h-5"/>
-                    </Button>
+                    
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <MoreVertical className="w-5 h-5"/>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem>Mulai Obrolan Baru</DropdownMenuItem>
+                            <DropdownMenuItem>Lihat Profil Dokter</DropdownMenuItem>
+                            <DropdownMenuItem>Laporkan Masalah</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </header>
 
@@ -307,7 +327,7 @@ export default function DoctorChatPage() {
                     <div key={index} className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
                        {message.role === 'model' && (
                            <Avatar className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
-                               <Image src={doctor.avatar} alt={doctor.name} width={36} height={36} className="rounded-full" data-ai-hint={doctor.dataAiHint} />
+                               <AvatarImage src={doctor.avatar} alt={doctor.name} data-ai-hint={doctor.dataAiHint} />
                            </Avatar>
                        )}
                        <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm shadow-md ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card glass-card border-0'}`}>
@@ -368,7 +388,3 @@ export default function DoctorChatPage() {
         </div>
     )
 }
-
-    
-
-    

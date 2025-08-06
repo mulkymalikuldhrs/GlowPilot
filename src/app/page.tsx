@@ -43,7 +43,7 @@ const doctor: { name: string; specialty: string; avatar: string; dataAiHint: str
     avatar: 'https://placehold.co/100x100.png',
     dataAiHint: 'woman smiling',
     voice: 'nova',
-    systemPrompt: "You are Dr. Rina, a general AI skincare consultant. Your tone is friendly, professional, and reassuring. You are speaking to a user in Indonesia. Your first task is to ask for their name, skin type, and primary skin concerns to personalize the experience. After gathering this information, if the user mentions a specific problem like 'jerawat' (acne) or 'kerutan' (wrinkles), you MUST redirect them to a specialist by saying: 'Tentu, untuk masalah itu, saya sarankan Anda berbicara dengan spesialis kami. Silakan pilih dokter yang sesuai dari menu Chat.' and do not provide any more information."
+    systemPrompt: "You are Dr. Rina, a general AI skincare consultant. Your tone is friendly, professional, and reassuring. You are speaking to a user in Indonesia. After one or two interactions, if the user mentions a specific problem like 'jerawat' (acne) or 'kerutan' (wrinkles), you MUST redirect them to a specialist by saying: 'Tentu, untuk masalah itu, saya sarankan Anda berbicara dengan spesialis kami. Silakan pilih dokter yang sesuai.' and do not provide any more information."
 };
 
 
@@ -64,7 +64,6 @@ export default function ChatPage() {
     useEffect(() => {
         const startConversation = async () => {
             const userData = localStorage.getItem('userData');
-            let initialHistory: DiagnosisMessage[] = [];
             
             if (!userData) {
                 // If no user data, redirect to onboarding
@@ -77,7 +76,7 @@ export default function ChatPage() {
 
             try {
                 const res = await conductDiagnosis({ 
-                    currentHistory: initialHistory, 
+                    currentHistory: [], 
                     photoDataUri: null, 
                     systemPrompt: doctor.systemPrompt 
                 });
@@ -94,7 +93,7 @@ export default function ChatPage() {
 
         startConversation();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [doctor.systemPrompt]);
+    }, []);
 
 
     const scrollToBottom = () => {
@@ -329,8 +328,7 @@ export default function ChatPage() {
                     <div key={index} className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
                        {message.role === 'model' && (
                            <Avatar className="w-9 h-9">
-                                <AvatarImage src={doctor.avatar} alt={doctor.name} data-ai-hint={doctor.dataAiHint} />
-                                <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
+                                <Image src={doctor.avatar} alt={doctor.name} width={36} height={36} className="rounded-full" data-ai-hint={doctor.dataAiHint}/>
                            </Avatar>
                        )}
                        <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm shadow-md ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card glass-card border-0'}`}>
@@ -352,8 +350,7 @@ export default function ChatPage() {
                  {loading && (
                      <div className="flex items-start gap-3">
                          <Avatar className="w-9 h-9">
-                            <AvatarImage src={doctor.avatar} alt={doctor.name} data-ai-hint={doctor.dataAiHint} />
-                            <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
+                            <Image src={doctor.avatar} alt={doctor.name} width={36} height={36} className="rounded-full" data-ai-hint={doctor.dataAiHint}/>
                          </Avatar>
                          <div className="rounded-2xl p-3 max-w-lg bg-muted flex items-center space-x-2">
                              <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -392,5 +389,3 @@ export default function ChatPage() {
         </div>
     )
 }
-
-    

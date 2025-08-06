@@ -350,8 +350,7 @@ export default function DoctorChatPage() {
                     <div key={index} className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
                        {message.role === 'model' && (
                            <Avatar className="w-9 h-9">
-                                <AvatarImage src={doctor.avatar} alt={doctor.name} data-ai-hint={doctor.dataAiHint} />
-                                <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
+                                <Image src={doctor.avatar} alt={doctor.name} width={36} height={36} className="rounded-full" data-ai-hint={doctor.dataAiHint}/>
                            </Avatar>
                        )}
                        <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm shadow-md ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card glass-card border-0'}`}>
@@ -373,8 +372,7 @@ export default function DoctorChatPage() {
                  {loading && (
                      <div className="flex items-start gap-3">
                          <Avatar className="w-9 h-9">
-                            <AvatarImage src={doctor.avatar} alt={doctor.name} data-ai-hint={doctor.dataAiHint} />
-                            <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
+                            <Image src={doctor.avatar} alt={doctor.name} width={36} height={36} className="rounded-full" data-ai-hint={doctor.dataAiHint}/>
                          </Avatar>
                          <div className="rounded-2xl p-3 max-w-lg bg-muted flex items-center space-x-2">
                              <Loader2 className="h-4 w-4 animate-spin text-primary" />

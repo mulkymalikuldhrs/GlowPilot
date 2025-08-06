@@ -38,12 +38,12 @@ type Goal = {
 type DoctorType = TextToSpeechInput['voice'];
 
 const doctor: { name: string; specialty: string; avatar: string; dataAiHint: string; voice: DoctorType, systemPrompt: string } = { 
-    name: 'Dr. Rina', 
-    specialty: 'AI Konsultan Umum', 
+    name: 'Andi (Dokter Virtual)', 
+    specialty: 'Dokter Virtual Umum', 
     avatar: 'https://placehold.co/100x100.png',
-    dataAiHint: 'woman smiling',
-    voice: 'nova',
-    systemPrompt: "You are Dr. Rina, a general AI skincare consultant. Your tone is friendly, professional, and reassuring. You are speaking to a user in Indonesia. After one or two interactions, if the user mentions a specific problem like 'jerawat' (acne) or 'kerutan' (wrinkles), you MUST redirect them to a specialist by saying: 'Tentu, untuk masalah itu, saya sarankan Anda berbicara dengan spesialis kami. Silakan pilih dokter yang sesuai.' and do not provide any more information."
+    dataAiHint: 'man smiling',
+    voice: 'echo',
+    systemPrompt: "You are Andi (Dokter Virtual), a general AI skincare consultant. Your tone is friendly, professional, and reassuring. You are speaking to a user in Indonesia. After one or two interactions, if the user mentions a specific problem like 'jerawat' (acne) or 'kerutan' (wrinkles), you MUST redirect them to a specialist by saying: 'Tentu, untuk masalah itu, saya sarankan Anda berbicara dengan spesialis kami. Silakan pilih dokter yang sesuai.' and do not provide any more information."
 };
 
 

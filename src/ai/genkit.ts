@@ -22,7 +22,7 @@ export const ai = genkit({
   plugins: [
     googleAI({
       // Provide a function that returns a new API key for each request.
-      apiKey: getApiKey,
+      apiKey: getApiKey(),
     }),
   ],
 });

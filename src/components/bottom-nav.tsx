@@ -10,7 +10,6 @@ export function BottomNav() {
     const pathname = usePathname();
 
     const navItems = [
-        { href: "/chat", icon: Bot, label: "Chat" },
         { href: "/doctors", icon: MessageSquare, label: "Spesialis" },
         { href: "/catalog", icon: ShoppingBag, label: "Produk" },
         { href: "/progress", icon: AreaChart, label: "Progres" },
@@ -18,9 +17,6 @@ export function BottomNav() {
     ];
 
     const isActive = (itemHref: string) => {
-        if (itemHref === "/chat") {
-            return pathname === "/chat";
-        }
          if (itemHref === "/doctors") {
             // Also active for specific doctor chats, but not the main chat
             return pathname.startsWith('/chat/') || pathname === '/doctors';
@@ -43,5 +39,3 @@ export function BottomNav() {
         </div>
     );
 }
-
-    

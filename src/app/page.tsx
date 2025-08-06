@@ -38,7 +38,7 @@ export default function LandingPage() {
                 <Button 
                     size="lg" 
                     className="text-white bg-gradient-to-r from-primary to-primary-optimistic"
-                    onClick={() => router.push('/chat')}
+                    onClick={() => router.push('/doctors')}
                 >
                     Mulai Konsultasi Gratis
                 </Button>

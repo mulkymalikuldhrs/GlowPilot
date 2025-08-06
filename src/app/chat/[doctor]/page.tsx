@@ -7,7 +7,7 @@ import type { TextToSpeechInput } from "@/ai/schemas/tts-schemas";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, MoreVertical, Paperclip, Sparkles, Shield, FlaskConical, Languages, Volume2, PlayCircle, Mic } from "lucide-react";
+import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, MoreVertical, Paperclip, Sparkles, Shield, FlaskConical, Languages, Volume2, PlayCircle, Mic, XCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
@@ -88,6 +88,8 @@ export default function DoctorChatPage() {
     const audioRef = useRef<HTMLAudioElement>(null);
     const [playingMessageIndex, setPlayingMessageIndex] = useState<number | null>(null);
     const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+    const [attachedImage, setAttachedImage] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
 
     useEffect(() => {
@@ -232,23 +234,49 @@ export default function DoctorChatPage() {
         )
     }
 
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAttachedImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         
-        if (!input.trim()) return;
+        if (!input.trim() && !attachedImage) return;
 
-        const userMessage: Message = { role: 'user', content: input };
-        const userDiagnosisMessage: DiagnosisMessage = { role: 'user', content: input };
+        const userMessageText = attachedImage ? `${input} (gambar terlampir)` : input;
+
+        const userMessage: Message = { 
+            role: 'user', 
+            content: (
+                <div>
+                    {input && <p>{input}</p>}
+                    {attachedImage && (
+                        <Image src={attachedImage} alt="Lampiran pengguna" width={150} height={150} className="rounded-lg mt-2"/>
+                    )}
+                </div>
+            )
+        };
+        const userDiagnosisMessage: DiagnosisMessage = { role: 'user', content: userMessageText };
 
         setMessages(prev => [...prev, userMessage]);
         setDiagnosisMessages(prev => [...prev, userDiagnosisMessage]);
         setInput('');
+        const imageToSend = attachedImage;
+        setAttachedImage(null);
         setLoading(true);
 
         try {
             const res = await conductDiagnosis({ 
                 currentHistory: [...diagnosisMessages, userDiagnosisMessage],
-                photoDataUri: null,
+                photoDataUri: imageToSend,
                 systemPrompt: doctor.systemPrompt,
             });
             
@@ -384,8 +412,28 @@ export default function DoctorChatPage() {
             </main>
             
             <footer className="p-4 bg-background/80 backdrop-blur-md sticky bottom-16 border-t">
+                 {attachedImage && (
+                    <div className="relative w-20 h-20 mb-2">
+                        <Image src={attachedImage} alt="Lampiran" layout="fill" objectFit="cover" className="rounded-md" />
+                        <Button
+                            variant="destructive"
+                            size="icon"
+                            className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                            onClick={() => setAttachedImage(null)}
+                        >
+                            <XCircle className="h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
                  <form onSubmit={handleSubmit} className="relative flex items-center w-full gap-2">
-                    <Button type="button" variant="ghost" size="icon" className="shrink-0">
+                    <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        onChange={handleFileChange} 
+                        className="hidden" 
+                        accept="image/*" 
+                    />
+                    <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => fileInputRef.current?.click()}>
                         <Paperclip className="w-5 h-5"/>
                         <span className="sr-only">Attach image</span>
                     </Button>
@@ -402,7 +450,7 @@ export default function DoctorChatPage() {
                          className="pr-12 rounded-full"
                          autoComplete="off"
                      />
-                     <Button type="submit" size="icon" disabled={loading || !input.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full">
+                     <Button type="submit" size="icon" disabled={loading || (!input.trim() && !attachedImage)} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full">
                         <SendHorizonal className="h-4 w-4" />
                      </Button>
                 </form>

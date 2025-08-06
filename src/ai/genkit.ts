@@ -21,7 +21,8 @@ const getApiKey = (): string => {
 export const ai = genkit({
   plugins: [
     googleAI({
-      // Provide a function that returns a new API key for each request.
+      // Call the function to get a random key.
+      // This will be re-evaluated on server-side requests, effectively rotating keys.
       apiKey: getApiKey(),
     }),
   ],

@@ -5,13 +5,37 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuroraBackground } from '@/components/aurora-background';
 import { Toaster } from '@/components/ui/toaster';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { BottomNav } from '@/components/bottom-nav';
+import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 function AppContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const noNavRoutes = ['/onboarding', '/landing-placeholder'];
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('userData');
+    const isAuthRoute = pathname === '/' || pathname === '/onboarding';
+
+    if (!userData && !isAuthRoute) {
+      router.replace('/');
+    } else {
+      setLoading(false);
+    }
+  }, [pathname, router]);
+  
+  const noNavRoutes = ['/onboarding', '/'];
   const showNav = !noNavRoutes.includes(pathname);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex flex-col min-h-screen">

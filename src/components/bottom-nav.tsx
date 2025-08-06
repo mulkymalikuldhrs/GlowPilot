@@ -10,7 +10,7 @@ export function BottomNav() {
     const pathname = usePathname();
 
     const navItems = [
-        { href: "/", icon: Bot, label: "Chat" },
+        { href: "/chat", icon: Bot, label: "Chat" },
         { href: "/doctors", icon: MessageSquare, label: "Spesialis" },
         { href: "/catalog", icon: ShoppingBag, label: "Produk" },
         { href: "/progress", icon: AreaChart, label: "Progres" },
@@ -18,11 +18,12 @@ export function BottomNav() {
     ];
 
     const isActive = (itemHref: string) => {
-        if (itemHref === "/") {
-            return pathname === "/";
+        if (itemHref === "/chat") {
+            return pathname === "/chat";
         }
-        if (itemHref === "/doctors") {
-            return pathname.startsWith('/chat') || pathname === '/doctors';
+         if (itemHref === "/doctors") {
+            // Also active for specific doctor chats, but not the main chat
+            return pathname.startsWith('/chat/') || pathname === '/doctors';
         }
         return pathname.startsWith(itemHref);
     };
@@ -42,3 +43,5 @@ export function BottomNav() {
         </div>
     );
 }
+
+    

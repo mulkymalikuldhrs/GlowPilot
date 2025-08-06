@@ -70,12 +70,6 @@ export default function ChatPage() {
                 return;
             };
 
-            const userData = localStorage.getItem('userData');
-            if (!userData) {
-                router.push('/onboarding');
-                return;
-            }
-
             try {
                 const res = await conductDiagnosis({ 
                     currentHistory: [], 
@@ -445,5 +439,3 @@ export default function ChatPage() {
         </div>
     )
 }
-
-    

@@ -5,17 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useEffect } from "react";
 
 export default function LandingPage() {
     const router = useRouter();
-
-    useEffect(() => {
-        // If user is already onboarded, redirect them to the chat
-        if (localStorage.getItem('userData')) {
-            router.replace('/chat');
-        }
-    }, [router]);
 
     return (
         <div className="flex flex-col items-center justify-center h-screen text-center p-4">
@@ -46,7 +38,7 @@ export default function LandingPage() {
                 <Button 
                     size="lg" 
                     className="text-white bg-gradient-to-r from-primary to-primary-optimistic"
-                    onClick={() => router.push('/onboarding')}
+                    onClick={() => router.push('/chat')}
                 >
                     Mulai Konsultasi Gratis
                 </Button>
@@ -58,5 +50,3 @@ export default function LandingPage() {
         </div>
     );
 }
-
-    

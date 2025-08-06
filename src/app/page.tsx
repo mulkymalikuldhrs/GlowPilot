@@ -2,11 +2,19 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
+    const router = useRouter();
+
+    const startConsultation = () => {
+        // This simulates the initial interaction. After a brief moment,
+        // it redirects to the doctor selection page.
+        // In a real scenario, this might happen after 1-2 chat messages.
+        router.push('/doctors');
+    };
     
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
@@ -23,10 +31,8 @@ export default function LandingPage() {
             </div>
 
             <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-sm px-4 space-y-4">
-                <Button size="lg" className="w-full" asChild>
-                    <Link href="/chat/general">
-                        Mulai Konsultasi Gratis <ArrowRight className="ml-2" />
-                    </Link>
+                <Button size="lg" className="w-full" onClick={startConsultation}>
+                    Mulai Konsultasi Gratis <ArrowRight className="ml-2" />
                 </Button>
                 <p className="text-xs text-muted-foreground px-4">
                     Dengan melanjutkan, Anda menyetujui {' '}
@@ -38,3 +44,5 @@ export default function LandingPage() {
         </div>
     );
 }
+
+    

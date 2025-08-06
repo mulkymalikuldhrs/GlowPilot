@@ -7,13 +7,14 @@ import type { TextToSpeechInput } from "@/ai/schemas/tts-schemas";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, MoreVertical, Paperclip, Sparkles, Shield, FlaskConical, Languages, Volume2, PlayCircle, Mic, MicOff } from "lucide-react";
+import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, MoreVertical, Paperclip, Sparkles, Shield, FlaskConical, Languages, Volume2, PlayCircle, Mic } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { useParams, useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
+import Image from "next/image";
 
 type Message = {
     role: 'user' | 'model';
@@ -29,32 +30,36 @@ type DiagnosisMessage = {
 
 type DoctorType = TextToSpeechInput['voice'];
 
-const doctors: Record<string, { name: string; specialty: string; avatar: React.ElementType, voice: DoctorType, systemPrompt: string }> = {
+const doctors: Record<string, { name: string; specialty: string; avatar: string; dataAiHint: string; voice: DoctorType, systemPrompt: string }> = {
     general: { 
-        name: 'Dr. Rina General', 
+        name: 'Dr. Rina', 
         specialty: 'AI Konsultan Umum', 
-        avatar: Sparkles, 
+        avatar: 'https://placehold.co/100x100.png',
+        dataAiHint: 'woman smiling',
         voice: 'nova',
-        systemPrompt: "You are Dr. Rina, a general AI skincare consultant. Your tone is friendly, professional, and reassuring. You are speaking to a user in Indonesia. Your goal is to provide a preliminary analysis of general skin concerns. You must use the productCatalogTool to recommend products."
+        systemPrompt: "You are Dr. Rina, a general AI skincare consultant. Your tone is friendly, professional, and reassuring. You are speaking to a user in Indonesia. After one or two interactions, if the user mentions a specific problem like 'jerawat' (acne) or 'kerutan' (wrinkles), you MUST redirect them to a specialist by saying: 'Tentu, untuk masalah itu, saya sarankan Anda berbicara dengan spesialis kami. Silakan pilih dokter yang sesuai.' and do not provide any more information."
     },
     acne: { 
-        name: 'Dr. Andi Jerawat', 
+        name: 'Dr. Andi', 
         specialty: 'Spesialis Jerawat', 
-        avatar: Shield, 
+        avatar: 'https://placehold.co/100x100.png',
+        dataAiHint: 'man smiling',
         voice: 'echo',
         systemPrompt: "You are Dr. Andi, an AI dermatologist specializing in acne. Your tone is direct, knowledgeable, and empathetic. You are speaking to a user in Indonesia. Your goal is to diagnose the type of acne and provide a targeted routine. You must use the productCatalogTool to recommend products specifically for acne."
     },
     aging: { 
-        name: 'Dr. Citra Awet Muda', 
+        name: 'Dr. Citra', 
         specialty: 'Spesialis Anti-Aging', 
-        avatar: Sparkles, 
+        avatar: 'https://placehold.co/100x100.png',
+        dataAiHint: 'mature woman smiling',
         voice: 'shimmer',
         systemPrompt: "You are Dr. Citra, an AI dermatologist specializing in anti-aging. Your tone is elegant, scientific, and encouraging. You are speaking to a user in Indonesia. Your goal is to create a preventative and corrective routine for signs of aging. You must use the productCatalogTool to recommend anti-aging products."
     },
     ingredients: { 
-        name: 'Dr. Budi Bahan', 
+        name: 'Dr. Budi', 
         specialty: 'Spesialis Bahan Skincare', 
-        avatar: FlaskConical, 
+        avatar: 'https://placehold.co/100x100.png',
+        dataAiHint: 'man in lab coat',
         voice: 'echo',
         systemPrompt: "You are Dr. Budi, an AI skincare chemist. Your tone is educational, precise, and a bit nerdy. You are speaking to a user in Indonesia. Your goal is to analyze product ingredients and explain their function. When asked for recommendations, you must use the productCatalogTool to find products containing specific ingredients the user is interested in."
     },
@@ -75,6 +80,8 @@ export default function DoctorChatPage() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const audioRef = useRef<HTMLAudioElement>(null);
     const [playingMessageIndex, setPlayingMessageIndex] = useState<number | null>(null);
+    const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+
 
     useEffect(() => {
         const startConversation = async () => {
@@ -110,22 +117,27 @@ export default function DoctorChatPage() {
         scrollToBottom();
     }, [messages, loading]);
 
-    const playAudio = (audioUrl: string, index: number) => {
+    const playAudio = (audioUrl: string, index: number, autoPlay = false) => {
         if (audioRef.current) {
-            if (playingMessageIndex === index) {
+            if (playingMessageIndex === index && !autoPlay) {
                 audioRef.current.pause();
                 setPlayingMessageIndex(null);
+                setIsAutoPlaying(false);
             } else {
                 audioRef.current.src = audioUrl;
-                audioRef.current.play();
+                audioRef.current.play().catch(e => console.error("Autoplay failed:", e));
                 setPlayingMessageIndex(index);
+                setIsAutoPlaying(autoPlay);
             }
         }
     };
     
     useEffect(() => {
         const audioElement = audioRef.current;
-        const handleAudioEnd = () => setPlayingMessageIndex(null);
+        const handleAudioEnd = () => {
+            setPlayingMessageIndex(null);
+            setIsAutoPlaying(false);
+        };
     
         if (audioElement) {
             audioElement.addEventListener('ended', handleAudioEnd);
@@ -135,20 +147,35 @@ export default function DoctorChatPage() {
         }
     }, []);
 
-    const handleGenerateAudio = async (text: string, index: number) => {
+    const handleGenerateAudio = async (text: string, index: number, autoPlay = false) => {
         try {
             const res = await textToSpeech({ text, voice: doctor.voice });
+            const audioUrl = res.audioDataUri;
             setMessages(prev => {
                 const newMessages = [...prev];
-                newMessages[index].audioUrl = res.audioDataUri;
+                if (newMessages[index]) {
+                  newMessages[index].audioUrl = audioUrl;
+                }
                 return newMessages;
             });
-            playAudio(res.audioDataUri, index);
+            if (audioUrl) {
+                playAudio(audioUrl, index, autoPlay);
+            }
         } catch (error) {
             console.error("TTS Error:", error);
             toast({ title: "Audio Error", description: "Gagal menghasilkan audio.", variant: "destructive" });
         }
     };
+    
+    // Autoplay useEffect
+    useEffect(() => {
+        const lastMessage = messages[messages.length - 1];
+        if (lastMessage && lastMessage.role === 'model' && lastMessage.textForTts && !lastMessage.audioUrl) {
+            handleGenerateAudio(lastMessage.textForTts, messages.length - 1, true);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [messages]);
+
 
     const renderDiagnosis = (res: NonNullable<DiagnosisConversationOutput['diagnosisResult']>) => {
         return (
@@ -217,6 +244,11 @@ export default function DoctorChatPage() {
                 photoDataUri: null,
                 systemPrompt: doctor.systemPrompt,
             });
+            
+            if (res.response.includes("Silakan pilih dokter yang sesuai")) {
+                setTimeout(() => router.push('/doctors'), 2000);
+            }
+
 
             const assistantMessage: Message = {
                 role: 'model',
@@ -252,9 +284,7 @@ export default function DoctorChatPage() {
             <header className="sticky top-0 z-10 flex items-center justify-between p-2 border-b bg-background/80 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                      <Avatar className="w-10 h-10 border-2 border-primary/50">
-                        <div className="w-full h-full flex items-center justify-center bg-muted">
-                           <doctor.avatar className="w-6 h-6 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
-                        </div>
+                        <Image src={doctor.avatar} alt={doctor.name} width={40} height={40} className="rounded-full" data-ai-hint={doctor.dataAiHint} />
                     </Avatar>
                     <div>
                         <p className="font-bold">{doctor.name}</p>
@@ -283,7 +313,7 @@ export default function DoctorChatPage() {
                        <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm shadow-md ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card glass-card border-0'}`}>
                            {typeof message.content === 'string' ? <p className="whitespace-pre-wrap">{message.content}</p> : message.content}
                             {message.role === 'model' && message.textForTts && (
-                                <button onClick={() => message.audioUrl ? playAudio(message.audioUrl, index) : handleGenerateAudio(message.textForTts!, index)} className="mt-2 text-primary/80 hover:text-primary transition-colors flex items-center gap-1 text-xs">
+                                <button onClick={() => message.audioUrl ? playAudio(message.audioUrl, index) : handleGenerateAudio(message.textForTts!, index, false)} className="mt-2 text-primary/80 hover:text-primary transition-colors flex items-center gap-1 text-xs">
                                     {playingMessageIndex === index ? <Volume2 className="h-4 w-4" /> : <PlayCircle className="h-4 w-4" />}
                                     <span>{playingMessageIndex === index ? 'Playing...' : 'Play Audio'}</span>
                                 </button>
@@ -334,7 +364,9 @@ export default function DoctorChatPage() {
                      </Button>
                 </form>
             </footer>
-            <audio ref={audioRef} />
+            <audio ref={audioRef} onPlay={() => setIsAutoPlaying(true)} onPause={() => setIsAutoPlaying(false)} />
         </div>
     )
 }
+
+    

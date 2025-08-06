@@ -29,6 +29,12 @@ type DiagnosisMessage = {
     content: string;
 };
 
+type Goal = {
+    title: string;
+    progress: number;
+    targetDate: string;
+}
+
 type DoctorType = TextToSpeechInput['voice'];
 
 const doctors: Record<string, { name: string; specialty: string; avatar: string; dataAiHint: string; voice: DoctorType, systemPrompt: string }> = {
@@ -249,6 +255,22 @@ export default function DoctorChatPage() {
             if (res.response.includes("Silakan pilih dokter yang sesuai")) {
                 setTimeout(() => router.push('/doctors'), 2000);
             }
+            
+            if (res.isComplete && res.diagnosisResult?.progressGoal) {
+                const newGoal = {
+                    ...res.diagnosisResult.progressGoal,
+                    progress: 0, // Initial progress is 0
+                };
+                
+                // Save to localStorage
+                const existingGoals: Goal[] = JSON.parse(localStorage.getItem('userGoals') || '[]');
+                localStorage.setItem('userGoals', JSON.stringify([...existingGoals, newGoal]));
+
+                toast({
+                    title: "Tujuan Baru Ditambahkan!",
+                    description: `"${newGoal.title}" telah ditambahkan ke halaman Progres Anda.`,
+                });
+            }
 
 
             const assistantMessage: Message = {
@@ -352,6 +374,7 @@ export default function DoctorChatPage() {
                      <div className="flex items-start gap-3">
                          <Avatar className="w-9 h-9">
                             <AvatarImage src={doctor.avatar} alt={doctor.name} data-ai-hint={doctor.dataAiHint} />
+                            <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
                          </Avatar>
                          <div className="rounded-2xl p-3 max-w-lg bg-muted flex items-center space-x-2">
                              <Loader2 className="h-4 w-4 animate-spin text-primary" />

@@ -4,30 +4,51 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Check, Target, Plus } from "lucide-react";
+import { Check, Target, Plus, Ghost } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-// In a real app, this would come from a user-specific database record
-const userGoals: Record<string, {title: string; progress: number; targetDate: string}[]> = {
-    "default": [
-         {
-            title: "Mengurangi Jerawat Hormonal",
-            progress: 40,
-            targetDate: "30 Sep 2024"
-        },
-        {
-            title: "Meningkatkan Hidrasi Kulit",
-            progress: 75,
-            targetDate: "15 Okt 2024"
-        }
-    ]
+type Goal = {
+    title: string;
+    progress: number;
+    targetDate: string;
 }
+
+const defaultGoals: Goal[] = [
+     {
+        title: "Mengurangi Jerawat Hormonal",
+        progress: 40,
+        targetDate: "30 Sep 2024"
+    },
+    {
+        title: "Meningkatkan Hidrasi Kulit",
+        progress: 75,
+        targetDate: "15 Okt 2024"
+    }
+];
 
 
 export default function ProgressPage() {
-    const [goals, setGoals] = useState(userGoals.default);
+    const [goals, setGoals] = useState<Goal[]>([]);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+        // Load goals from localStorage
+        const storedGoals = localStorage.getItem('userGoals');
+        if (storedGoals) {
+            setGoals(JSON.parse(storedGoals));
+        } else {
+            // Optional: set default goals if none are stored
+            setGoals(defaultGoals);
+            localStorage.setItem('userGoals', JSON.stringify(defaultGoals));
+        }
+    }, []);
     
+    if (!isClient) {
+        return null; // or a loading skeleton
+    }
+
     return (
         <div className="p-4">
              <header className="w-full text-center py-4 mb-4">
@@ -63,21 +84,34 @@ export default function ProgressPage() {
                         </Button>
                     </div>
 
-                    {goals.map(goal => (
-                        <Card key={goal.title} className="glass-card">
-                            <CardContent className="p-4">
-                                <div className="flex justify-between items-start">
-                                    <div className="space-y-1">
-                                        <p className="font-semibold">{goal.title}</p>
-                                        <p className="text-xs text-muted-foreground">Target: {goal.targetDate}</p>
+                    {goals.length > 0 ? (
+                        goals.map(goal => (
+                            <Card key={goal.title} className="glass-card">
+                                <CardContent className="p-4">
+                                    <div className="flex justify-between items-start">
+                                        <div className="space-y-1">
+                                            <p className="font-semibold">{goal.title}</p>
+                                            <p className="text-xs text-muted-foreground">Target: {goal.targetDate}</p>
+                                        </div>
+                                        <Target className="w-5 h-5 text-primary"/>
                                     </div>
-                                    <Target className="w-5 h-5 text-primary"/>
-                                </div>
-                                <Progress value={goal.progress} className="mt-4 h-2"/>
-                                <p className="text-right text-xs text-muted-foreground mt-1">{goal.progress}%</p>
+                                    <Progress value={goal.progress} className="mt-4 h-2"/>
+                                    <p className="text-right text-xs text-muted-foreground mt-1">{goal.progress}%</p>
+                                </CardContent>
+                            </Card>
+                        ))
+                    ) : (
+                        <Card className="glass-card">
+                            <CardContent className="p-6 flex flex-col items-center justify-center text-center">
+                                <Ghost className="w-12 h-12 text-muted-foreground mb-4" />
+                                <h3 className="font-semibold">Belum Ada Tujuan</h3>
+                                <p className="text-sm text-muted-foreground mt-1">Mulai konsultasi dengan dokter AI untuk membuat tujuan perawatan kulit Anda.</p>
+                                <Button asChild variant="secondary" className="mt-4">
+                                    <Link href="/doctors">Mulai Konsultasi</Link>
+                                </Button>
                             </CardContent>
                         </Card>
-                    ))}
+                    )}
                 </div>
 
                 <div className="text-center">

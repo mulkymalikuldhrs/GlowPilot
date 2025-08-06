@@ -306,8 +306,8 @@ export default function DoctorChatPage() {
                 {messages.map((message, index) => (
                     <div key={index} className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
                        {message.role === 'model' && (
-                           <Avatar className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                               <Bot className="h-5 w-5 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
+                           <Avatar className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
+                               <Image src={doctor.avatar} alt={doctor.name} width={36} height={36} className="rounded-full" data-ai-hint={doctor.dataAiHint} />
                            </Avatar>
                        )}
                        <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm shadow-md ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card glass-card border-0'}`}>
@@ -368,5 +368,7 @@ export default function DoctorChatPage() {
         </div>
     )
 }
+
+    
 
     

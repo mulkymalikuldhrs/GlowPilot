@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { useParams, useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 type Message = {
     role: 'user' | 'model';
@@ -326,8 +327,9 @@ export default function DoctorChatPage() {
                 {messages.map((message, index) => (
                     <div key={index} className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
                        {message.role === 'model' && (
-                           <Avatar className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
-                               <AvatarImage src={doctor.avatar} alt={doctor.name} data-ai-hint={doctor.dataAiHint} />
+                           <Avatar className="w-9 h-9">
+                                <AvatarImage src={doctor.avatar} alt={doctor.name} data-ai-hint={doctor.dataAiHint} />
+                                <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
                            </Avatar>
                        )}
                        <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm shadow-md ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card glass-card border-0'}`}>
@@ -348,8 +350,8 @@ export default function DoctorChatPage() {
                 ))}
                  {loading && (
                      <div className="flex items-start gap-3">
-                         <Avatar className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                            <Bot className="h-5 w-5 text-primary" style={{color: 'var(--primary-optimistic)'}}/>
+                         <Avatar className="w-9 h-9">
+                            <AvatarImage src={doctor.avatar} alt={doctor.name} data-ai-hint={doctor.dataAiHint} />
                          </Avatar>
                          <div className="rounded-2xl p-3 max-w-lg bg-muted flex items-center space-x-2">
                              <Loader2 className="h-4 w-4 animate-spin text-primary" />

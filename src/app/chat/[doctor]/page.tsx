@@ -1,13 +1,11 @@
-
 'use client';
 
 import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/conversational-diagnosis-flow";
 import { textToSpeech } from "@/ai/flows/tts-flow";
-import type { TextToSpeechInput } from "@/ai/schemas/tts-schemas";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { ShoppingCart, Info, Languages, MoreVertical, Loader2 } from "lucide-react";
+import { ShoppingCart, Languages, MoreVertical, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
@@ -19,49 +17,8 @@ import { MessageInput } from "@/components/chat/MessageInput";
 import { useUser } from "@/hooks/use-user";
 import { db } from "@/lib/firebase/client";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-
-export type Message = {
-    id: string;
-    role: 'user' | 'model';
-    content: React.ReactNode;
-    audioUrl?: string;
-    textForTts?: string;
-    isGeneratingAudio?: boolean;
-};
-
-type DiagnosisMessage = {
-    role: 'user' | 'model';
-    content: string;
-};
-
-type DoctorType = TextToSpeechInput['voice'];
-
-const doctors: Record<string, { name: string; specialty: string; avatar: string; dataAiHint: string; voice: DoctorType, systemPrompt: string }> = {
-    acne: { 
-        name: 'Dr. Andi', 
-        specialty: 'Spesialis Jerawat', 
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'man smiling',
-        voice: 'echo',
-        systemPrompt: "You are Dr. Andi, an AI dermatologist specializing in acne. Your tone is direct, knowledgeable, and empathetic. You are speaking to a user in Indonesia. Your goal is to diagnose the type of acne and provide a targeted routine. You must use the productCatalogTool to recommend products specifically for acne."
-    },
-    aging: { 
-        name: 'Dr. Citra', 
-        specialty: 'Spesialis Anti-Aging', 
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'mature woman smiling',
-        voice: 'shimmer',
-        systemPrompt: "You are Dr. Citra, an AI dermatologist specializing in anti-aging. Your tone is elegant, scientific, and encouraging. You are speaking to a user in Indonesia. Your goal is to create a preventative and corrective routine for signs of aging. You must use the productCatalogTool to recommend anti-aging products."
-    },
-    ingredients: { 
-        name: 'Dr. Budi', 
-        specialty: 'Spesialis Bahan Skincare', 
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'man in lab coat',
-        voice: 'echo',
-        systemPrompt: "You are Dr. Budi, an AI skincare chemist. Your tone is educational, precise, and a bit nerdy. You are speaking to a user in Indonesia. Your goal is to analyze product ingredients and explain their function. When asked for recommendations, you must use the productCatalogTool to find products containing specific ingredients the user is interested in."
-    },
-};
+import type { DiagnosisMessage, Message } from "@/lib/types";
+import { doctors } from "@/lib/doctors";
 
 
 export default function DoctorChatPage() {
@@ -82,7 +39,7 @@ export default function DoctorChatPage() {
     const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
 
     const handleAutoPlayAudio = async (text: string, messageId: string) => {
-        if (!text) return;
+        if (!text || !doctor.voice) return;
         
         // Stop any currently playing audio
         if (audioRef.current && !audioRef.current.paused) {
@@ -124,7 +81,7 @@ export default function DoctorChatPage() {
 
     useEffect(() => {
         if (!doctor) {
-            router.push('/doctors');
+            router.push('/chat'); // Redirect to doctor selection if slug is invalid
             return;
         }
 

@@ -1,42 +1,15 @@
-
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { doctors } from '@/lib/doctors';
 
-const specialists = [
-    { 
-        slug: 'acne',
-        name: 'Dr. Andi', 
-        specialty: 'Spesialis Jerawat', 
-        description: 'Dapatkan solusi dan rekomendasi rutin untuk mengatasi berbagai jenis jerawat.',
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'man smiling'
-    },
-    { 
-        slug: 'aging',
-        name: 'Dr. Citra', 
-        specialty: 'Spesialis Anti-Aging', 
-        description: 'Fokus pada pencegahan dan perbaikan tanda-tanda penuaan seperti kerutan dan garis halus.',
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'mature woman smiling'
-    },
-    { 
-        slug: 'ingredients',
-        name: 'Dr. Budi', 
-        specialty: 'Spesialis Bahan Skincare', 
-        description: 'Pahami kandungan dalam produk skincare Anda dan temukan bahan yang paling cocok.',
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'man in lab coat'
-    },
-];
 
 export default function DoctorSelectionPage() {
-    const router = useRouter();
+
+    const specialists = Object.values(doctors);
 
     return (
         <div className="p-4">

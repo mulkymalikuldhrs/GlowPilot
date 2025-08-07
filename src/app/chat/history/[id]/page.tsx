@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from "react";
@@ -6,47 +5,22 @@ import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@/hooks/use-user";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
-import { Loader2, ArrowLeft, Info, MessageSquare } from "lucide-react";
+import { Loader2, ArrowLeft, MessageSquare } from "lucide-react";
 import type { Message, DiagnosisMessage } from "@/lib/types";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { doctors } from "@/lib/doctors";
+import type { DoctorSlug } from "@/lib/doctors";
+import { Info } from "lucide-react";
 
-type DoctorType = 'acne' | 'aging' | 'ingredients' | 'general';
-
-const doctors: Record<string, { name: string; specialty: string; avatar: string; dataAiHint: string; }> = {
-    acne: { 
-        name: 'Dr. Andi', 
-        specialty: 'Spesialis Jerawat', 
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'man smiling',
-    },
-    aging: { 
-        name: 'Dr. Citra', 
-        specialty: 'Spesialis Anti-Aging', 
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'mature woman smiling',
-    },
-    ingredients: { 
-        name: 'Dr. Budi', 
-        specialty: 'Spesialis Bahan Skincare', 
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'man in lab coat',
-    },
-    general: {
-        name: 'GlowPilot Assistant',
-        specialty: 'Asisten Virtual Umum',
-        avatar: 'https://placehold.co/100x100.png',
-        dataAiHint: 'friendly robot',
-    }
-};
 
 interface Consultation {
     doctor: {
         name: string;
         specialty: string;
-        slug: DoctorType;
+        slug: DoctorSlug;
     };
     history: DiagnosisMessage[];
     diagnosis: any; // Use a more specific type if you have one

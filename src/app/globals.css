@@ -5,13 +5,13 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 220 20% 99%;
     --foreground: 224 71.4% 4.1%;
-    --card: 0 0% 100%;
+    --card: 220 20% 99%;
     --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
-    --primary: 262.1 83.3% 57.8%; /* New Purple from Blueprint */
+    --primary: 221.2 83.2% 53.3%; /* New Blueprint Blue */
     --primary-foreground: 210 20% 98%;
     --secondary: 220 14.3% 95.9%;
     --secondary-foreground: 220.9 39.3% 11%;
@@ -23,20 +23,20 @@
     --destructive-foreground: 210 20% 98%;
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 262.1 83.3% 57.8%;
+    --ring: 221.2 83.2% 53.3%;
     --radius: 1rem;
-    --chart-1: 12 76% 61%;
+    --chart-1: 221.2 83.2% 53.3%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     
-    /* Glassmorphism & Aurora Tokens from Blueprint */
-    --glass-bg: rgba(255, 255, 255, 0.25);
-    --glass-border: rgba(255, 255, 255, 0.35);
-    --aurora-1: #a855f7;
-    --aurora-2: #3b82f6;
-    --aurora-3: #10b981;
+    /* Refined Glassmorphism & Aurora Tokens */
+    --glass-bg: rgba(255, 255, 255, 0.5);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --aurora-1: #3b82f6; /* Blueprint Blue */
+    --aurora-2: #14b8a6; /* Teal */
+    --aurora-3: #a855f7; /* Purple */
   }
 
   .dark {
@@ -46,7 +46,7 @@
     --card-foreground: 210 20% 98%;
     --popover: 224 71.4% 4.1%;
     --popover-foreground: 210 20% 98%;
-    --primary: 262.1 83.3% 57.8%;
+    --primary: 217.2 91.2% 59.8%; /* Brighter Blue for Dark Mode */
     --primary-foreground: 210 20% 98%;
     --secondary: 215 27.9% 16.9%;
     --secondary-foreground: 210 20% 98%;
@@ -58,11 +58,11 @@
     --destructive-foreground: 210 20% 98%;
     --border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
-    --ring: 262.1 83.3% 57.8%;
+    --ring: 217.2 91.2% 59.8%;
 
-    /* Glassmorphism & Aurora Tokens from Blueprint */
-    --glass-bg: rgba(0, 0, 0, 0.25);
-    --glass-border: rgba(255, 255, 255, 0.15);
+    /* Refined Glassmorphism & Aurora Tokens */
+    --glass-bg: rgba(10, 10, 20, 0.35);
+    --glass-border: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -78,7 +78,7 @@
 }
 
 .aurora-bg {
-  opacity: 0.5;
+  opacity: 0.15;
   position: fixed;
   top: 0;
   left: 0;
@@ -89,8 +89,8 @@
   transition: opacity 0.5s ease-in-out;
 }
 
-.light .aurora-bg {
-    opacity: 0.8;
+.dark .aurora-bg {
+    opacity: 0.2;
 }
 
 .aurora-bg div {
@@ -100,8 +100,9 @@
   mix-blend-mode: plus-lighter;
 }
 
-.light .aurora-bg div {
+.dark .aurora-bg div {
     mix-blend-mode: screen;
+    opacity: 0.5;
 }
 
 .aurora-bg .aurora-1 {
@@ -151,9 +152,9 @@
 
 .glass-card {
   background-color: var(--glass-bg);
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 hsla(0, 0%, 0%, 0.1);
+  box-shadow: 0 4px 20px 0 hsla(0, 0%, 0%, 0.05);
   border-radius: var(--radius);
 }

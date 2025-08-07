@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { createClient } from '@/lib/supabase/client';

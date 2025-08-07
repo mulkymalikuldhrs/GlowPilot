@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Paperclip, SendHorizonal, XCircle } from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { VoiceInput } from "./VoiceInput";
 
 interface MessageInputProps {
@@ -27,15 +27,20 @@ export function MessageInput({
     setAttachedImage,
     handleFileChange,
     handleSubmit,
-    placeholder = "Ketik pesan Anda..."
+    placeholder = "Ketik pesan atau tahan ikon mik untuk bicara..."
 }: MessageInputProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isListening, setIsListening] = useState(false);
+
+    const handleTranscript = (transcript: string) => {
+        setInput(transcript);
+    };
     
     return (
         <div className="space-y-2">
              {attachedImage && (
                 <div className="relative w-20 h-20 ml-4">
-                    <Image src={attachedImage} alt="Lampiran" layout="fill" objectFit="cover" className="rounded-md" />
+                    <Image src={attachedImage} alt="Lampiran" fill objectFit="cover" className="rounded-md" />
                     <Button
                         variant="destructive"
                         size="icon"
@@ -58,10 +63,14 @@ export function MessageInput({
                     <Paperclip className="w-5 h-5"/>
                     <span className="sr-only">Attach image</span>
                 </Button>
-                <VoiceInput />
+                <VoiceInput 
+                    onTranscript={handleTranscript}
+                    isListening={isListening}
+                    setIsListening={setIsListening} 
+                />
                  <Input
                      id="message"
-                     placeholder={placeholder}
+                     placeholder={isListening ? "Mendengarkan..." : placeholder}
                      value={input}
                      onChange={(e) => setInput(e.target.value)}
                      disabled={loading}

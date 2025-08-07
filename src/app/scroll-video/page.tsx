@@ -10,7 +10,7 @@ export default function ScrollVideoPage() {
     <div className="w-full">
       <div className="container mx-auto max-w-4xl py-8 md:py-12 text-center">
         <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary mx-auto">
-          <Film className="h-8 w-8" style={{color: 'var(--primary-optimistic)'}}/>
+          <Film className="h-8 w-8 text-primary"/>
         </div>
         <h1 className="text-4xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>Scroll-Controlled Video</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground mx-auto">

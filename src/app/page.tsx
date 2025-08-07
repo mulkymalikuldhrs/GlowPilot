@@ -24,7 +24,7 @@ export default function LandingPage() {
 
             <div className="relative z-10 flex flex-col items-center">
                 <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Sparkles className="h-10 w-10" style={{color: 'var(--primary-optimistic)'}}/>
+                    <Sparkles className="h-10 w-10 text-primary"/>
                 </div>
 
                 <h1 className="text-4xl font-bold tracking-tight mb-4" style={{fontFamily: 'Sora, sans-serif'}}>
@@ -37,7 +37,7 @@ export default function LandingPage() {
 
                 <Button 
                     size="lg" 
-                    className="text-white bg-gradient-to-r from-primary to-primary-optimistic"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
                     onClick={() => router.push('/doctors')}
                 >
                     Mulai Konsultasi Gratis

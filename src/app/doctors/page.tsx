@@ -60,7 +60,7 @@ export default function DoctorSelectionPage() {
                                 />
                                 <div className="flex-1">
                                     <h2 className="font-bold text-base">{doctor.name}</h2>
-                                    <p className="text-sm text-primary font-medium" style={{color: 'hsl(var(--primary-optimistic))'}}>{doctor.specialty}</p>
+                                    <p className="text-sm text-primary font-medium">{doctor.specialty}</p>
                                     <p className="text-xs text-muted-foreground mt-1">{doctor.description}</p>
                                 </div>
                                 <ArrowRight className="w-5 h-5 text-muted-foreground" />
@@ -72,5 +72,3 @@ export default function DoctorSelectionPage() {
         </div>
     );
 }
-
-    

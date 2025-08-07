@@ -71,7 +71,7 @@ export default function CatalogPage() {
           <h3 className="font-bold text-sm leading-snug flex-grow">{product.title}</h3>
           <p className="text-sm text-muted-foreground font-semibold">{product.price}</p>
           <Button
-            className="w-full text-white bg-gradient-to-r from-primary to-primary-optimistic shrink-0"
+            className="w-full text-primary-foreground bg-primary"
             asChild
           >
             <Link href={product.affiliate_link} target="_blank" rel="noopener noreferrer">

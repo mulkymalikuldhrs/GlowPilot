@@ -59,7 +59,7 @@ export default function ProfilePage() {
                  <Card className="glass-card bg-primary/10">
                     <CardContent className="p-4 text-center">
                         <div className='flex flex-col items-center gap-2 text-xs text-muted-foreground'>
-                            <Sparkles className="w-5 h-5 text-primary" style={{color: 'hsl(var(--primary-optimistic))'}}/>
+                            <Sparkles className="w-5 h-5 text-primary"/>
                             <span className="font-medium">Dikembangkan oleh Mulky Malikul Dhaher</span>
                             <span>mulkymalikuldhr@mail.com</span>
                         </div>

@@ -17,9 +17,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Sora', 'sans-serif'],
+        body: ['"Plus Jakarta Sans"', 'sans-serif'],
         headline: ['Sora', 'sans-serif'],
-        code: ['monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',

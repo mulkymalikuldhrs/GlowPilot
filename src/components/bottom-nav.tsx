@@ -20,8 +20,8 @@ export function BottomNav() {
 
     const isActive = (itemHref: string) => {
          if (itemHref === "/chat") {
-            // Also active for specific doctor chats and the doctor selection page
-            return pathname.startsWith('/chat') || pathname === '/doctors';
+            // Also active for specific doctor chats
+            return pathname.startsWith('/chat');
         }
         return pathname === itemHref;
     };

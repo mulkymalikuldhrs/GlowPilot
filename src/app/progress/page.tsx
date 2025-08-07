@@ -238,7 +238,7 @@ export default function ProgressPage() {
                                 <h3 className="font-semibold">Belum Ada Tujuan</h3>
                                 <p className="text-sm text-muted-foreground mt-1">Mulai konsultasi dengan dokter AI untuk membuat tujuan perawatan kulit Anda.</p>
                                 <Button asChild variant="secondary" className="mt-4">
-                                    <Link href="/doctors">Mulai Konsultasi</Link>
+                                    <Link href="/chat">Mulai Konsultasi</Link>
                                 </Button>
                             </CardContent>
                         </Card>

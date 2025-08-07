@@ -1,198 +1,74 @@
 
 'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { conductDiagnosis } from "@/ai/flows/conversational-diagnosis-flow";
-import { useToast } from "@/hooks/use-toast";
-import type { Message, DiagnosisMessage } from "@/lib/types";
-import { ChatWindow } from "@/components/chat/ChatWindow";
-import { MessageInput } from "@/components/chat/MessageInput";
-import { useUser } from "@/hooks/use-user";
-import { Loader2 } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowRight } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-const generalDoctor = { 
-    name: 'Andi (Dokter Virtual)', 
-    specialty: 'Dokter Virtual Umum', 
-    avatar: 'https://placehold.co/100x100.png',
-    dataAiHint: 'man smiling',
-    voice: 'echo',
-    systemPrompt: `You are Andi, a friendly and empathetic AI virtual doctor.
-Your primary role is to conduct an initial triage.
-1.  Start by warmly greeting the user in Bahasa Indonesia and asking about their skin concerns.
-2.  After their first response, analyze their problem.
-3.  If they mention a specific, common issue (e.g., "jerawat", "kerutan", "kulit kusam", "flek hitam"), you MUST immediately recommend they consult a specialist. Use this exact phrase: "Terima kasih atas informasinya. Untuk masalah Anda, saya sangat menyarankan untuk berkonsultasi lebih lanjut dengan dokter spesialis kami agar mendapatkan penanganan yang lebih akurat. Saya akan mengarahkan Anda ke halaman pemilihan dokter sekarang."
-4.  If the query is very general or unclear, you can ask one clarifying question before recommending a specialist.
-5.  Keep your responses concise. Your goal is to guide them to the right specialist quickly.`
-};
+const specialists = [
+    { 
+        slug: 'acne',
+        name: 'Dr. Andi', 
+        specialty: 'Spesialis Jerawat', 
+        description: 'Dapatkan solusi dan rekomendasi rutin untuk mengatasi berbagai jenis jerawat.',
+        avatar: 'https://placehold.co/100x100.png',
+        dataAiHint: 'man smiling'
+    },
+    { 
+        slug: 'aging',
+        name: 'Dr. Citra', 
+        specialty: 'Spesialis Anti-Aging', 
+        description: 'Fokus pada pencegahan dan perbaikan tanda-tanda penuaan seperti kerutan dan garis halus.',
+        avatar: 'https://placehold.co/100x100.png',
+        dataAiHint: 'mature woman smiling'
+    },
+    { 
+        slug: 'ingredients',
+        name: 'Dr. Budi', 
+        specialty: 'Spesialis Bahan Skincare', 
+        description: 'Pahami kandungan dalam produk skincare Anda dan temukan bahan yang paling cocok.',
+        avatar: 'https://placehold.co/100x100.png',
+        dataAiHint: 'man in lab coat'
+    },
+];
 
-
-export default function ChatPage() {
+export default function DoctorSelectionPage() {
     const router = useRouter();
-    const { user, isLoading: isUserLoading } = useUser();
-    
-    const [loading, setLoading] = useState(false);
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
-    const [input, setInput] = useState('');
-    const { toast } = useToast();
-    const [attachedImage, setAttachedImage] = useState<string | null>(null);
-
-     useEffect(() => {
-        if (!isUserLoading && !user) {
-            router.replace('/login');
-        }
-    }, [user, isUserLoading, router]);
-
-    useEffect(() => {
-        if(user) { // Only start conversation if user is loaded
-            startConversation();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
-
-    const startConversation = async () => {
-        if (messages.length > 0) return;
-        setLoading(true);
-        try {
-            const res = await conductDiagnosis({ 
-                currentHistory: [], 
-                photoDataUri: null, 
-                systemPrompt: generalDoctor.systemPrompt 
-            });
-            const initialMessage: Message = { id: Date.now().toString(), role: 'model', content: res.response, textForTts: res.response };
-            setMessages([initialMessage]);
-            setDiagnosisMessages([{ role: 'model', content: res.response }]);
-        } catch (error) {
-            console.error(error);
-            toast({ title: 'Error', description: 'Gagal memulai percakapan dengan AI.', variant: 'destructive' });
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setAttachedImage(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        
-        if (!input.trim() && !attachedImage) return;
-
-        const userMessageText = attachedImage ? `${input} (gambar terlampir)` : input;
-
-        const userMessage: Message = {
-            id: Date.now().toString(),
-            role: 'user', 
-            content: (
-                <div>
-                    {input && <p>{input}</p>}
-                    {attachedImage && (
-                        <img src={attachedImage} alt="Lampiran pengguna" width={150} height={150} className="rounded-lg mt-2"/>
-                    )}
-                </div>
-            )
-        };
-        const userDiagnosisMessage: DiagnosisMessage = { role: 'user', content: userMessageText };
-
-        setMessages(prev => [...prev, userMessage]);
-        setDiagnosisMessages(prev => [...prev, userDiagnosisMessage]);
-        setInput('');
-        const imageToSend = attachedImage;
-        setAttachedImage(null);
-        setLoading(true);
-
-        try {
-            const res = await conductDiagnosis({ 
-                currentHistory: [...diagnosisMessages, userDiagnosisMessage],
-                photoDataUri: imageToSend,
-                systemPrompt: generalDoctor.systemPrompt,
-            });
-
-            const assistantMessage: Message = {
-                id: (Date.now() + 1).toString(),
-                role: 'model',
-                content: res.response,
-                textForTts: res.response,
-            };
-            setMessages(prev => [...prev, assistantMessage]);
-            setDiagnosisMessages(prev => [...prev, {role: 'model', content: res.response}])
-
-            // Check for redirection phrase
-            if (res.response.includes("Saya akan mengarahkan Anda")) {
-                toast({
-                    title: 'Mengalihkan...',
-                    description: 'Anda akan diarahkan ke halaman dokter spesialis.'
-                });
-                setTimeout(() => {
-                    router.push('/doctors');
-                }, 2500);
-            }
-
-        } catch (error) {
-            console.error(error);
-            const errorMessage: Message = {
-                id: (Date.now() + 1).toString(),
-                role: 'model',
-                content: 'Maaf, terjadi kesalahan. Silakan coba lagi.'
-            };
-             setMessages(prev => [...prev, errorMessage]);
-            toast({
-                title: 'Error',
-                description: 'Terjadi kesalahan saat memproses permintaan Anda.',
-                variant: 'destructive'
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (isUserLoading) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        );
-    }
-    
-    if (!user) {
-        // This view is technically not shown due to the redirect, but it's good practice for robustness.
-        return null;
-    }
-
 
     return (
-        <div className="flex flex-col h-screen bg-background">
-             <ChatWindow 
-                messages={messages}
-                loading={loading}
-                doctor={generalDoctor}
-                isLanding={true}
-                onGenerateAudio={() => {}}
-                onPlayAudio={() => {}}
-                playingMessageId={null}
-            />
-            
-            <footer className="p-4 bg-background/80 backdrop-blur-md sticky bottom-16 border-t">
-                 <MessageInput 
-                    input={input}
-                    setInput={setInput}
-                    loading={loading}
-                    attachedImage={attachedImage}
-                    setAttachedImage={setAttachedImage}
-                    handleFileChange={handleFileChange}
-                    handleSubmit={handleSubmit}
-                    placeholder="Ceritakan keluhan kulit Anda di sini..."
-                />
-            </footer>
+        <div className="p-4">
+            <header className="w-full text-center py-4 mb-4">
+                <h1 className="text-xl font-bold" style={{fontFamily: 'Sora, sans-serif'}}>Pilih Dokter Spesialis AI</h1>
+                <p className="text-muted-foreground text-sm mt-1">Pilih konsultan yang paling sesuai dengan masalah kulit Anda.</p>
+            </header>
+
+            <div className="space-y-4">
+                {specialists.map((doctor) => (
+                    <Card key={doctor.slug} className="glass-card overflow-hidden hover:border-primary/50 transition-colors">
+                         <Link href={`/chat/${doctor.slug}`} className="block">
+                            <CardContent className="p-4 flex items-center gap-4">
+                                <Image 
+                                    src={doctor.avatar} 
+                                    alt={doctor.name}
+                                    width={80} 
+                                    height={80} 
+                                    className="rounded-full border-2 border-primary/20"
+                                    data-ai-hint={doctor.dataAiHint}
+                                />
+                                <div className="flex-1">
+                                    <h2 className="font-bold text-base">{doctor.name}</h2>
+                                    <p className="text-sm text-primary font-medium">{doctor.specialty}</p>
+                                    <p className="text-xs text-muted-foreground mt-1">{doctor.description}</p>
+                                </div>
+                                <ArrowRight className="w-5 h-5 text-muted-foreground" />
+                            </CardContent>
+                        </Link>
+                    </Card>
+                ))}
+            </div>
         </div>
     );
 }

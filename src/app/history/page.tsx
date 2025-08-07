@@ -116,7 +116,7 @@ export default function HistoryPage() {
                             <h3 className="font-semibold">Belum Ada Riwayat</h3>
                             <p className="text-sm text-muted-foreground mt-1">Mulai konsultasi pertama Anda dengan dokter AI untuk melihat riwayatnya di sini.</p>
                             <Button asChild variant="secondary" className="mt-4">
-                                <Link href="/doctors">Mulai Konsultasi</Link>
+                                <Link href="/chat">Mulai Konsultasi</Link>
                             </Button>
                         </CardContent>
                     </Card>

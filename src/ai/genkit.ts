@@ -1,4 +1,7 @@
 
+import { config } from 'dotenv';
+config();
+
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
 
@@ -23,7 +26,7 @@ export const ai = genkit({
     googleAI({
       // Call the function to get a random key.
       // This will be re-evaluated on server-side requests, effectively rotating keys.
-      apiKey: getApiKey(),
+      apiKey: getApiKey,
     }),
   ],
 });

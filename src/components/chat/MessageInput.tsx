@@ -17,6 +17,7 @@ interface MessageInputProps {
     handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     placeholder?: string;
+    allowImageAttachment?: boolean;
 }
 
 export function MessageInput({
@@ -27,7 +28,8 @@ export function MessageInput({
     setAttachedImage,
     handleFileChange,
     handleSubmit,
-    placeholder = "Ketik pesan atau tahan ikon mik untuk bicara..."
+    placeholder = "Ketik pesan atau tahan ikon mik untuk bicara...",
+    allowImageAttachment = true
 }: MessageInputProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isListening, setIsListening] = useState(false);
@@ -59,10 +61,12 @@ export function MessageInput({
                     className="hidden" 
                     accept="image/*" 
                 />
-                <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => fileInputRef.current?.click()}>
-                    <Paperclip className="w-5 h-5"/>
-                    <span className="sr-only">Attach image</span>
-                </Button>
+                {allowImageAttachment && (
+                    <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => fileInputRef.current?.click()}>
+                        <Paperclip className="w-5 h-5"/>
+                        <span className="sr-only">Attach image</span>
+                    </Button>
+                )}
                 <VoiceInput 
                     onTranscript={handleTranscript}
                     isListening={isListening}

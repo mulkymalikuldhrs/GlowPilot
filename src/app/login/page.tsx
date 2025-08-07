@@ -4,19 +4,45 @@
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { Logo } from "@/components/logo";
 import { useUser } from "@/hooks/use-user";
-import { Sparkles } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Sparkles, Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertTriangle } from 'lucide-react';
+
 
 export default function LoginPage() {
-    const { user } = useUser();
+    const { user, isLoading } = useUser();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const { toast } = useToast();
 
     useEffect(() => {
         if (user) {
             router.replace('/chat');
         }
     }, [user, router]);
+    
+    useEffect(() => {
+        const error = searchParams.get('error');
+        if (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Login Gagal',
+                description: 'Terjadi kesalahan saat mencoba masuk. Silakan coba lagi.'
+            })
+        }
+    }, [searchParams, toast]);
+
+    if (isLoading || user) {
+        return (
+             <div className="flex flex-col h-screen bg-background items-center justify-center p-8 text-center">
+                <Loader2 className="w-12 h-12 animate-spin text-primary"/>
+                <p className="text-muted-foreground mt-4">Mempersiapkan sesi Anda...</p>
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-col h-screen bg-background items-center justify-center p-8 text-center">
@@ -30,10 +56,10 @@ export default function LoginPage() {
             </div>
 
             <h1 className="text-3xl md:text-4xl font-bold tracking-tighter" style={{fontFamily: 'Sora, sans-serif'}}>
-                Selamat Datang Kembali!
+                Selamat Datang!
             </h1>
             <p className="text-lg text-muted-foreground max-w-md mx-auto mt-2 mb-8">
-                Masuk untuk melanjutkan perjalanan perawatan kulit Anda.
+                Masuk atau daftar untuk memulai perjalanan perawatan kulit Anda.
             </p>
 
             <div className="w-full max-w-sm">

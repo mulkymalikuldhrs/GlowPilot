@@ -1,6 +1,7 @@
 
 import { NextResponse } from 'next/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createClient } from '@/lib/supabase/client';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -26,12 +27,23 @@ export async function GET(request: Request) {
         },
       }
     )
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      return NextResponse.redirect(`${origin}`)
+    const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code)
+
+    if (!error && user) {
+       // Check if profile exists. This is a simplified check.
+       // In a real app, you might want to handle this more robustly.
+       const client = createClient();
+       const { data: profile } = await client.from('profiles').select('id').eq('id', user.id).single();
+
+       if(profile) {
+            return NextResponse.redirect(`${origin}/chat`);
+       } else {
+           // New user, redirect to onboarding
+           return NextResponse.redirect(`${origin}/onboarding`);
+       }
     }
   }
 
   // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+  return NextResponse.redirect(`${origin}/login?error=auth-code-error`);
 }

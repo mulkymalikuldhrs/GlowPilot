@@ -118,31 +118,40 @@ export type Database = {
       }
       profiles: {
         Row: {
-          birthday: string | null
-          consent: boolean
-          full_name: string | null
           id: string
-          lang: string
+          updated_at: string | null
+          full_name: string | null
+          avatar_url: string | null
           skin_type: string | null
-          theme: string
+          skin_concerns: string | null
+          current_routine: string | null
+          lifestyle_factors: string | null
+          consent: boolean
+          email: string | null
         }
         Insert: {
-          birthday?: string | null
-          consent?: boolean
-          full_name?: string | null
           id: string
-          lang?: string
+          updated_at?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
           skin_type?: string | null
-          theme?: string
+          skin_concerns?: string | null
+          current_routine?: string | null
+          lifestyle_factors?: string | null
+          consent?: boolean
+          email?: string | null
         }
         Update: {
-          birthday?: string | null
-          consent?: boolean
-          full_name?: string | null
           id?: string
-          lang?: string
+          updated_at?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
           skin_type?: string | null
-          theme?: string
+          skin_concerns?: string | null
+          current_routine?: string | null
+          lifestyle_factors?: string | null
+          consent?: boolean
+          email?: string | null
         }
         Relationships: [
           {

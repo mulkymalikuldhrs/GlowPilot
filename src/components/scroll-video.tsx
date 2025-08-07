@@ -29,7 +29,15 @@ export function ScrollVideo({ videoSrc, className }: ScrollVideoProps) {
         const scrollableHeight = height - window.innerHeight;
         
         // This prevents calculation errors when the section is not scrollable
-        if (scrollableHeight <= 0) return;
+        if (scrollableHeight <= 0) {
+            // If not scrollable, ensure video is at the start or end depending on position
+            if (top > 0) {
+                video.currentTime = 0;
+            } else {
+                if(video.duration) video.currentTime = video.duration;
+            }
+            return;
+        };
 
         // Calculate the scroll percentage within the container
         let scrollPercent = -top / scrollableHeight;
@@ -40,7 +48,7 @@ export function ScrollVideo({ videoSrc, className }: ScrollVideoProps) {
         }
       };
 
-      window.addEventListener('scroll', handleScroll);
+      window.addEventListener('scroll', handleScroll, { passive: true });
       // Set initial frame
       handleScroll(); 
 
@@ -62,7 +70,7 @@ export function ScrollVideo({ videoSrc, className }: ScrollVideoProps) {
 
   return (
     <div ref={containerRef} className={cn('relative h-[300vh] w-full', className)}>
-      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden rounded-xl border shadow-xl">
         <video
           ref={videoRef}
           src={videoSrc}

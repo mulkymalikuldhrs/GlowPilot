@@ -24,12 +24,14 @@ export function ConsentModal({ isOpen, onAccept }: ConsentModalProps) {
       <AlertDialogContent className="glass-card">
         <AlertDialogHeader>
           <div className="flex justify-center mb-4">
-            <ShieldCheck className="w-12 h-12 text-primary" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                <ShieldCheck className="w-8 h-8 text-primary" />
+            </div>
           </div>
-          <AlertDialogTitle className="text-center">Selamat Datang di GlowPilot!</AlertDialogTitle>
+          <AlertDialogTitle className="text-center" style={{fontFamily: 'Sora, sans-serif'}}>Selamat Datang di GlowPilot!</AlertDialogTitle>
           <AlertDialogDescription className="text-center text-muted-foreground pt-2">
             Sebelum kita mulai, kami ingin memastikan Anda memahami beberapa hal penting.
-            <ul className="list-disc list-inside text-left mt-4 space-y-2 text-xs text-muted-foreground px-6">
+            <ul className="list-disc list-inside text-left mt-4 space-y-2 text-xs text-muted-foreground px-2 sm:px-6">
                 <li>
                     <strong>Ini Bukan Nasihat Medis:</strong> GlowPilot adalah asisten AI, bukan dokter sungguhan. Konsultasi di sini bersifat informasional dan tidak menggantikan nasihat dari dokter profesional.
                 </li>

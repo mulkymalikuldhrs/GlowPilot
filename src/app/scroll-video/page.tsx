@@ -18,7 +18,10 @@ export default function ScrollVideoPage() {
         </p>
       </div>
 
-      <ScrollVideo videoSrc="/scroll-video.mp4" />
+      <div className="w-full max-w-5xl mx-auto px-4">
+        {/* The video source needs to be in the /public folder */}
+        <ScrollVideo videoSrc="/scroll-video-placeholder.mp4" />
+      </div>
       
       <div className="container mx-auto max-w-4xl py-16 md:py-24 text-center">
         <h2 className="text-3xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>Bagian Setelah Video</h2>

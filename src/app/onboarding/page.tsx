@@ -11,12 +11,14 @@ import { ChatWindow } from "@/components/chat/ChatWindow";
 import { MessageInput } from "@/components/chat/MessageInput";
 import { useUser } from "@/hooks/use-user";
 import { createClient } from "@/lib/supabase/client";
+import { ConsentModal } from "@/components/common/ConsentModal";
 
 const onboardingAI = { 
     name: 'GlowPilot Assistant', 
     specialty: 'Onboarding Specialist', 
     avatar: 'https://placehold.co/100x100.png',
     dataAiHint: 'friendly robot',
+    voice: 'nova'
 };
 
 
@@ -29,7 +31,10 @@ export default function OnboardingPage() {
     const [onboardingMessages, setOnboardingMessages] = useState<OnboardingMessage[]>([]);
     const [input, setInput] = useState('');
     const { toast } = useToast();
-    
+
+    const [showConsent, setShowConsent] = useState(false);
+    const [hasConsented, setHasConsented] = useState(false);
+
     // Redirect if user is not logged in or loading
     useEffect(() => {
         if (!isUserLoading && !user) {
@@ -37,22 +42,62 @@ export default function OnboardingPage() {
         }
     }, [user, isUserLoading, router]);
 
-    // Start conversation once user is loaded
+    // Check consent status once user is loaded
     useEffect(() => {
-        if(user) {
-            startConversation();
+        if (user) {
+            const checkConsent = async () => {
+                const supabase = createClient();
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('consent')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (profile && profile.consent) {
+                    setHasConsented(true);
+                    startConversation(); // Already consented, start chat
+                } else if (profile) {
+                    setShowConsent(true); // Needs consent
+                } else {
+                    // Profile might not exist yet, show consent
+                    setShowConsent(true);
+                }
+            };
+            checkConsent();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
+    
+    const handleAcceptConsent = async () => {
+        if (!user) return;
+        
+        const supabase = createClient();
+        const { error } = await supabase
+            .from('profiles')
+            .upsert({ id: user.id, consent: true, full_name: user.user_metadata.full_name, email: user.email }, { onConflict: 'id' });
+
+        if (error) {
+            toast({ title: "Gagal menyimpan persetujuan", variant: "destructive" });
+            console.error(error);
+        } else {
+            setHasConsented(true);
+            setShowConsent(false);
+            startConversation();
+        }
+    };
+
 
      const startConversation = async () => {
-        if (messages.length > 0) return;
+        if (messages.length > 0 || !user) return;
         setLoading(true);
         try {
-            const res = await conductOnboarding({ currentHistory: [] });
+            // Pass user's name to the first prompt
+            const initialHistory: OnboardingMessage[] = [{ role: 'user', content: `Nama saya ${user.user_metadata.full_name || 'pengguna baru'}.` }];
+            const res = await conductOnboarding({ currentHistory: initialHistory });
+            
             const initialMessage: Message = { id: Date.now().toString(), role: 'model', content: res.response };
             setMessages([initialMessage]);
-            setOnboardingMessages([{ role: 'model', content: res.response }]);
+            setOnboardingMessages([...initialHistory, { role: 'model', content: res.response }]);
         } catch (error) {
             console.error(error);
             toast({ title: 'Error', description: 'Gagal memulai onboarding.', variant: 'destructive' });
@@ -71,7 +116,6 @@ export default function OnboardingPage() {
 
         setMessages(prev => [...prev, userMessage]);
         setOnboardingMessages(prev => [...prev, userOnboardingMessage]);
-        const currentInput = input;
         setInput('');
         setLoading(true);
 
@@ -91,16 +135,14 @@ export default function OnboardingPage() {
                     description: 'Mengalihkan Anda ke dashboard...',
                 });
 
-                // Here you would typically save res.userData to your database
-                console.log("Onboarding complete, user data:", res.userData);
-
-                // For example, updating the user's profile in Supabase
                 const supabase = createClient();
                 if(user && res.userData) {
                     await supabase.from('profiles').update({ 
                         full_name: res.userData.name,
                         skin_type: res.userData.skinType,
-                        // You can add more fields here based on your schema
+                        skin_concerns: res.userData.skinConcerns,
+                        current_routine: res.userData.currentRoutine,
+                        lifestyle_factors: res.userData.lifestyleFactors,
                      }).eq('id', user.id);
                 }
 
@@ -130,6 +172,18 @@ export default function OnboardingPage() {
             </div>
         );
     }
+
+    if (showConsent) {
+        return <ConsentModal isOpen={showConsent} onAccept={handleAcceptConsent} />
+    }
+    
+    if (!hasConsented) {
+         return (
+            <div className="flex items-center justify-center h-screen">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
     
     return (
         <div className="flex flex-col h-screen bg-background">
@@ -153,9 +207,9 @@ export default function OnboardingPage() {
                     handleFileChange={() => {}}
                     handleSubmit={handleSubmit}
                     placeholder="Jawab di sini..."
+                    allowImageAttachment={false}
                 />
             </footer>
         </div>
     );
 }
-

@@ -8,9 +8,9 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 // Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyD0zaikxZy7gMyA0cX-0RcAZGvtnR8eIXo",
-    authDomain: "mulkymalikuldhr-s-projects.firebaseapp.com",
-    projectId: "mulkymalikuldhr-s-projects",
-    storageBucket: "mulkymalikuldhr-s-projects.firebasestorage.app",
+    authDomain: "glowpilot.firebaseapp.com",
+    projectId: "glowpilot",
+    storageBucket: "glowpilot.appspot.com",
     messagingSenderId: "705987898649",
     appId: "1:705987898649:web:489f82e797a60ba10e2988"
 };

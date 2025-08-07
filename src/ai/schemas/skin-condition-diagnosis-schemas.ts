@@ -49,7 +49,7 @@ export const SkinConditionDiagnosisOutputSchema = z.object({
   progressGoal: z.object({
     title: z.string().describe("A concise, actionable title for the user's progress goal (e.g., 'Mengurangi Jerawat Hormonal')."),
     targetDate: z.string().describe("A realistic target date for the goal, formatted as 'DD MMM YYYY' (e.g., '30 Sep 2024').")
-  }).optional().describe("A new progress goal to be added to the user's tracking page.")
+  }).describe("A new progress goal to be added to the user's tracking page. This is a mandatory field.")
 });
 export type SkinConditionDiagnosisOutput = z.infer<
   typeof SkinConditionDiagnosisOutputSchema

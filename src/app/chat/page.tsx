@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import type { Message, DiagnosisMessage } from "@/lib/types";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { MessageInput } from "@/components/chat/MessageInput";
+import { useUser } from "@/hooks/use-user";
+import { Loader2 } from "lucide-react";
 
 const generalDoctor = { 
     name: 'Andi (Dokter Virtual)', 
@@ -27,6 +29,7 @@ Your primary role is to conduct an initial triage.
 
 export default function ChatPage() {
     const router = useRouter();
+    const { user, isLoading: isUserLoading } = useUser();
     
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
@@ -35,10 +38,18 @@ export default function ChatPage() {
     const { toast } = useToast();
     const [attachedImage, setAttachedImage] = useState<string | null>(null);
 
+     useEffect(() => {
+        if (!isUserLoading && !user) {
+            router.replace('/login');
+        }
+    }, [user, isUserLoading, router]);
+
     useEffect(() => {
-        startConversation();
+        if(user) { // Only start conversation if user is loaded
+            startConversation();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [user]);
 
     const startConversation = async () => {
         if (messages.length > 0) return;
@@ -49,7 +60,7 @@ export default function ChatPage() {
                 photoDataUri: null, 
                 systemPrompt: generalDoctor.systemPrompt 
             });
-            const initialMessage: Message = { role: 'model', content: res.response, textForTts: res.response };
+            const initialMessage: Message = { id: Date.now().toString(), role: 'model', content: res.response, textForTts: res.response };
             setMessages([initialMessage]);
             setDiagnosisMessages([{ role: 'model', content: res.response }]);
         } catch (error) {
@@ -78,7 +89,8 @@ export default function ChatPage() {
 
         const userMessageText = attachedImage ? `${input} (gambar terlampir)` : input;
 
-        const userMessage: Message = { 
+        const userMessage: Message = {
+            id: Date.now().toString(),
             role: 'user', 
             content: (
                 <div>
@@ -106,6 +118,7 @@ export default function ChatPage() {
             });
 
             const assistantMessage: Message = {
+                id: (Date.now() + 1).toString(),
                 role: 'model',
                 content: res.response,
                 textForTts: res.response,
@@ -127,6 +140,7 @@ export default function ChatPage() {
         } catch (error) {
             console.error(error);
             const errorMessage: Message = {
+                id: (Date.now() + 1).toString(),
                 role: 'model',
                 content: 'Maaf, terjadi kesalahan. Silakan coba lagi.'
             };
@@ -141,6 +155,20 @@ export default function ChatPage() {
         }
     };
 
+    if (isUserLoading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+    
+    if (!user) {
+        // This view is technically not shown due to the redirect, but it's good practice for robustness.
+        return null;
+    }
+
+
     return (
         <div className="flex flex-col h-screen bg-background">
              <ChatWindow 
@@ -148,6 +176,9 @@ export default function ChatPage() {
                 loading={loading}
                 doctor={generalDoctor}
                 isLanding={true}
+                onGenerateAudio={() => {}}
+                onPlayAudio={() => {}}
+                playingMessageId={null}
             />
             
             <footer className="p-4 bg-background/80 backdrop-blur-md sticky bottom-16 border-t">

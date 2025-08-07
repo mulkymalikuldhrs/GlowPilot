@@ -11,8 +11,9 @@ import { UserProvider } from '@/hooks/use-user';
 
 function AppContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // Define routes that should not have the bottom nav or are standalone pages
-  const noNavRoutes = ['/login', '/onboarding'];
+  // Define routes that are standalone or should not have the bottom nav.
+  // The root landing page and login page should be clean.
+  const noNavRoutes = ['/', '/login', '/onboarding'];
   const showNav = !noNavRoutes.includes(pathname);
 
   return (

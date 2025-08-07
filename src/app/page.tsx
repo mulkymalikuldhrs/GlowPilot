@@ -38,7 +38,7 @@ const testimonials = [
 const features = [
     {
         icon: Bot,
-        title: "Diagnosis Ahli AI",
+        title: "Diagnosis oleh Dokter Spesialis AI",
         description: "Dapatkan analisis mendalam tentang masalah kulit Anda dari AI canggih kami, kapan saja, di mana saja."
     },
     {

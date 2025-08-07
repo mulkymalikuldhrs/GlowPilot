@@ -45,4 +45,26 @@ export async function updateSession(request: NextRequest) {
               headers: request.headers,
             },
           })
-          response.cookies.
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+        },
+      },
+    }
+  )
+
+  // IMPORTANT: Avoid running middleware on static files.
+  // This is a common cause of unexpected behavior.
+  if (
+    request.nextUrl.pathname.startsWith('/_next') ||
+    request.nextUrl.pathname.includes('/api/')
+  ) {
+    return response
+  }
+
+  await supabase.auth.getUser()
+
+  return response
+}

@@ -13,16 +13,18 @@ import { AlertTriangle } from 'lucide-react';
 
 
 export default function LoginPage() {
-    const { user, isLoading } = useUser();
+    const { user, isNewUser, isLoading } = useUser();
     const router = useRouter();
     const searchParams = useSearchParams();
     const { toast } = useToast();
 
     useEffect(() => {
         if (user) {
-            router.replace('/chat');
+            // Redirect based on whether the user is new or existing.
+            const redirectPath = isNewUser ? '/onboarding' : '/chat';
+            router.replace(redirectPath);
         }
-    }, [user, router]);
+    }, [user, isNewUser, router]);
     
     useEffect(() => {
         const error = searchParams.get('error');

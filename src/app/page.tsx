@@ -47,14 +47,16 @@ const testimonials = [
 ]
 
 export default function LandingPage() {
-    const { user, isLoading } = useUser();
+    const { user, isNewUser, isLoading } = useUser();
     const router = useRouter();
 
     useEffect(() => {
         if (!isLoading && user) {
-            router.replace('/chat');
+            const redirectPath = isNewUser ? '/onboarding' : '/chat';
+            router.replace(redirectPath);
         }
-    }, [user, isLoading, router]);
+    }, [user, isNewUser, isLoading, router]);
+
 
     if (isLoading || user) {
         return (

@@ -16,6 +16,7 @@ interface MessageInputProps {
     setAttachedImage: (value: string | null) => void;
     handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    placeholder?: string;
 }
 
 export function MessageInput({
@@ -26,13 +27,14 @@ export function MessageInput({
     setAttachedImage,
     handleFileChange,
     handleSubmit,
+    placeholder = "Ketik pesan Anda..."
 }: MessageInputProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     
     return (
-        <footer className="p-4 bg-background/80 backdrop-blur-md sticky bottom-16 border-t">
+        <div className="space-y-2">
              {attachedImage && (
-                <div className="relative w-20 h-20 mb-2">
+                <div className="relative w-20 h-20 ml-4">
                     <Image src={attachedImage} alt="Lampiran" layout="fill" objectFit="cover" className="rounded-md" />
                     <Button
                         variant="destructive"
@@ -59,7 +61,7 @@ export function MessageInput({
                 <VoiceInput />
                  <Input
                      id="message"
-                     placeholder="Ketik pesan Anda..."
+                     placeholder={placeholder}
                      value={input}
                      onChange={(e) => setInput(e.target.value)}
                      disabled={loading}
@@ -70,6 +72,6 @@ export function MessageInput({
                     <SendHorizonal className="h-4 w-4" />
                  </Button>
             </form>
-        </footer>
+        </div>
     )
 }

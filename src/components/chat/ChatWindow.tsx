@@ -1,9 +1,9 @@
 
 'use client';
 
-import type { Message } from '@/app/chat/[doctor]/page';
+import type { Message } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Loader2, User } from 'lucide-react';
+import { Loader2, Sparkles, User } from 'lucide-react';
 import Image from 'next/image';
 import { useRef, useEffect } from 'react';
 import { ChatBubble } from './ChatBubble';
@@ -15,10 +15,11 @@ interface ChatWindowProps {
         name: string;
         avatar: string;
         dataAiHint: string;
-    }
+    },
+    isLanding?: boolean;
 }
 
-export function ChatWindow({ messages, loading, doctor }: ChatWindowProps) {
+export function ChatWindow({ messages, loading, doctor, isLanding = false }: ChatWindowProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -31,6 +32,19 @@ export function ChatWindow({ messages, loading, doctor }: ChatWindowProps) {
 
     return (
         <main className="flex-1 overflow-y-auto p-4 space-y-6">
+            {isLanding && (
+                <div className="text-center my-6">
+                    <div className="inline-flex items-center justify-center bg-primary/10 text-primary rounded-full w-20 h-20 mb-4">
+                        <Sparkles className="w-10 h-10" />
+                    </div>
+                    <h1 className="text-3xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>
+                        GlowPilot
+                    </h1>
+                    <p className="text-muted-foreground max-w-md mx-auto mt-2">
+                        Asisten AI pribadi Anda untuk mendapatkan kulit impian.
+                    </p>
+                </div>
+            )}
             {messages.map((message, index) => (
                 <ChatBubble 
                     key={index} 

@@ -2,7 +2,7 @@
 'use client'
 
 import { cn } from "@/lib/utils";
-import { MessageSquare, ShoppingBag, AreaChart, User, Bot } from "lucide-react";
+import { MessageSquare, ShoppingBag, AreaChart, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -21,7 +21,7 @@ export function BottomNav() {
             // Also active for specific doctor chats
             return pathname.startsWith('/chat/') || pathname === '/doctors';
         }
-        return pathname.startsWith(itemHref);
+        return pathname === itemHref;
     };
 
     return (

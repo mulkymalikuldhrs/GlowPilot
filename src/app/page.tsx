@@ -3,178 +3,126 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { conductDiagnosis } from "@/ai/flows/conversational-diagnosis-flow";
-import { useToast } from "@/hooks/use-toast";
-import type { Message, DiagnosisMessage } from "@/lib/types";
-import { ChatWindow } from "@/components/chat/ChatWindow";
-import { MessageInput } from "@/components/chat/MessageInput";
 import { ConsentModal } from "@/components/common/ConsentModal";
+import { Button } from "@/components/ui/button";
+import { Sparkles, Star } from "lucide-react";
+import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
+import { ThemeSwitcher } from "@/components/common/ThemeSwitcher";
 
-const generalDoctor = { 
-    name: 'Andi (Dokter Virtual)', 
-    specialty: 'Dokter Virtual Umum', 
-    avatar: 'https://placehold.co/100x100.png',
-    dataAiHint: 'man smiling',
-    voice: 'echo',
-    systemPrompt: `You are Andi, a friendly and empathetic AI virtual doctor.
-Your primary role is to conduct an initial triage.
-1.  Start by warmly greeting the user in Bahasa Indonesia and asking about their skin concerns.
-2.  After their first response, analyze their problem.
-3.  If they mention a specific, common issue (e.g., "jerawat", "kerutan", "kulit kusam", "flek hitam"), you MUST immediately recommend they consult a specialist. Use this exact phrase: "Terima kasih atas informasinya. Untuk masalah Anda, saya sangat menyarankan untuk berkonsultasi lebih lanjut dengan dokter spesialis kami agar mendapatkan penanganan yang lebih akurat. Saya akan mengarahkan Anda ke halaman pemilihan dokter sekarang."
-4.  If the query is very general or unclear, you can ask one clarifying question before recommending a specialist.
-5.  Keep your responses concise. Your goal is to guide them to the right specialist quickly.`
-};
-
+const testimonials = [
+    {
+        name: "Anya",
+        city: "Jakarta",
+        avatar: "https://placehold.co/100x100.png",
+        dataAiHint: "woman smiling",
+        text: "GlowPilot benar-benar mengubah cara saya merawat kulit. Diagnosis AI-nya sangat akurat dan rekomendasi produknya luar biasa!"
+    },
+    {
+        name: "Budi",
+        city: "Surabaya",
+        avatar: "https://placehold.co/100x100.png",
+        dataAiHint: "man with glasses",
+        text: "Sebagai pria, saya sering bingung soal skincare. Aplikasi ini membuatnya jadi sangat mudah dan praktis. Kulit saya jauh lebih baik."
+    },
+     {
+        name: "Citra",
+        city: "Bandung",
+        avatar: "https://placehold.co/100x100.png",
+        dataAiHint: "woman with hijab",
+        text: "Fitur progress tracker-nya sangat memotivasi. Saya bisa lihat perkembangan kulit saya setiap minggu. Sangat merekomendasikan!"
+    }
+]
 
 export default function LandingPage() {
     const router = useRouter();
     const [showConsent, setShowConsent] = useState(false);
     
-    const [loading, setLoading] = useState(false);
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
-    const [input, setInput] = useState('');
-    const { toast } = useToast();
-    const [attachedImage, setAttachedImage] = useState<string | null>(null);
-
     useEffect(() => {
         const consent = localStorage.getItem('consentAccepted');
         if (consent !== 'true') {
             setShowConsent(true);
-        } else {
-            startConversation();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleConsent = () => {
         localStorage.setItem('consentAccepted', 'true');
         setShowConsent(false);
-        startConversation();
-    };
-
-    const startConversation = async () => {
-        if (messages.length > 0) return;
-        setLoading(true);
-        try {
-            const res = await conductDiagnosis({ 
-                currentHistory: [], 
-                photoDataUri: null, 
-                systemPrompt: generalDoctor.systemPrompt 
-            });
-            const initialMessage: Message = { role: 'model', content: res.response, textForTts: res.response };
-            setMessages([initialMessage]);
-            setDiagnosisMessages([{ role: 'model', content: res.response }]);
-        } catch (error) {
-            console.error(error);
-            toast({ title: 'Error', description: 'Gagal memulai percakapan dengan AI.', variant: 'destructive' });
-        } finally {
-            setLoading(false);
-        }
+        router.push('/chat');
     };
     
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setAttachedImage(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        
-        if (!input.trim() && !attachedImage) return;
-
-        const userMessageText = attachedImage ? `${input} (gambar terlampir)` : input;
-
-        const userMessage: Message = { 
-            role: 'user', 
-            content: (
-                <div>
-                    {input && <p>{input}</p>}
-                    {attachedImage && (
-                        <img src={attachedImage} alt="Lampiran pengguna" width={150} height={150} className="rounded-lg mt-2"/>
-                    )}
-                </div>
-            )
-        };
-        const userDiagnosisMessage: DiagnosisMessage = { role: 'user', content: userMessageText };
-
-        setMessages(prev => [...prev, userMessage]);
-        setDiagnosisMessages(prev => [...prev, userDiagnosisMessage]);
-        setInput('');
-        const imageToSend = attachedImage;
-        setAttachedImage(null);
-        setLoading(true);
-
-        try {
-            const res = await conductDiagnosis({ 
-                currentHistory: [...diagnosisMessages, userDiagnosisMessage],
-                photoDataUri: imageToSend,
-                systemPrompt: generalDoctor.systemPrompt,
-            });
-
-            const assistantMessage: Message = {
-                role: 'model',
-                content: res.response,
-                textForTts: res.response,
-            };
-            setMessages(prev => [...prev, assistantMessage]);
-            setDiagnosisMessages(prev => [...prev, {role: 'model', content: res.response}])
-
-            // Check for redirection phrase
-            if (res.response.includes("Saya akan mengarahkan Anda")) {
-                toast({
-                    title: 'Mengalihkan...',
-                    description: 'Anda akan diarahkan ke halaman dokter spesialis.'
-                });
-                setTimeout(() => {
-                    router.push('/doctors');
-                }, 2500);
-            }
-
-        } catch (error) {
-            console.error(error);
-            const errorMessage: Message = {
-                role: 'model',
-                content: 'Maaf, terjadi kesalahan. Silakan coba lagi.'
-            };
-             setMessages(prev => [...prev, errorMessage]);
-            toast({
-                title: 'Error',
-                description: 'Terjadi kesalahan saat memproses permintaan Anda.',
-                variant: 'destructive'
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
     return (
-        <div className="flex flex-col h-screen bg-background">
-             <ConsentModal isOpen={showConsent} onAccept={handleConsent} />
-             <ChatWindow 
-                messages={messages}
-                loading={loading}
-                doctor={generalDoctor}
-                isLanding={true}
-            />
+        <div className="flex flex-col min-h-screen bg-background text-foreground">
+            <ConsentModal isOpen={showConsent} onAccept={handleConsent} />
             
-            <footer className="p-4 bg-background/80 backdrop-blur-md sticky bottom-16 border-t">
-                 <MessageInput 
-                    input={input}
-                    setInput={setInput}
-                    loading={loading}
-                    attachedImage={attachedImage}
-                    setAttachedImage={setAttachedImage}
-                    handleFileChange={handleFileChange}
-                    handleSubmit={handleSubmit}
-                    placeholder="Ceritakan keluhan kulit Anda di sini..."
-                />
+            <header className="absolute top-0 left-0 right-0 p-4 flex justify-end z-10">
+                <ThemeSwitcher />
+            </header>
+
+            <main className="flex-1 flex flex-col items-center justify-center text-center p-4 -mt-16">
+                 <div className="inline-flex items-center justify-center bg-primary/10 text-primary rounded-full w-24 h-24 mb-6">
+                    <Sparkles className="w-12 h-12" />
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight" style={{fontFamily: 'Sora, sans-serif'}}>
+                    Wujudkan Kulit Impian Anda
+                </h1>
+                <p className="text-muted-foreground max-w-md mx-auto mt-4 text-base md:text-lg">
+                    Dapatkan analisis kulit, rekomendasi produk, dan rencana perawatan yang dipersonalisasi dari dokter AI kami.
+                </p>
+                <div className="mt-8">
+                     <Button 
+                        size="lg" 
+                        className="h-12 text-base" 
+                        onClick={() => {
+                            const consent = localStorage.getItem('consentAccepted');
+                            if (consent === 'true') {
+                                router.push('/chat');
+                            } else {
+                                setShowConsent(true);
+                            }
+                        }}
+                    >
+                        Mulai Konsultasi Gratis
+                    </Button>
+                </div>
+            </main>
+
+            <section className="w-full py-12 md:py-20 bg-background/50">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-3xl font-bold text-center mb-2" style={{fontFamily: 'Sora, sans-serif'}}>Dipercaya oleh Ribuan Orang</h2>
+                     <div className="flex items-center justify-center gap-2 mb-8">
+                        <div className="flex text-yellow-400">
+                           <Star className="w-5 h-5 fill-current"/>
+                           <Star className="w-5 h-5 fill-current"/>
+                           <Star className="w-5 h-5 fill-current"/>
+                           <Star className="w-5 h-5 fill-current"/>
+                           <Star className="w-5 h-5 fill-current"/>
+                        </div>
+                        <p className="text-muted-foreground"><span className="font-bold text-foreground">4.9</span> dari 5.0 (2,492 reviews)</p>
+                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {testimonials.map((t, i) => (
+                             <Card key={i} className="glass-card">
+                                <CardContent className="p-6">
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <Image src={t.avatar} alt={t.name} width={48} height={48} className="rounded-full" data-ai-hint={t.dataAiHint}/>
+                                        <div>
+                                            <p className="font-bold">{t.name}</p>
+                                            <p className="text-sm text-muted-foreground">{t.city}</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-sm text-foreground/80">"{t.text}"</p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </section>
+            
+            <footer className="w-full py-6 text-center">
+                 <p className="text-xs text-muted-foreground">&copy; 2024 GlowPilot. Hak Cipta Dilindungi.</p>
             </footer>
         </div>
     );

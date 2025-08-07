@@ -17,6 +17,7 @@ interface Consultation {
     doctor: {
         name: string;
         specialty: string;
+        slug: string;
     };
     createdAt: Timestamp;
     history: {
@@ -63,11 +64,9 @@ export default function HistoryPage() {
     }
 
     const getSummary = (consultation: Consultation) => {
-        // Try to find the diagnosis summary, otherwise use the first user message.
-        const diagnosis = consultation.history.find(m => m.content.includes('Diagnosis'));
-        if(diagnosis) return diagnosis.content.substring(0, 100) + '...';
-        const firstUserMessage = consultation.history.find(m => m.role === 'user');
-        return firstUserMessage ? firstUserMessage.content.substring(0, 100) + '...' : 'Ringkasan tidak tersedia.';
+        // Find the last model message as a summary
+        const lastModelMessage = [...consultation.history].reverse().find(m => m.role === 'model');
+        return lastModelMessage ? lastModelMessage.content.substring(0, 100) + '...' : 'Tidak ada ringkasan.';
     }
 
     if (loading || isUserLoading) {

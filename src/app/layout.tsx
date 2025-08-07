@@ -10,8 +10,9 @@ import { BottomNav } from '@/components/bottom-nav';
 
 function AppContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // The landing page (`/`) should not have the bottom nav.
-  const showNav = pathname !== '/';
+  // Define routes that should not have the bottom nav
+  const noNavRoutes = ['/', '/onboarding'];
+  const showNav = !noNavRoutes.includes(pathname);
 
   return (
     <div className="relative flex flex-col min-h-screen">

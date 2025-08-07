@@ -58,16 +58,22 @@ export default function LandingPage() {
     const [showConsent, setShowConsent] = useState(false);
     
     useEffect(() => {
+        // This logic will be replaced by checking auth state
         const consent = localStorage.getItem('consentAccepted');
-        if (consent !== 'true') {
+        const userData = localStorage.getItem('userData');
+        
+        if (consent === 'true' && userData) {
+            router.push('/chat'); // User is onboarded, go to chat
+        } else if (consent !== 'true') {
             setShowConsent(true);
         }
-    }, []);
+        // If consent is true but no user data, they should proceed to onboarding.
+    }, [router]);
 
     const handleStart = () => {
         const consent = localStorage.getItem('consentAccepted');
         if (consent === 'true') {
-            router.push('/chat');
+            router.push('/onboarding');
         } else {
             setShowConsent(true);
         }
@@ -76,7 +82,7 @@ export default function LandingPage() {
     const handleConsent = () => {
         localStorage.setItem('consentAccepted', 'true');
         setShowConsent(false);
-        router.push('/chat');
+        router.push('/onboarding');
     };
     
     return (

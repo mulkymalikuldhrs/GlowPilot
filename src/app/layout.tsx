@@ -10,12 +10,12 @@ import { BottomNav } from '@/components/bottom-nav';
 
 function AppContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const noNavRoutes = ['/'];
-  const showNav = !noNavRoutes.includes(pathname);
+  // The landing page (`/`) should not have the bottom nav.
+  const showNav = pathname !== '/';
 
   return (
     <div className="relative flex flex-col min-h-screen">
-      <main className="flex-1 pb-20">{children}</main>
+      <main className={`flex-1 ${showNav ? 'pb-20' : ''}`}>{children}</main>
       {showNav && <BottomNav />}
     </div>
   );

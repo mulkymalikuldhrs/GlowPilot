@@ -5,9 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { ConsentModal } from "@/components/common/ConsentModal";
+import { useEffect, useState } from "react";
 
 export default function LandingPage() {
     const router = useRouter();
+    const [showConsent, setShowConsent] = useState(false);
+
+    useEffect(() => {
+        const consent = localStorage.getItem('consentAccepted');
+        if (consent !== 'true') {
+            setShowConsent(true);
+        }
+    }, []);
+
+    const handleConsent = () => {
+        localStorage.setItem('consentAccepted', 'true');
+        setShowConsent(false);
+    };
+
 
     return (
         <div className="flex flex-col items-center justify-center h-screen text-center p-4">
@@ -47,6 +63,7 @@ export default function LandingPage() {
                     Sudah punya akun? <a href="#" className="underline">Masuk</a>
                 </p>
             </div>
+             <ConsentModal isOpen={showConsent} onAccept={handleConsent} />
         </div>
     );
 }

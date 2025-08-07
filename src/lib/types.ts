@@ -1,5 +1,6 @@
 
 import type React from 'react';
+export type { Database } from './types/supabase';
 
 export type Message = {
     id: string;

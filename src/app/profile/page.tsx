@@ -4,17 +4,24 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { History, Shield, LogOut, User, Mail, Sparkles, ChevronRight } from 'lucide-react';
+import { History, Shield, LogOut, User, Sparkles, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useUser } from '@/hooks/use-user';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
-    
-    // Placeholder data since login is disabled
-    const user = {
-        displayName: 'Mulky Malikul Dhaher',
-        email: 'mulkymalikuldhr@mail.com',
-        photoURL: 'https://placehold.co/100x100.png',
-        dataAiHint: 'man smiling'
+    const { user, isLoading } = useUser();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        const supabase = createClient();
+        const { error } = await supabase.auth.signOut();
+        if (!error) {
+            router.push('/login');
+        } else {
+            console.error('Logout failed:', error.message);
+        }
     }
 
     const menuItems = [
@@ -29,17 +36,36 @@ export default function ProfilePage() {
             label: "Kebijakan Privasi"
         }
     ];
+    
+    if (isLoading) {
+        return (
+            <div className="p-4 flex items-center justify-center h-full">
+                <Loader2 className="w-8 h-8 animate-spin text-primary"/>
+            </div>
+        )
+    }
+    
+    if (!user) {
+        // This should ideally not happen if page is protected, but as a fallback
+        return (
+            <div className="p-4 text-center">
+                <p>Anda harus masuk untuk melihat profil.</p>
+                <Button asChild className="mt-4"><Link href="/login">Masuk</Link></Button>
+            </div>
+        )
+    }
+
 
     return (
         <div className="p-4">
             <header className="w-full py-4 mb-6 text-center">
                 <Avatar className="w-24 h-24 border-4 border-primary/50 mx-auto">
-                    <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} data-ai-hint={user.dataAiHint}/>
+                    <AvatarImage src={user.user_metadata.avatar_url || ''} alt={user.user_metadata.full_name || 'User'}/>
                     <AvatarFallback>
                         <User className="w-12 h-12"/>
                     </AvatarFallback>
                 </Avatar>
-                <h1 className="text-2xl font-bold mt-4" style={{fontFamily: 'Sora, sans-serif'}}>{user.displayName}</h1>
+                <h1 className="text-2xl font-bold mt-4" style={{fontFamily: 'Sora, sans-serif'}}>{user.user_metadata.full_name || 'Pengguna Baru'}</h1>
                 <p className="text-muted-foreground">{user.email}</p>
             </header>
 
@@ -70,10 +96,7 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                <Button onClick={() => {
-                    // Placeholder for logout functionality
-                    alert("Logout functionality is currently disabled.");
-                }} variant="destructive" className="w-full">
+                <Button onClick={handleLogout} variant="destructive" className="w-full">
                     <LogOut className="mr-2 h-4 w-4"/>
                     Keluar
                 </Button>

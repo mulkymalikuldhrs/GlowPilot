@@ -3,9 +3,20 @@
 
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { Logo } from "@/components/logo";
+import { useUser } from "@/hooks/use-user";
 import { Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default function OnboardingPage() {
+export default function LoginPage() {
+    const { user } = useUser();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (user) {
+            router.replace('/chat');
+        }
+    }, [user, router]);
 
     return (
         <div className="flex flex-col h-screen bg-background items-center justify-center p-8 text-center">
@@ -19,10 +30,10 @@ export default function OnboardingPage() {
             </div>
 
             <h1 className="text-3xl md:text-4xl font-bold tracking-tighter" style={{fontFamily: 'Sora, sans-serif'}}>
-                Selamat Datang!
+                Selamat Datang Kembali!
             </h1>
             <p className="text-lg text-muted-foreground max-w-md mx-auto mt-2 mb-8">
-                Satu langkah lagi untuk mendapatkan akses ke dokter AI pribadi Anda.
+                Masuk untuk melanjutkan perjalanan perawatan kulit Anda.
             </p>
 
             <div className="w-full max-w-sm">

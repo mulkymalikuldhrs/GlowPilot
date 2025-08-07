@@ -1,6 +1,7 @@
 
 'use client'
 
+import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import { MessageSquare, ShoppingBag, AreaChart, User } from "lucide-react";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import { usePathname } from "next/navigation";
 
 export function BottomNav() {
     const pathname = usePathname();
+    const { user, isLoading } = useUser();
 
     const navItems = [
         { href: "/chat", icon: MessageSquare, label: "Chat" },
@@ -18,11 +20,17 @@ export function BottomNav() {
 
     const isActive = (itemHref: string) => {
          if (itemHref === "/chat") {
-            // Also active for specific doctor chats
+            // Also active for specific doctor chats and the doctor selection page
             return pathname.startsWith('/chat') || pathname === '/doctors';
         }
         return pathname === itemHref;
     };
+
+    // Don't render the nav if the user is not logged in
+    if (isLoading || !user) {
+        return null;
+    }
+
 
     return (
         <div className="fixed bottom-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-md border-t z-20">

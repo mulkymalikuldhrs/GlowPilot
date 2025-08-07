@@ -7,11 +7,12 @@ import { AuroraBackground } from '@/components/aurora/Background';
 import { Toaster } from '@/components/ui/toaster';
 import { usePathname } from 'next/navigation';
 import { BottomNav } from '@/components/bottom-nav';
+import { UserProvider } from '@/hooks/use-user';
 
 function AppContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // Define routes that should not have the bottom nav
-  const noNavRoutes = ['/', '/onboarding'];
+  // Define routes that should not have the bottom nav or are standalone pages
+  const noNavRoutes = ['/login', '/onboarding'];
   const showNav = !noNavRoutes.includes(pathname);
 
   return (
@@ -40,11 +41,13 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="antialiased" style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-            <AuroraBackground />
-            <AppContent>{children}</AppContent>
-            <Toaster />
-        </ThemeProvider>
+        <UserProvider>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+              <AuroraBackground />
+              <AppContent>{children}</AppContent>
+              <Toaster />
+          </ThemeProvider>
+        </UserProvider>
       </body>
     </html>
   );

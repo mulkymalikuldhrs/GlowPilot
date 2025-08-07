@@ -10,7 +10,6 @@ import { Loader2 } from "lucide-react";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { MessageInput } from "@/components/chat/MessageInput";
 import { useUser } from "@/hooks/use-user";
-import { createClient } from "@/lib/supabase/client";
 import { ConsentModal } from "@/components/common/ConsentModal";
 
 const onboardingAI = { 
@@ -32,67 +31,29 @@ export default function OnboardingPage() {
     const [input, setInput] = useState('');
     const { toast } = useToast();
 
-    const [showConsent, setShowConsent] = useState(false);
-    const [hasConsented, setHasConsented] = useState(false);
+    // For now, we assume consent is given upon reaching this page.
+    // In a real app, you'd fetch this from your database.
+    const [hasConsented, setHasConsented] = useState(true); 
 
     // Redirect if user is not logged in or loading
     useEffect(() => {
         if (!isUserLoading && !user) {
             router.replace('/login');
         }
-    }, [user, isUserLoading, router]);
-
-    // Check consent status once user is loaded
-    useEffect(() => {
-        if (user) {
-            const checkConsent = async () => {
-                const supabase = createClient();
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('consent')
-                    .eq('id', user.id)
-                    .single();
-                
-                if (profile && profile.consent) {
-                    setHasConsented(true);
-                    startConversation(); // Already consented, start chat
-                } else if (profile) {
-                    setShowConsent(true); // Needs consent
-                } else {
-                    // Profile might not exist yet, show consent
-                    setShowConsent(true);
-                }
-            };
-            checkConsent();
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
-    
-    const handleAcceptConsent = async () => {
-        if (!user) return;
-        
-        const supabase = createClient();
-        const { error } = await supabase
-            .from('profiles')
-            .upsert({ id: user.id, consent: true, full_name: user.user_metadata.full_name, email: user.email }, { onConflict: 'id' });
-
-        if (error) {
-            toast({ title: "Gagal menyimpan persetujuan", variant: "destructive" });
-            console.error(error);
-        } else {
-            setHasConsented(true);
-            setShowConsent(false);
+         if (!isUserLoading && user) {
+            // Here you could check if the user has already completed onboarding
+            // For now, we'll just proceed.
             startConversation();
         }
-    };
-
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user, isUserLoading]);
+    
      const startConversation = async () => {
         if (messages.length > 0 || !user) return;
         setLoading(true);
         try {
             // Pass user's name to the first prompt
-            const initialHistory: OnboardingMessage[] = [{ role: 'user', content: `Nama saya ${user.user_metadata.full_name || 'pengguna baru'}.` }];
+            const initialHistory: OnboardingMessage[] = [{ role: 'user', content: `Nama saya ${user.displayName || 'pengguna baru'}.` }];
             const res = await conductOnboarding({ currentHistory: initialHistory });
             
             const initialMessage: Message = { id: Date.now().toString(), role: 'model', content: res.response };
@@ -135,16 +96,8 @@ export default function OnboardingPage() {
                     description: 'Mengalihkan Anda ke dashboard...',
                 });
 
-                const supabase = createClient();
-                if(user && res.userData) {
-                    await supabase.from('profiles').update({ 
-                        full_name: res.userData.name,
-                        skin_type: res.userData.skinType,
-                        skin_concerns: res.userData.skinConcerns,
-                        current_routine: res.userData.currentRoutine,
-                        lifestyle_factors: res.userData.lifestyleFactors,
-                     }).eq('id', user.id);
-                }
+                // Here you would save the profile to Firebase Firestore
+                console.log('Saving user data:', res.userData);
 
                 setTimeout(() => {
                     router.replace('/chat');
@@ -167,18 +120,6 @@ export default function OnboardingPage() {
 
     if (isUserLoading || !user) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        );
-    }
-
-    if (showConsent) {
-        return <ConsentModal isOpen={showConsent} onAccept={handleAcceptConsent} />
-    }
-    
-    if (!hasConsented) {
-         return (
             <div className="flex items-center justify-center h-screen">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>

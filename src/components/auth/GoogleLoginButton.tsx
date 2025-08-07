@@ -2,28 +2,38 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+import { auth, googleProvider } from "@/lib/firebase/client";
+import { signInWithPopup } from "firebase/auth";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 export function GoogleLoginButton() {
     const [loading, setLoading] = useState(false);
+    const { toast } = useToast();
+    const router = useRouter();
 
     const handleLogin = async () => {
         setLoading(true);
-        const supabase = createClient();
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: `${location.origin}/api/auth/callback`,
-            },
-        });
-
-        if (error) {
-            console.error("Login failed:", error.message);
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            // This will trigger the onAuthStateChanged listener in useUser hook
+            // and handle the redirection.
+            toast({
+                title: 'Login Berhasil',
+                description: `Selamat datang, ${result.user.displayName}!`,
+            });
+            // The redirection is now handled by the useUser hook globally
+        } catch (error: any) {
+            console.error("Login failed:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Login Gagal',
+                description: error.message || 'Terjadi kesalahan saat mencoba masuk. Silakan coba lagi.',
+            });
             setLoading(false);
         }
-        // If successful, Supabase redirects, so we don't need to setLoading(false)
     };
 
     return (

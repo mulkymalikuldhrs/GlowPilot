@@ -1,9 +1,9 @@
 
 'use client';
 
-import { createClient } from '@/lib/supabase/client';
-import type { User } from '@supabase/supabase-js';
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { auth } from '@/lib/firebase/client';
+import type { User } from 'firebase/auth';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 type UserContextType = {
     user: User | null;
@@ -15,29 +15,17 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const supabase = createClient();
-
-    const getSession = useCallback(async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
-        setIsLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     useEffect(() => {
-        getSession();
-
-        const { data: authListener } = supabase.auth.onAuthStateChange(
-            (event, session) => {
-                setUser(session?.user ?? null);
+        const unsubscribe = auth.onAuthStateChanged(
+            (user) => {
+                setUser(user);
                 setIsLoading(false);
             }
         );
 
-        return () => {
-            authListener?.subscription.unsubscribe();
-        };
-    }, [getSession, supabase.auth]);
+        return () => unsubscribe();
+    }, []);
 
     const value = {
         user,

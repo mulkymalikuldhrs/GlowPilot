@@ -7,20 +7,19 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { History, Shield, LogOut, User, Sparkles, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useUser } from '@/hooks/use-user';
-import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { auth } from '@/lib/firebase/client';
 
 export default function ProfilePage() {
     const { user, isLoading } = useUser();
     const router = useRouter();
 
     const handleLogout = async () => {
-        const supabase = createClient();
-        const { error } = await supabase.auth.signOut();
-        if (!error) {
+        try {
+            await auth.signOut();
             router.push('/login');
-        } else {
-            console.error('Logout failed:', error.message);
+        } catch (error) {
+            console.error('Logout failed:', error);
         }
     }
 
@@ -46,13 +45,13 @@ export default function ProfilePage() {
     }
     
     if (!user) {
-        // This should ideally not happen if page is protected, but as a fallback
-        return (
-            <div className="p-4 text-center">
-                <p>Anda harus masuk untuk melihat profil.</p>
-                <Button asChild className="mt-4"><Link href="/login">Masuk</Link></Button>
+         // Redirect to login if not authenticated
+         router.push('/login');
+         return (
+            <div className="p-4 flex items-center justify-center h-full">
+                <Loader2 className="w-8 h-8 animate-spin text-primary"/>
             </div>
-        )
+         );
     }
 
 
@@ -60,12 +59,12 @@ export default function ProfilePage() {
         <div className="p-4">
             <header className="w-full py-4 mb-6 text-center">
                 <Avatar className="w-24 h-24 border-4 border-primary/50 mx-auto">
-                    <AvatarImage src={user.user_metadata.avatar_url || ''} alt={user.user_metadata.full_name || 'User'}/>
+                    <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'}/>
                     <AvatarFallback>
                         <User className="w-12 h-12"/>
                     </AvatarFallback>
                 </Avatar>
-                <h1 className="text-2xl font-bold mt-4" style={{fontFamily: 'Sora, sans-serif'}}>{user.user_metadata.full_name || 'Pengguna Baru'}</h1>
+                <h1 className="text-2xl font-bold mt-4" style={{fontFamily: 'Sora, sans-serif'}}>{user.displayName || 'Pengguna Baru'}</h1>
                 <p className="text-muted-foreground">{user.email}</p>
             </header>
 

@@ -16,6 +16,9 @@ import { ThemeSwitcher } from "@/components/common/ThemeSwitcher";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { MessageInput } from "@/components/chat/MessageInput";
+import { useUser } from "@/hooks/use-user";
+import { db } from "@/lib/firebase/client";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export type Message = {
     id: string;
@@ -30,12 +33,6 @@ type DiagnosisMessage = {
     role: 'user' | 'model';
     content: string;
 };
-
-type Goal = {
-    title: string;
-    progress: number;
-    targetDate: string;
-}
 
 type DoctorType = TextToSpeechInput['voice'];
 
@@ -70,6 +67,7 @@ const doctors: Record<string, { name: string; specialty: string; avatar: string;
 export default function DoctorChatPage() {
     const params = useParams();
     const router = useRouter();
+    const { user } = useUser();
     const [isPending, startTransition] = useTransition();
 
     const doctorSlug = typeof params.doctor === 'string' ? params.doctor : '';
@@ -83,7 +81,34 @@ export default function DoctorChatPage() {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
 
-    const playAudio = (audioUrl: string, messageId: string) => {
+    const handleAutoPlayAudio = async (text: string, messageId: string) => {
+        if (!text) return;
+        
+        // Stop any currently playing audio
+        if (audioRef.current && !audioRef.current.paused) {
+            audioRef.current.pause();
+        }
+        
+        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isGeneratingAudio: true } : m));
+        try {
+            const res = await textToSpeech({ text, voice: doctor.voice });
+            const audioUrl = res.audioDataUri;
+            setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioUrl, isGeneratingAudio: false } : m));
+            
+            if (audioRef.current) {
+                audioRef.current.src = audioUrl;
+                audioRef.current.play();
+                setPlayingMessageId(messageId);
+            }
+
+        } catch (error) {
+            console.error(error);
+            toast({ title: 'Audio Gagal', description: 'Tidak dapat membuat audio saat ini.', variant: 'destructive' });
+            setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isGeneratingAudio: false } : m));
+        }
+    };
+    
+    const handleReplayAudio = (audioUrl: string, messageId: string) => {
         if (audioRef.current) {
             if (playingMessageId === messageId) {
                 audioRef.current.pause();
@@ -93,21 +118,6 @@ export default function DoctorChatPage() {
                 audioRef.current.play();
                 setPlayingMessageId(messageId);
             }
-        }
-    };
-    
-    const handleGenerateAndPlayAudio = async (text: string, messageId: string) => {
-        if (!text) return;
-        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isGeneratingAudio: true } : m));
-        try {
-            const res = await textToSpeech({ text, voice: doctor.voice });
-            const audioUrl = res.audioDataUri;
-            setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioUrl, isGeneratingAudio: false } : m));
-            playAudio(audioUrl, messageId);
-        } catch (error) {
-            console.error(error);
-            toast({ title: 'Audio Gagal', description: 'Tidak dapat membuat audio saat ini.', variant: 'destructive' });
-            setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isGeneratingAudio: false } : m));
         }
     };
 
@@ -131,7 +141,7 @@ export default function DoctorChatPage() {
                     const initialMessage: Message = { id: initialMessageId, role: 'model', content: res.response, textForTts: res.response };
                     setMessages([initialMessage]);
                     setDiagnosisMessages([{ role: 'model', content: res.response }]);
-                    await handleGenerateAndPlayAudio(res.response, initialMessageId);
+                    await handleAutoPlayAudio(res.response, initialMessageId);
 
                 } catch (error) {
                     console.error(error);
@@ -253,14 +263,16 @@ export default function DoctorChatPage() {
                     systemPrompt: doctor.systemPrompt,
                 });
                 
-                if (res.isComplete && res.diagnosisResult?.progressGoal) {
+                if (res.isComplete && res.diagnosisResult?.progressGoal && user) {
                     const newGoal = {
                         ...res.diagnosisResult.progressGoal,
-                        progress: 0, 
+                        progress: 0,
+                        createdAt: serverTimestamp(),
+                        userId: user.uid,
                     };
                     
-                    const existingGoals: Goal[] = JSON.parse(localStorage.getItem('userGoals') || '[]');
-                    localStorage.setItem('userGoals', JSON.stringify([...existingGoals, newGoal]));
+                    const goalsCollectionRef = collection(db, 'users', user.uid, 'goals');
+                    await addDoc(goalsCollectionRef, newGoal);
 
                     toast({
                         title: "Tujuan Baru Ditambahkan!",
@@ -269,7 +281,7 @@ export default function DoctorChatPage() {
                 }
 
                 const assistantMessageId = (Date.now() + 1).toString();
-                const textToSpeak = res.isComplete && res.diagnosisResult ? `Berikut adalah diagnosis dan rekomendasi untuk Anda.` : res.response;
+                const textToSpeak = res.isComplete && res.diagnosisResult ? res.diagnosisResult.diagnosis : res.response;
 
                 const assistantMessage: Message = {
                     id: assistantMessageId,
@@ -285,7 +297,7 @@ export default function DoctorChatPage() {
                     setDiagnosisMessages(prev => [...prev, {role: 'model', content: res.response}])
                 }
                 
-                await handleGenerateAndPlayAudio(textToSpeak, assistantMessageId);
+                await handleAutoPlayAudio(textToSpeak, assistantMessageId);
 
 
             } catch (error) {
@@ -352,7 +364,7 @@ export default function DoctorChatPage() {
                 messages={messages}
                 loading={isPending}
                 doctor={doctor}
-                onPlayAudio={playAudio}
+                onPlayAudio={handleReplayAudio}
                 playingMessageId={playingMessageId}
             />
             
@@ -367,9 +379,7 @@ export default function DoctorChatPage() {
                     handleSubmit={handleSubmit}
                 />
             </footer>
-            <audio ref={audioRef} className="hidden" />
+            <audio ref={audioRef} className="hidden" onEnded={() => setPlayingMessageId(null)} />
         </div>
     )
 }
-
-    

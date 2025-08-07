@@ -10,7 +10,8 @@ import { Loader2 } from "lucide-react";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { MessageInput } from "@/components/chat/MessageInput";
 import { useUser } from "@/hooks/use-user";
-import { ConsentModal } from "@/components/common/ConsentModal";
+import { db } from "@/lib/firebase/client";
+import { doc, setDoc } from "firebase/firestore";
 
 const onboardingAI = { 
     name: 'GlowPilot Assistant', 
@@ -30,10 +31,6 @@ export default function OnboardingPage() {
     const [onboardingMessages, setOnboardingMessages] = useState<OnboardingMessage[]>([]);
     const [input, setInput] = useState('');
     const { toast } = useToast();
-
-    // For now, we assume consent is given upon reaching this page.
-    // In a real app, you'd fetch this from your database.
-    const [hasConsented, setHasConsented] = useState(true); 
 
     // Redirect if user is not logged in or loading
     useEffect(() => {
@@ -96,8 +93,16 @@ export default function OnboardingPage() {
                     description: 'Mengalihkan Anda ke dashboard...',
                 });
 
-                // Here you would save the profile to Firebase Firestore
-                console.log('Saving user data:', res.userData);
+                if (user && res.userData) {
+                    const userRef = doc(db, 'users', user.uid);
+                    await setDoc(userRef, {
+                        profile: {
+                            ...res.userData,
+                            email: user.email,
+                            photoURL: user.photoURL,
+                        },
+                    }, { merge: true });
+                }
 
                 setTimeout(() => {
                     router.replace('/chat');

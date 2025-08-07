@@ -4,49 +4,57 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Check, Target, Plus, Ghost } from "lucide-react";
+import { Check, Target, Plus, Ghost, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useUser } from "@/hooks/use-user";
+import { db } from "@/lib/firebase/client";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 type Goal = {
+    id: string;
     title: string;
     progress: number;
     targetDate: string;
 }
 
-const defaultGoals: Goal[] = [
-     {
-        title: "Mengurangi Jerawat Hormonal",
-        progress: 40,
-        targetDate: "30 Sep 2024"
-    },
-    {
-        title: "Meningkatkan Hidrasi Kulit",
-        progress: 75,
-        targetDate: "15 Okt 2024"
-    }
-];
-
-
 export default function ProgressPage() {
+    const { user, isLoading: isUserLoading } = useUser();
     const [goals, setGoals] = useState<Goal[]>([]);
-    const [isClient, setIsClient] = useState(false);
+    const [loadingGoals, setLoadingGoals] = useState(true);
 
     useEffect(() => {
-        setIsClient(true);
-        // Load goals from localStorage
-        const storedGoals = localStorage.getItem('userGoals');
-        if (storedGoals) {
-            setGoals(JSON.parse(storedGoals));
-        } else {
-            // Optional: set default goals if none are stored
-            setGoals(defaultGoals);
-            localStorage.setItem('userGoals', JSON.stringify(defaultGoals));
+        if (isUserLoading) return;
+        if (!user) {
+            setLoadingGoals(false);
+            return;
         }
-    }, []);
+
+        const goalsCollectionRef = collection(db, 'users', user.uid, 'goals');
+        const q = query(goalsCollectionRef);
+
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const goalsData: Goal[] = [];
+            querySnapshot.forEach((doc) => {
+                goalsData.push({ id: doc.id, ...doc.data() } as Goal);
+            });
+            setGoals(goalsData);
+            setLoadingGoals(false);
+        }, (error) => {
+            console.error("Error fetching goals:", error);
+            setLoadingGoals(false);
+        });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+    }, [user, isUserLoading]);
     
-    if (!isClient) {
-        return null; // or a loading skeleton
+    if (isUserLoading || loadingGoals) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
     }
 
     return (
@@ -86,7 +94,7 @@ export default function ProgressPage() {
 
                     {goals.length > 0 ? (
                         goals.map(goal => (
-                            <Card key={goal.title} className="glass-card">
+                            <Card key={goal.id} className="glass-card">
                                 <CardContent className="p-4">
                                     <div className="flex justify-between items-start">
                                         <div className="space-y-1">

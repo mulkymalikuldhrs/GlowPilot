@@ -29,12 +29,12 @@ export function ConsentModal({ isOpen, onAccept }: ConsentModalProps) {
           <AlertDialogTitle className="text-center">Selamat Datang di GlowPilot!</AlertDialogTitle>
           <AlertDialogDescription className="text-center text-muted-foreground pt-2">
             Sebelum kita mulai, kami ingin memastikan Anda memahami beberapa hal penting.
-            <ul className="list-disc list-inside text-left mt-4 space-y-2 text-xs">
+            <ul className="list-disc list-inside text-left mt-4 space-y-2 text-xs text-muted-foreground px-6">
                 <li>
-                    **Ini Bukan Nasihat Medis:** GlowPilot adalah asisten AI, bukan dokter sungguhan. Konsultasi di sini bersifat informasional dan tidak menggantikan nasihat dari dokter profesional.
+                    <strong>Ini Bukan Nasihat Medis:</strong> GlowPilot adalah asisten AI, bukan dokter sungguhan. Konsultasi di sini bersifat informasional dan tidak menggantikan nasihat dari dokter profesional.
                 </li>
                  <li>
-                    **Privasi & Data:** Kami menghargai privasi Anda. Interaksi Anda akan digunakan untuk meningkatkan layanan kami. Untuk detail lebih lanjut, lihat {" "}
+                    <strong>Privasi & Data:</strong> Kami menghargai privasi Anda. Interaksi Anda akan digunakan untuk meningkatkan layanan kami. Untuk detail lebih lanjut, lihat{" "}
                     <Link href="/privacy" className="underline hover:text-primary">Kebijakan Privasi</Link> kami.
                 </li>
             </ul>

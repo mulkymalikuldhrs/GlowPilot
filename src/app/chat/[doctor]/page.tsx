@@ -221,6 +221,35 @@ export default function DoctorChatPage() {
         }
     };
 
+    const saveConsultation = async (history: DiagnosisMessage[], finalDiagnosis: DiagnosisConversationOutput['diagnosisResult']) => {
+        if (!user || !finalDiagnosis) return;
+        
+        try {
+            const consultationsCollectionRef = collection(db, 'users', user.uid, 'consultations');
+            await addDoc(consultationsCollectionRef, {
+                doctor: {
+                    name: doctor.name,
+                    specialty: doctor.specialty,
+                    slug: doctorSlug
+                },
+                createdAt: serverTimestamp(),
+                history: history, // Save the text-based history
+                diagnosis: finalDiagnosis
+            });
+            toast({
+                title: "Riwayat Disimpan",
+                description: "Konsultasi ini telah disimpan di halaman Riwayat Anda."
+            })
+        } catch (error) {
+            console.error("Failed to save consultation:", error);
+            toast({
+                variant: "destructive",
+                title: "Gagal Menyimpan",
+                description: "Gagal menyimpan riwayat konsultasi Anda."
+            })
+        }
+    }
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -249,8 +278,10 @@ export default function DoctorChatPage() {
         };
         const userDiagnosisMessage: DiagnosisMessage = { role: 'user', content: userMessageText };
 
+        const currentDiagnosisHistory = [...diagnosisMessages, userDiagnosisMessage];
+
         setMessages(prev => [...prev, userMessage]);
-        setDiagnosisMessages(prev => [...prev, userDiagnosisMessage]);
+        setDiagnosisMessages(currentDiagnosisHistory);
         setInput('');
         const imageToSend = attachedImage;
         setAttachedImage(null);
@@ -258,30 +289,37 @@ export default function DoctorChatPage() {
         startTransition(async () => {
             try {
                 const res = await conductDiagnosis({ 
-                    currentHistory: [...diagnosisMessages, userDiagnosisMessage],
+                    currentHistory: currentDiagnosisHistory,
                     photoDataUri: imageToSend,
                     systemPrompt: doctor.systemPrompt,
                 });
                 
-                if (res.isComplete && res.diagnosisResult?.progressGoal && user) {
-                    const newGoal = {
-                        ...res.diagnosisResult.progressGoal,
-                        progress: 0,
-                        createdAt: serverTimestamp(),
-                        userId: user.uid,
-                    };
-                    
-                    const goalsCollectionRef = collection(db, 'users', user.uid, 'goals');
-                    await addDoc(goalsCollectionRef, newGoal);
-
-                    toast({
-                        title: "Tujuan Baru Ditambahkan!",
-                        description: `"${newGoal.title}" telah ditambahkan ke halaman Progres Anda.`,
-                    });
+                if (res.isComplete && res.diagnosisResult) {
+                     if (user) {
+                        // Save the new goal to Firestore
+                        if(res.diagnosisResult.progressGoal) {
+                            const newGoal = {
+                                ...res.diagnosisResult.progressGoal,
+                                progress: 0,
+                                createdAt: serverTimestamp(),
+                                userId: user.uid,
+                                isAiRecommended: true,
+                            };
+                            const goalsCollectionRef = collection(db, 'users', user.uid, 'goals');
+                            await addDoc(goalsCollectionRef, newGoal);
+                             toast({
+                                title: "Tujuan Baru Ditambahkan!",
+                                description: `"${newGoal.title}" telah ditambahkan ke halaman Progres Anda.`,
+                            });
+                        }
+                       // Save the entire consultation
+                        const finalHistory = [...currentDiagnosisHistory, { role: 'model' as const, content: res.response }];
+                        await saveConsultation(finalHistory, res.diagnosisResult);
+                    }
                 }
 
                 const assistantMessageId = (Date.now() + 1).toString();
-                const textToSpeak = res.isComplete && res.diagnosisResult ? res.diagnosisResult.diagnosis : res.response;
+                const textToSpeak = res.isComplete && res.diagnosisResult ? res.response : res.response;
 
                 const assistantMessage: Message = {
                     id: assistantMessageId,

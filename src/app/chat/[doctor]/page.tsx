@@ -7,17 +7,18 @@ import type { TextToSpeechInput } from "@/ai/schemas/tts-schemas";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Loader2, User, ShoppingCart, Info, SendHorizonal, MoreVertical, Paperclip, Sparkles, Shield, FlaskConical, Languages, Volume2, PlayCircle, Mic, XCircle } from "lucide-react";
+import { ShoppingCart, Info, Languages, MoreVertical } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
 import { useParams, useRouter } from "next/navigation";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeSwitcher } from "@/components/common/ThemeSwitcher";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
+import { ChatWindow } from "@/components/chat/ChatWindow";
+import { MessageInput } from "@/components/chat/MessageInput";
+import { Loader2 } from "lucide-react";
 
-type Message = {
+export type Message = {
     role: 'user' | 'model';
     content: React.ReactNode;
     audioUrl?: string;
@@ -76,12 +77,7 @@ export default function DoctorChatPage() {
     const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
     const [input, setInput] = useState('');
     const { toast } = useToast();
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const audioRef = useRef<HTMLAudioElement>(null);
-    const [playingMessageIndex, setPlayingMessageIndex] = useState<number | null>(null);
-    const [isAutoPlaying, setIsAutoPlaying] = useState(false);
     const [attachedImage, setAttachedImage] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (!doctor) {
@@ -117,75 +113,6 @@ export default function DoctorChatPage() {
         // You can return a loader here while redirecting
         return <div className="flex items-center justify-center h-screen"><Loader2 className="h-8 w-8 animate-spin"/></div>;
     }
-
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages, loading]);
-
-    const playAudio = (audioUrl: string, index: number, autoPlay = false) => {
-        if (audioRef.current) {
-            if (playingMessageIndex === index && !autoPlay) {
-                audioRef.current.pause();
-                setPlayingMessageIndex(null);
-                setIsAutoPlaying(false);
-            } else {
-                audioRef.current.src = audioUrl;
-                audioRef.current.play().catch(e => console.error("Autoplay failed:", e));
-                setPlayingMessageIndex(index);
-                setIsAutoPlaying(autoPlay);
-            }
-        }
-    };
-    
-    useEffect(() => {
-        const audioElement = audioRef.current;
-        const handleAudioEnd = () => {
-            setPlayingMessageIndex(null);
-            setIsAutoPlaying(false);
-        };
-    
-        if (audioElement) {
-            audioElement.addEventListener('ended', handleAudioEnd);
-            return () => {
-                audioElement.removeEventListener('ended', handleAudioEnd);
-            };
-        }
-    }, []);
-
-    const handleGenerateAudio = async (text: string, index: number, autoPlay = false) => {
-        try {
-            const res = await textToSpeech({ text, voice: doctor.voice });
-            const audioUrl = res.audioDataUri;
-            setMessages(prev => {
-                const newMessages = [...prev];
-                if (newMessages[index]) {
-                  newMessages[index].audioUrl = audioUrl;
-                }
-                return newMessages;
-            });
-            if (audioUrl) {
-                playAudio(audioUrl, index, autoPlay);
-            }
-        } catch (error) {
-            console.error("TTS Error:", error);
-            toast({ title: "Audio Error", description: "Gagal menghasilkan audio.", variant: "destructive" });
-        }
-    };
-    
-    // Autoplay useEffect
-    useEffect(() => {
-        const lastMessage = messages[messages.length - 1];
-        if (lastMessage && lastMessage.role === 'model' && lastMessage.textForTts && !lastMessage.audioUrl) {
-            handleGenerateAudio(lastMessage.textForTts, messages.length - 1, true);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [messages]);
-
 
     const renderDiagnosis = (res: NonNullable<DiagnosisConversationOutput['diagnosisResult']>) => {
         return (
@@ -260,7 +187,7 @@ export default function DoctorChatPage() {
                 <div>
                     {input && <p>{input}</p>}
                     {attachedImage && (
-                        <Image src={attachedImage} alt="Lampiran pengguna" width={150} height={150} className="rounded-lg mt-2"/>
+                        <img src={attachedImage} alt="Lampiran pengguna" width={150} height={150} className="rounded-lg mt-2"/>
                     )}
                 </div>
             )
@@ -280,10 +207,6 @@ export default function DoctorChatPage() {
                 photoDataUri: imageToSend,
                 systemPrompt: doctor.systemPrompt,
             });
-            
-            if (res.response.includes("Silakan pilih dokter yang sesuai")) {
-                setTimeout(() => router.push('/doctors'), 2000);
-            }
             
             if (res.isComplete && res.diagnosisResult?.progressGoal) {
                 const newGoal = {
@@ -357,7 +280,7 @@ export default function DoctorChatPage() {
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <ThemeToggle />
+                    <ThemeSwitcher />
                     
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -374,89 +297,21 @@ export default function DoctorChatPage() {
                 </div>
             </header>
 
-            <main className="flex-1 overflow-y-auto p-4 space-y-6">
-                {messages.map((message, index) => (
-                    <div key={index} className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
-                       {message.role === 'model' && (
-                           <Avatar className="w-9 h-9">
-                                <Image src={doctor.avatar} alt={doctor.name} width={36} height={36} className="rounded-full" data-ai-hint={doctor.dataAiHint}/>
-                           </Avatar>
-                       )}
-                       <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm shadow-md ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card glass-card border-0'}`}>
-                           {typeof message.content === 'string' ? <p className="whitespace-pre-wrap">{message.content}</p> : message.content}
-                            {message.role === 'model' && message.textForTts && (
-                                <button onClick={() => message.audioUrl ? playAudio(message.audioUrl, index) : handleGenerateAudio(message.textForTts!, index, false)} className="mt-2 text-primary/80 hover:text-primary transition-colors flex items-center gap-1 text-xs">
-                                    {playingMessageIndex === index ? <Volume2 className="h-4 w-4" /> : <PlayCircle className="h-4 w-4" />}
-                                    <span>{playingMessageIndex === index ? 'Playing...' : 'Play Audio'}</span>
-                                </button>
-                            )}
-                       </div>
-                       {message.role === 'user' && (
-                           <Avatar className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary">
-                               <User className="h-5 w-5 text-secondary-foreground" />
-                           </Avatar>
-                       )}
-                   </div>
-                ))}
-                 {loading && (
-                     <div className="flex items-start gap-3">
-                         <Avatar className="w-9 h-9">
-                            <Image src={doctor.avatar} alt={doctor.name} width={36} height={36} className="rounded-full" data-ai-hint={doctor.dataAiHint}/>
-                         </Avatar>
-                         <div className="rounded-2xl p-3 max-w-lg bg-muted flex items-center space-x-2">
-                             <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                             <p className="text-sm text-muted-foreground">Menganalisis...</p>
-                         </div>
-                     </div>
-                 )}
-                 <div ref={messagesEndRef} />
-            </main>
+            <ChatWindow 
+                messages={messages}
+                loading={loading}
+                doctor={doctor}
+            />
             
-            <footer className="p-4 bg-background/80 backdrop-blur-md sticky bottom-16 border-t">
-                 {attachedImage && (
-                    <div className="relative w-20 h-20 mb-2">
-                        <Image src={attachedImage} alt="Lampiran" layout="fill" objectFit="cover" className="rounded-md" />
-                        <Button
-                            variant="destructive"
-                            size="icon"
-                            className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
-                            onClick={() => setAttachedImage(null)}
-                        >
-                            <XCircle className="h-4 w-4" />
-                        </Button>
-                    </div>
-                )}
-                 <form onSubmit={handleSubmit} className="relative flex items-center w-full gap-2">
-                    <input 
-                        type="file" 
-                        ref={fileInputRef} 
-                        onChange={handleFileChange} 
-                        className="hidden" 
-                        accept="image/*" 
-                    />
-                    <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => fileInputRef.current?.click()}>
-                        <Paperclip className="w-5 h-5"/>
-                        <span className="sr-only">Attach image</span>
-                    </Button>
-                    <Button type="button" variant="ghost" size="icon" className="shrink-0">
-                        <Mic className="w-5 h-5"/>
-                        <span className="sr-only">Use Microphone</span>
-                    </Button>
-                     <Input
-                         id="message"
-                         placeholder="Ketik pesan Anda..."
-                         value={input}
-                         onChange={(e) => setInput(e.target.value)}
-                         disabled={loading}
-                         className="pr-12 rounded-full"
-                         autoComplete="off"
-                     />
-                     <Button type="submit" size="icon" disabled={loading || (!input.trim() && !attachedImage)} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full">
-                        <SendHorizonal className="h-4 w-4" />
-                     </Button>
-                </form>
-            </footer>
-            <audio ref={audioRef} onPlay={() => setIsAutoPlaying(true)} onPause={() => setIsAutoPlaying(false)} />
+            <MessageInput 
+                input={input}
+                setInput={setInput}
+                loading={loading}
+                attachedImage={attachedImage}
+                setAttachedImage={setAttachedImage}
+                handleFileChange={handleFileChange}
+                handleSubmit={handleSubmit}
+            />
         </div>
     )
 }

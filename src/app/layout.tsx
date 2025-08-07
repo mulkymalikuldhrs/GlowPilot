@@ -3,7 +3,7 @@
 
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
-import { AuroraBackground } from '@/components/aurora-background';
+import { AuroraBackground } from '@/components/aurora/Background';
 import { Toaster } from '@/components/ui/toaster';
 import { usePathname } from 'next/navigation';
 import { BottomNav } from '@/components/bottom-nav';

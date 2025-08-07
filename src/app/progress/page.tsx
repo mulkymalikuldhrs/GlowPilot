@@ -115,7 +115,7 @@ export default function ProgressPage() {
                 </div>
 
                 <div className="text-center">
-                    <Link href="/history" className="text-sm text-primary hover:underline">
+                    <Link href="/history" className="text-sm text-primary hover:underline font-medium">
                         Lihat Riwayat Konsultasi
                     </Link>
                 </div>

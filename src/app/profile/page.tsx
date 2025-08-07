@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { History, Shield, LogOut, User, Mail, Sparkles } from 'lucide-react';
+import { History, Shield, LogOut, User, Mail, Sparkles, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
@@ -13,46 +13,50 @@ export default function ProfilePage() {
     const user = {
         displayName: 'Mulky Malikul Dhaher',
         email: 'mulkymalikuldhr@mail.com',
-        photoURL: 'https://placehold.co/100x100.png'
+        photoURL: 'https://placehold.co/100x100.png',
+        dataAiHint: 'man smiling'
     }
+
+    const menuItems = [
+        {
+            href: "/history",
+            icon: History,
+            label: "Riwayat Konsultasi"
+        },
+        {
+            href: "/privacy",
+            icon: Shield,
+            label: "Kebijakan Privasi"
+        }
+    ];
 
     return (
         <div className="p-4">
-            <header className="w-full py-4 mb-4">
-                <div className="flex items-center gap-4">
-                    <Avatar className="w-20 h-20 border-4 border-primary/50">
-                        <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'}/>
-                        <AvatarFallback>
-                            <User className="w-10 h-10"/>
-                        </AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <h1 className="text-xl font-bold">{user.displayName}</h1>
-                        <p className="text-muted-foreground">{user.email}</p>
-                    </div>
-                </div>
+            <header className="w-full py-4 mb-6 text-center">
+                <Avatar className="w-24 h-24 border-4 border-primary/50 mx-auto">
+                    <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} data-ai-hint={user.dataAiHint}/>
+                    <AvatarFallback>
+                        <User className="w-12 h-12"/>
+                    </AvatarFallback>
+                </Avatar>
+                <h1 className="text-2xl font-bold mt-4" style={{fontFamily: 'Sora, sans-serif'}}>{user.displayName}</h1>
+                <p className="text-muted-foreground">{user.email}</p>
             </header>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
                  <Card className="glass-card">
-                    <CardContent className="p-4">
-                        <Link href="/history" className="flex items-center justify-between">
-                            <div className='flex items-center gap-4'>
-                                <History className="w-5 h-5 text-primary"/>
-                                <span className="font-medium">Riwayat Konsultasi</span>
-                            </div>
-                        </Link>
-                    </CardContent>
-                </Card>
-
-                 <Card className="glass-card">
-                    <CardContent className="p-4">
-                        <Link href="/privacy" className="flex items-center justify-between">
-                             <div className='flex items-center gap-4'>
-                                <Shield className="w-5 h-5 text-primary"/>
-                                <span className="font-medium">Kebijakan Privasi</span>
-                            </div>
-                        </Link>
+                    <CardContent className="p-2">
+                        <div className="space-y-1">
+                            {menuItems.map(item => (
+                                <Link key={item.href} href={item.href} className="flex items-center justify-between p-3 rounded-lg hover:bg-primary/5 transition-colors">
+                                    <div className='flex items-center gap-4'>
+                                        <item.icon className="w-5 h-5 text-primary"/>
+                                        <span className="font-medium">{item.label}</span>
+                                    </div>
+                                    <ChevronRight className="w-5 h-5 text-muted-foreground"/>
+                                </Link>
+                            ))}
+                        </div>
                     </CardContent>
                 </Card>
                 

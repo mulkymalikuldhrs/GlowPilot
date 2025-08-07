@@ -339,15 +339,17 @@ export default function DoctorChatPage() {
                 playingMessageId={playingMessageId}
             />
             
-            <MessageInput 
-                input={input}
-                setInput={setInput}
-                loading={isPending}
-                attachedImage={attachedImage}
-                setAttachedImage={setAttachedImage}
-                handleFileChange={handleFileChange}
-                handleSubmit={handleSubmit}
-            />
+            <footer className="p-4 bg-background/80 backdrop-blur-md sticky bottom-16 border-t">
+                 <MessageInput 
+                    input={input}
+                    setInput={setInput}
+                    loading={isPending}
+                    attachedImage={attachedImage}
+                    setAttachedImage={setAttachedImage}
+                    handleFileChange={handleFileChange}
+                    handleSubmit={handleSubmit}
+                />
+            </footer>
             <audio ref={audioRef} className="hidden" />
         </div>
     )

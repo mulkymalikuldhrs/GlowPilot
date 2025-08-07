@@ -44,10 +44,12 @@ export const SkinConditionDiagnosisOutputSchema = z.object({
       })
     )
     .describe('A list of specific product recommendations.'),
+  lifestyleTips: z.array(z.string()).optional().describe("A list of relevant lifestyle tips."),
+  disclaimer: z.string().optional().describe("A disclaimer that the AI is not a medical professional."),
   progressGoal: z.object({
     title: z.string().describe("A concise, actionable title for the user's progress goal (e.g., 'Mengurangi Jerawat Hormonal')."),
     targetDate: z.string().describe("A realistic target date for the goal, formatted as 'DD MMM YYYY' (e.g., '30 Sep 2024').")
-  }).describe("A new progress goal to be added to the user's tracking page.")
+  }).optional().describe("A new progress goal to be added to the user's tracking page.")
 });
 export type SkinConditionDiagnosisOutput = z.infer<
   typeof SkinConditionDiagnosisOutputSchema

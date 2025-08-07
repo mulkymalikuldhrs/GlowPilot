@@ -2,9 +2,10 @@
 'use client';
 import type { Message } from "@/app/chat/[doctor]/page";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Volume2, PlayCircle, Loader2, StopCircle } from "lucide-react";
+import { User, Volume2, PlayCircle, Loader2, StopCircle, Soundwave } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
 
 interface ChatBubbleProps {
     message: Message;
@@ -15,39 +16,36 @@ interface ChatBubbleProps {
     };
     playingMessageId: string | null;
     onPlayAudio: (audioUrl: string, messageId: string) => void;
-    onGenerateAudio: (text: string, messageId: string) => void;
 }
 
-export function ChatBubble({ message, doctor, playingMessageId, onPlayAudio, onGenerateAudio }: ChatBubbleProps) {
+export function ChatBubble({ message, doctor, playingMessageId, onPlayAudio }: ChatBubbleProps) {
     const isPlaying = playingMessageId === message.id;
 
-    const renderAudioButton = () => {
+    const renderAudioIndicator = () => {
         if (message.role !== 'model' || !message.textForTts) return null;
 
-        let icon = <PlayCircle className="h-4 w-4" />;
-        let text = "Putar Audio";
-        let action = () => message.audioUrl ? onPlayAudio(message.audioUrl, message.id) : onGenerateAudio(message.textForTts!, message.id);
-
         if (message.isGeneratingAudio) {
-            icon = <Loader2 className="h-4 w-4 animate-spin" />;
-            text = "Membuat audio...";
-        } else if (isPlaying) {
-            icon = <StopCircle className="h-4 w-4" />;
-            text = "Hentikan";
+            return <div className="flex items-center gap-1 text-xs text-primary/80 mt-2">
+                <Loader2 className="h-3 w-3 animate-spin"/>
+                <span>Membuat audio...</span>
+            </div>
         }
         
-        return (
-            <Button 
-                onClick={action} 
-                disabled={message.isGeneratingAudio}
-                variant="ghost"
-                size="sm"
-                className="mt-2 text-primary/80 hover:text-primary transition-colors flex items-center gap-1 text-xs -ml-2 h-auto py-1"
-            >
-                {icon}
-                <span>{text}</span>
-            </Button>
-        );
+        if (message.audioUrl) {
+            return (
+                <button 
+                    onClick={() => onPlayAudio(message.audioUrl!, message.id)}
+                    className={cn(
+                        "flex items-center gap-2 text-xs text-primary/80 mt-2 transition-colors hover:text-primary",
+                        isPlaying && "text-primary"
+                    )}
+                >
+                    <Soundwave className="h-4 w-4" />
+                    <span className="font-medium">{isPlaying ? 'Memutar...' : 'Putar ulang suara'}</span>
+                </button>
+            )
+        }
+        return null;
     };
 
     return (
@@ -59,7 +57,7 @@ export function ChatBubble({ message, doctor, playingMessageId, onPlayAudio, onG
            )}
            <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm shadow-md ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card glass-card border-0'}`}>
                {typeof message.content === 'string' ? <p className="whitespace-pre-wrap">{message.content}</p> : message.content}
-               {renderAudioButton()}
+               {renderAudioIndicator()}
            </div>
            {message.role === 'user' && (
                <Avatar className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary">
@@ -69,3 +67,5 @@ export function ChatBubble({ message, doctor, playingMessageId, onPlayAudio, onG
        </div>
     );
 }
+
+    

@@ -83,6 +83,35 @@ export default function DoctorChatPage() {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
 
+    const playAudio = (audioUrl: string, messageId: string) => {
+        if (audioRef.current) {
+            if (playingMessageId === messageId) {
+                audioRef.current.pause();
+                setPlayingMessageId(null);
+            } else {
+                audioRef.current.src = audioUrl;
+                audioRef.current.play();
+                setPlayingMessageId(messageId);
+            }
+        }
+    };
+    
+    const handleGenerateAndPlayAudio = async (text: string, messageId: string) => {
+        if (!text) return;
+        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isGeneratingAudio: true } : m));
+        try {
+            const res = await textToSpeech({ text, voice: doctor.voice });
+            const audioUrl = res.audioDataUri;
+            setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioUrl, isGeneratingAudio: false } : m));
+            playAudio(audioUrl, messageId);
+        } catch (error) {
+            console.error(error);
+            toast({ title: 'Audio Gagal', description: 'Tidak dapat membuat audio saat ini.', variant: 'destructive' });
+            setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isGeneratingAudio: false } : m));
+        }
+    };
+
+
     useEffect(() => {
         if (!doctor) {
             router.push('/doctors');
@@ -98,9 +127,12 @@ export default function DoctorChatPage() {
                         photoDataUri: null, 
                         systemPrompt: doctor.systemPrompt 
                     });
-                    const initialMessage: Message = { id: Date.now().toString(), role: 'model', content: res.response, textForTts: res.response };
+                    const initialMessageId = Date.now().toString();
+                    const initialMessage: Message = { id: initialMessageId, role: 'model', content: res.response, textForTts: res.response };
                     setMessages([initialMessage]);
                     setDiagnosisMessages([{ role: 'model', content: res.response }]);
+                    await handleGenerateAndPlayAudio(res.response, initialMessageId);
+
                 } catch (error) {
                     console.error(error);
                     toast({ title: 'Error', description: 'Gagal memulai percakapan dengan AI.', variant: 'destructive' });
@@ -123,33 +155,6 @@ export default function DoctorChatPage() {
     if (!doctor) {
         return <div className="flex items-center justify-center h-screen"><Loader2 className="h-8 w-8 animate-spin"/></div>;
     }
-
-    const handleGenerateAudio = async (text: string, messageId: string) => {
-        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isGeneratingAudio: true } : m));
-        try {
-            const res = await textToSpeech({ text, voice: doctor.voice });
-            const audioUrl = res.audioDataUri;
-            setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioUrl, isGeneratingAudio: false } : m));
-            playAudio(audioUrl, messageId);
-        } catch (error) {
-            console.error(error);
-            toast({ title: 'Audio Gagal', description: 'Tidak dapat membuat audio saat ini.', variant: 'destructive' });
-            setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isGeneratingAudio: false } : m));
-        }
-    };
-
-    const playAudio = (audioUrl: string, messageId: string) => {
-        if (audioRef.current) {
-            if (playingMessageId === messageId) {
-                audioRef.current.pause();
-                setPlayingMessageId(null);
-            } else {
-                audioRef.current.src = audioUrl;
-                audioRef.current.play();
-                setPlayingMessageId(messageId);
-            }
-        }
-    };
 
     const renderDiagnosis = (res: NonNullable<DiagnosisConversationOutput['diagnosisResult']>) => {
         return (
@@ -212,6 +217,12 @@ export default function DoctorChatPage() {
         
         if (!input.trim() && !attachedImage) return;
 
+        // Pause any currently playing audio
+        if (audioRef.current) {
+            audioRef.current.pause();
+            setPlayingMessageId(null);
+        }
+
         const userMessageText = attachedImage ? `${input} (gambar terlampir)` : input;
 
         const userMessage: Message = { 
@@ -257,18 +268,25 @@ export default function DoctorChatPage() {
                     });
                 }
 
+                const assistantMessageId = (Date.now() + 1).toString();
+                const textToSpeak = res.isComplete && res.diagnosisResult ? `Berikut adalah diagnosis dan rekomendasi untuk Anda.` : res.response;
+
                 const assistantMessage: Message = {
-                    id: (Date.now() + 1).toString(),
+                    id: assistantMessageId,
                     role: 'model',
                     content: res.isComplete && res.diagnosisResult 
                         ? renderDiagnosis(res.diagnosisResult)
                         : res.response,
-                    textForTts: res.isComplete && res.diagnosisResult ? `Berikut adalah diagnosis dan rekomendasi untuk Anda.` : res.response,
+                    textForTts: textToSpeak,
                 };
                 setMessages(prev => [...prev, assistantMessage]);
+                
                 if (res.response) {
                     setDiagnosisMessages(prev => [...prev, {role: 'model', content: res.response}])
                 }
+                
+                await handleGenerateAndPlayAudio(textToSpeak, assistantMessageId);
+
 
             } catch (error) {
                 console.error(error);
@@ -334,7 +352,6 @@ export default function DoctorChatPage() {
                 messages={messages}
                 loading={isPending}
                 doctor={doctor}
-                onGenerateAudio={handleGenerateAudio}
                 onPlayAudio={playAudio}
                 playingMessageId={playingMessageId}
             />
@@ -354,3 +371,5 @@ export default function DoctorChatPage() {
         </div>
     )
 }
+
+    

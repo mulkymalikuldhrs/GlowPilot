@@ -17,7 +17,6 @@ interface ChatWindowProps {
         dataAiHint: string;
     },
     isLanding?: boolean;
-    onGenerateAudio: (text: string, messageId: string) => void;
     onPlayAudio: (audioUrl: string, messageId: string) => void;
     playingMessageId: string | null;
 }
@@ -27,7 +26,6 @@ export function ChatWindow({
     loading, 
     doctor, 
     isLanding = false,
-    onGenerateAudio,
     onPlayAudio,
     playingMessageId,
 }: ChatWindowProps) {
@@ -61,7 +59,6 @@ export function ChatWindow({
                     key={message.id} 
                     message={message} 
                     doctor={doctor} 
-                    onGenerateAudio={onGenerateAudio}
                     onPlayAudio={onPlayAudio}
                     playingMessageId={playingMessageId}
                 />
@@ -87,3 +84,5 @@ export function ChatWindow({
         </main>
     )
 }
+
+    

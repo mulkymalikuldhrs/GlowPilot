@@ -3,7 +3,7 @@
 
 import type { Message } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Loader2, Sparkles, User } from 'lucide-react';
+import { Loader2, Sparkles, User, Info } from 'lucide-react';
 import Image from 'next/image';
 import { useRef, useEffect } from 'react';
 import { ChatBubble } from './ChatBubble';
@@ -17,9 +17,20 @@ interface ChatWindowProps {
         dataAiHint: string;
     },
     isLanding?: boolean;
+    onGenerateAudio: (text: string, messageId: string) => void;
+    onPlayAudio: (audioUrl: string, messageId: string) => void;
+    playingMessageId: string | null;
 }
 
-export function ChatWindow({ messages, loading, doctor, isLanding = false }: ChatWindowProps) {
+export function ChatWindow({ 
+    messages, 
+    loading, 
+    doctor, 
+    isLanding = false,
+    onGenerateAudio,
+    onPlayAudio,
+    playingMessageId,
+}: ChatWindowProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -45,12 +56,14 @@ export function ChatWindow({ messages, loading, doctor, isLanding = false }: Cha
                     </p>
                 </div>
             )}
-            {messages.map((message, index) => (
+            {messages.map((message) => (
                 <ChatBubble 
-                    key={index} 
+                    key={message.id} 
                     message={message} 
                     doctor={doctor} 
-                    index={index}
+                    onGenerateAudio={onGenerateAudio}
+                    onPlayAudio={onPlayAudio}
+                    playingMessageId={playingMessageId}
                 />
             ))}
             {loading && (
@@ -65,6 +78,12 @@ export function ChatWindow({ messages, loading, doctor, isLanding = false }: Cha
                  </div>
              )}
             <div ref={messagesEndRef} />
+             {!isLanding && (
+                <div className="text-center text-xs text-muted-foreground pt-4 flex items-center justify-center gap-2">
+                    <Info className="h-3 w-3"/>
+                    <span>Disclaimer: AI ini bukan pengganti nasihat medis profesional.</span>
+                </div>
+            )}
         </main>
     )
 }

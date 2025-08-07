@@ -7,8 +7,8 @@ import type { TextToSpeechInput } from "@/ai/schemas/tts-schemas";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { ShoppingCart, Info, Languages, MoreVertical } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ShoppingCart, Info, Languages, MoreVertical, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -16,13 +16,14 @@ import { ThemeSwitcher } from "@/components/common/ThemeSwitcher";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { MessageInput } from "@/components/chat/MessageInput";
-import { Loader2 } from "lucide-react";
 
 export type Message = {
+    id: string;
     role: 'user' | 'model';
     content: React.ReactNode;
     audioUrl?: string;
     textForTts?: string;
+    isGeneratingAudio?: boolean;
 };
 
 type DiagnosisMessage = {
@@ -69,15 +70,18 @@ const doctors: Record<string, { name: string; specialty: string; avatar: string;
 export default function DoctorChatPage() {
     const params = useParams();
     const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+
     const doctorSlug = typeof params.doctor === 'string' ? params.doctor : '';
     const doctor = doctors[doctorSlug];
 
-    const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
     const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
     const [input, setInput] = useState('');
     const { toast } = useToast();
     const [attachedImage, setAttachedImage] = useState<string | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!doctor) {
@@ -87,32 +91,65 @@ export default function DoctorChatPage() {
 
         const startConversation = async () => {
             if (messages.length > 0) return;
-            setLoading(true);
-            try {
-                const res = await conductDiagnosis({ 
-                    currentHistory: [], 
-                    photoDataUri: null, 
-                    systemPrompt: doctor.systemPrompt 
-                });
-                const initialMessage: Message = { role: 'model', content: res.response, textForTts: res.response };
-                setMessages([initialMessage]);
-                setDiagnosisMessages([{ role: 'model', content: res.response }]);
-            } catch (error) {
-                console.error(error);
-                toast({ title: 'Error', description: 'Gagal memulai percakapan dengan AI.', variant: 'destructive' });
-            } finally {
-                setLoading(false);
-            }
+            startTransition(async () => {
+                try {
+                    const res = await conductDiagnosis({ 
+                        currentHistory: [], 
+                        photoDataUri: null, 
+                        systemPrompt: doctor.systemPrompt 
+                    });
+                    const initialMessage: Message = { id: Date.now().toString(), role: 'model', content: res.response, textForTts: res.response };
+                    setMessages([initialMessage]);
+                    setDiagnosisMessages([{ role: 'model', content: res.response }]);
+                } catch (error) {
+                    console.error(error);
+                    toast({ title: 'Error', description: 'Gagal memulai percakapan dengan AI.', variant: 'destructive' });
+                }
+            });
         };
 
         startConversation();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [doctor]);
 
+    useEffect(() => {
+        const audio = audioRef.current;
+        const handleEnded = () => setPlayingMessageId(null);
+        audio?.addEventListener('ended', handleEnded);
+        return () => audio?.removeEventListener('ended', handleEnded);
+    }, [audioRef]);
+
+
     if (!doctor) {
-        // You can return a loader here while redirecting
         return <div className="flex items-center justify-center h-screen"><Loader2 className="h-8 w-8 animate-spin"/></div>;
     }
+
+    const handleGenerateAudio = async (text: string, messageId: string) => {
+        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isGeneratingAudio: true } : m));
+        try {
+            const res = await textToSpeech({ text, voice: doctor.voice });
+            const audioUrl = res.audioDataUri;
+            setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioUrl, isGeneratingAudio: false } : m));
+            playAudio(audioUrl, messageId);
+        } catch (error) {
+            console.error(error);
+            toast({ title: 'Audio Gagal', description: 'Tidak dapat membuat audio saat ini.', variant: 'destructive' });
+            setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isGeneratingAudio: false } : m));
+        }
+    };
+
+    const playAudio = (audioUrl: string, messageId: string) => {
+        if (audioRef.current) {
+            if (playingMessageId === messageId) {
+                audioRef.current.pause();
+                setPlayingMessageId(null);
+            } else {
+                audioRef.current.src = audioUrl;
+                audioRef.current.play();
+                setPlayingMessageId(messageId);
+            }
+        }
+    };
 
     const renderDiagnosis = (res: NonNullable<DiagnosisConversationOutput['diagnosisResult']>) => {
         return (
@@ -154,10 +191,6 @@ export default function DoctorChatPage() {
                         </div>
                     </div>
                 )}
-                 <p className="text-center text-xs text-muted-foreground pt-4 flex items-center justify-center gap-2">
-                    <Info className="h-3 w-3"/>
-                    <span>Disclaimer: Diagnosis AI ini hanya untuk tujuan informasi dan bukan pengganti nasihat medis profesional.</span>
-                </p>
             </div>
         )
     }
@@ -182,6 +215,7 @@ export default function DoctorChatPage() {
         const userMessageText = attachedImage ? `${input} (gambar terlampir)` : input;
 
         const userMessage: Message = { 
+            id: Date.now().toString(),
             role: 'user', 
             content: (
                 <div>
@@ -199,59 +233,58 @@ export default function DoctorChatPage() {
         setInput('');
         const imageToSend = attachedImage;
         setAttachedImage(null);
-        setLoading(true);
-
-        try {
-            const res = await conductDiagnosis({ 
-                currentHistory: [...diagnosisMessages, userDiagnosisMessage],
-                photoDataUri: imageToSend,
-                systemPrompt: doctor.systemPrompt,
-            });
-            
-            if (res.isComplete && res.diagnosisResult?.progressGoal) {
-                const newGoal = {
-                    ...res.diagnosisResult.progressGoal,
-                    progress: 0, // Initial progress is 0
-                };
+        
+        startTransition(async () => {
+            try {
+                const res = await conductDiagnosis({ 
+                    currentHistory: [...diagnosisMessages, userDiagnosisMessage],
+                    photoDataUri: imageToSend,
+                    systemPrompt: doctor.systemPrompt,
+                });
                 
-                // Save to localStorage
-                const existingGoals: Goal[] = JSON.parse(localStorage.getItem('userGoals') || '[]');
-                localStorage.setItem('userGoals', JSON.stringify([...existingGoals, newGoal]));
+                if (res.isComplete && res.diagnosisResult?.progressGoal) {
+                    const newGoal = {
+                        ...res.diagnosisResult.progressGoal,
+                        progress: 0, 
+                    };
+                    
+                    const existingGoals: Goal[] = JSON.parse(localStorage.getItem('userGoals') || '[]');
+                    localStorage.setItem('userGoals', JSON.stringify([...existingGoals, newGoal]));
 
+                    toast({
+                        title: "Tujuan Baru Ditambahkan!",
+                        description: `"${newGoal.title}" telah ditambahkan ke halaman Progres Anda.`,
+                    });
+                }
+
+                const assistantMessage: Message = {
+                    id: (Date.now() + 1).toString(),
+                    role: 'model',
+                    content: res.isComplete && res.diagnosisResult 
+                        ? renderDiagnosis(res.diagnosisResult)
+                        : res.response,
+                    textForTts: res.isComplete && res.diagnosisResult ? `Berikut adalah diagnosis dan rekomendasi untuk Anda.` : res.response,
+                };
+                setMessages(prev => [...prev, assistantMessage]);
+                if (res.response) {
+                    setDiagnosisMessages(prev => [...prev, {role: 'model', content: res.response}])
+                }
+
+            } catch (error) {
+                console.error(error);
+                const errorMessage: Message = {
+                    id: (Date.now() + 1).toString(),
+                    role: 'model',
+                    content: 'Terjadi kesalahan saat melakukan diagnosis. Silakan coba lagi.'
+                };
+                 setMessages(prev => [...prev, errorMessage]);
                 toast({
-                    title: "Tujuan Baru Ditambahkan!",
-                    description: `"${newGoal.title}" telah ditambahkan ke halaman Progres Anda.`,
+                    title: 'Diagnosis Gagal',
+                    description: 'Terjadi kesalahan saat melakukan diagnosis. Silakan coba lagi.',
+                    variant: 'destructive'
                 });
             }
-
-
-            const assistantMessage: Message = {
-                role: 'model',
-                content: res.isComplete && res.diagnosisResult 
-                    ? renderDiagnosis(res.diagnosisResult)
-                    : res.response,
-                textForTts: res.isComplete && res.diagnosisResult ? `Berikut adalah diagnosis dan rekomendasi untuk Anda.` : res.response,
-            };
-            setMessages(prev => [...prev, assistantMessage]);
-            if (res.response) {
-                setDiagnosisMessages(prev => [...prev, {role: 'model', content: res.response}])
-            }
-
-        } catch (error) {
-            console.error(error);
-            const errorMessage: Message = {
-                role: 'model',
-                content: 'Terjadi kesalahan saat melakukan diagnosis. Silakan coba lagi.'
-            };
-             setMessages(prev => [...prev, errorMessage]);
-            toast({
-                title: 'Diagnosis Gagal',
-                description: 'Terjadi kesalahan saat melakukan diagnosis. Silakan coba lagi.',
-                variant: 'destructive'
-            });
-        } finally {
-            setLoading(false);
-        }
+        });
     };
 
     return (
@@ -299,19 +332,23 @@ export default function DoctorChatPage() {
 
             <ChatWindow 
                 messages={messages}
-                loading={loading}
+                loading={isPending}
                 doctor={doctor}
+                onGenerateAudio={handleGenerateAudio}
+                onPlayAudio={playAudio}
+                playingMessageId={playingMessageId}
             />
             
             <MessageInput 
                 input={input}
                 setInput={setInput}
-                loading={loading}
+                loading={isPending}
                 attachedImage={attachedImage}
                 setAttachedImage={setAttachedImage}
                 handleFileChange={handleFileChange}
                 handleSubmit={handleSubmit}
             />
+            <audio ref={audioRef} className="hidden" />
         </div>
     )
 }

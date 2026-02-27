@@ -32,8 +32,8 @@
     --chart-5: 27 87% 67%;
     
     /* Refined Glassmorphism & Aurora Tokens */
-    --glass-bg: rgba(255, 255, 255, 0.5);
-    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.25);
     --aurora-1: #3b82f6; /* Blueprint Blue */
     --aurora-2: #14b8a6; /* Teal */
     --aurora-3: #a855f7; /* Purple */
@@ -61,8 +61,8 @@
     --ring: 217.2 91.2% 59.8%;
 
     /* Refined Glassmorphism & Aurora Tokens */
-    --glass-bg: rgba(10, 10, 20, 0.35);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(10, 10, 20, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.15);
   }
 }
 
@@ -152,9 +152,15 @@
 
 .glass-card {
   background-color: var(--glass-bg);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 4px 20px 0 hsla(0, 0%, 0%, 0.05);
+  box-shadow: 0 8px 32px 0 hsla(0, 0%, 0%, 0.08);
   border-radius: var(--radius);
+  transition: all 0.3s ease-in-out;
+}
+
+.glass-card:hover {
+  box-shadow: 0 12px 48px 0 hsla(0, 0%, 0%, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
 }

@@ -1,9 +1,10 @@
-# GlowPilot Copilot
+# GlowPilot Copilot 2.0
 
-GlowPilot Copilot is a virtual AI dermatology platform that analyzes skin conditions (via chat, voice, or photo) and provides personalized skincare routine recommendations. It features a futuristic interface with glassmorphism and aurora animations, and is integrated with affiliate links for product purchases.
+GlowPilot Copilot is a premium virtual AI dermatology platform powered by **NVIDIA NIM**. It analyzes skin conditions (via chat, voice, or photo) and provides personalized skincare routine recommendations using state-of-the-art LLMs. It features a luxurious futuristic interface with enhanced glassmorphism and aurora animations.
 
 ## Core Features
 
+- **NVIDIA NIM Integration**: Powered by `llama-3.1-nemotron-70b-instruct` for superior diagnostic accuracy and empathy.
 - **AI Dermatologist**: AI Chat Dermatologist (Text & Voice) for diagnosis and personalized skincare routines.
 - **Product Scraper**: Automatically scrapes product data from e-commerce sites.
 - **Voice Chat**: STT + TTS for a hands-free experience.

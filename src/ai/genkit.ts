@@ -4,6 +4,7 @@ config();
 
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
+import {openAI} from 'genkitx-openai';
 
 // Function to get a random API key from the list
 const getApiKey = (): string => {
@@ -28,6 +29,10 @@ export const ai = genkit({
       // The apiKey property now accepts a function that will be called
       // on each request, allowing for dynamic key rotation.
       apiKey: getApiKey,
+    }),
+    openAI({
+      apiKey: process.env.NVIDIA_API_KEY || 'no-key-set',
+      baseURL: 'https://integrate.api.nvidia.com/v1',
     }),
   ],
 });

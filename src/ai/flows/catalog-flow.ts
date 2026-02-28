@@ -64,8 +64,8 @@ const prompt = ai.definePrompt({
   name: 'catalogPrompt',
   input: {schema: CatalogInputSchema},
   output: {schema: CatalogOutputSchema},
-  prompt: (input) => catalogPromptTemplate(input.productQuery, input.platform),
-  model: 'googleai/gemini-1.5-flash-latest',
+  prompt: (input) => [{text: catalogPromptTemplate(input.productQuery, input.platform)}],
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
 });
 
 const catalogFlow = ai.defineFlow(
@@ -75,7 +75,12 @@ const catalogFlow = ai.defineFlow(
     outputSchema: CatalogOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
-    return output || [];
+    try {
+      const {output} = await prompt(input);
+      return output || [];
+    } catch (error) {
+      console.error('Error in catalogFlow:', error);
+      throw new Error('Gagal mengambil data katalog produk. Silakan coba lagi nanti.');
+    }
   }
 );

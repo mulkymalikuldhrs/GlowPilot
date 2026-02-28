@@ -20,7 +20,7 @@ const productComparisonPrompt = ai.definePrompt({
   name: 'productComparisonPrompt',
   input: {schema: ProductComparisonInputSchema},
   output: {schema: ProductComparisonOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
   prompt: `You are a skincare comparison copilot. Your task is to compare two skincare products based on their potential price range, user ratings, and key ingredients.
 Provide a detailed comparison in a paragraph. Then, analyze the comparison and label one of the products as 'Nilai Terbaik', 'Pilihan Dermatologis', or 'Paling Murah' where appropriate.
 If a product is a clear winner in terms of price-to-ingredients ratio, label it 'Nilai Terbaik'.
@@ -39,7 +39,15 @@ const productComparisonFlow = ai.defineFlow(
     outputSchema: ProductComparisonOutputSchema,
   },
   async input => {
-    const {output} = await productComparisonPrompt(input);
-    return output!;
+    try {
+      const {output} = await productComparisonPrompt(input);
+      if (!output) {
+        throw new Error('Gagal membandingkan produk.');
+      }
+      return output;
+    } catch (error) {
+      console.error('Error in productComparisonFlow:', error);
+      throw new Error('Terjadi kesalahan saat membandingkan produk pilihan Anda.');
+    }
   }
 );

@@ -19,6 +19,7 @@ import { useUser } from "@/hooks/use-user";
 import { db } from "@/lib/firebase/client";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import type { DiagnosisMessage, Message } from "@/lib/types";
+export type { Message } from "@/lib/types";
 import { doctors } from "@/lib/doctors";
 
 

@@ -19,7 +19,7 @@ const prompt = ai.definePrompt({
   name: 'antiAgingPrompt',
   input: {schema: AntiAgingInputSchema},
   output: {schema: AntiAgingOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
   prompt: `You are an AI anti-aging specialist. Based on the user's age, skin type, concerns, and current routine, provide a comprehensive anti-aging plan in Bahasa Indonesia.
 
 User's Age: {{{age}}}
@@ -37,7 +37,15 @@ const antiAgingFlow = ai.defineFlow(
     outputSchema: AntiAgingOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const {output} = await prompt(input);
+      if (!output) {
+        throw new Error('Gagal menghasilkan saran anti-aging. Silakan coba lagi.');
+      }
+      return output;
+    } catch (error) {
+      console.error('Error in antiAgingFlow:', error);
+      throw new Error('Terjadi kesalahan saat memproses permintaan anti-aging Anda.');
+    }
   }
 );

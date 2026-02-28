@@ -9,6 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import type { DiagnosisConversationInput, DiagnosisConversationOutput } from '@/ai/schemas/conversational-diagnosis-schemas';
+export type { DiagnosisConversationOutput } from '@/ai/schemas/conversational-diagnosis-schemas';
 import { DiagnosisConversationInputSchema, DiagnosisConversationOutputSchema } from '@/ai/schemas/conversational-diagnosis-schemas';
 import { productCatalogTool } from '../tools/product-catalog-tool';
 
@@ -22,7 +23,7 @@ const prompt = ai.definePrompt({
   input: {schema: DiagnosisConversationInputSchema},
   output: {schema: DiagnosisConversationOutputSchema},
   tools: [productCatalogTool],
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
   prompt: `You are GlowPilot, a friendly and empathetic AI dermatology assistant.
 Your persona and specialization are defined by the system prompt below.
 Your goal is to have a natural, multi-turn conversation with a user to understand their skin concerns before providing a diagnosis and recommendations.
@@ -65,7 +66,15 @@ const conversationalDiagnosisFlow = ai.defineFlow(
     outputSchema: DiagnosisConversationOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const {output} = await prompt(input);
+      if (!output) {
+        throw new Error('Gagal memproses diagnosis percakapan.');
+      }
+      return output;
+    } catch (error) {
+      console.error('Error in conversationalDiagnosisFlow:', error);
+      throw new Error('Terjadi kesalahan saat berkomunikasi dengan asisten dermatologi.');
+    }
   }
 );

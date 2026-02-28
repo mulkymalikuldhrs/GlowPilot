@@ -20,7 +20,7 @@ const prompt = ai.definePrompt({
   name: 'skinConditionDiagnosisPrompt',
   input: {schema: SkinConditionDiagnosisInputSchema},
   output: {schema: SkinConditionDiagnosisOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
   prompt: `You are GlowPilot Copilot, a non-medical virtual dermatology assistant. Your task is to analyze user input to provide a preliminary skin diagnosis, a detailed skincare routine, and specific product recommendations.
 
 User Information:
@@ -47,7 +47,15 @@ const skinConditionDiagnosisFlow = ai.defineFlow(
     outputSchema: SkinConditionDiagnosisOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const {output} = await prompt(input);
+      if (!output) {
+        throw new Error('Gagal menghasilkan diagnosis kulit.');
+      }
+      return output;
+    } catch (error) {
+      console.error('Error in skinConditionDiagnosisFlow:', error);
+      throw new Error('Terjadi kesalahan saat menganalisis kondisi kulit Anda.');
+    }
   }
 );

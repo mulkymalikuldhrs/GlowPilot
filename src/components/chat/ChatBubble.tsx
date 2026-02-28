@@ -2,7 +2,7 @@
 'use client';
 import type { Message } from "@/app/chat/[doctor]/page";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Volume2, PlayCircle, Loader2, StopCircle, Soundwave } from "lucide-react";
+import { User, Volume2, PlayCircle, Loader2, StopCircle, AudioWaveform } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,7 @@ export function ChatBubble({ message, doctor, playingMessageId, onPlayAudio }: C
                         isPlaying && "text-primary"
                     )}
                 >
-                    <Soundwave className="h-4 w-4" />
+                    <AudioWaveform className="h-4 w-4" />
                     <span className="font-medium">{isPlaying ? 'Memutar...' : 'Putar ulang suara'}</span>
                 </button>
             )

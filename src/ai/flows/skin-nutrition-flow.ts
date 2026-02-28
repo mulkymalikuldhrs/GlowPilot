@@ -19,7 +19,7 @@ const prompt = ai.definePrompt({
   name: 'skinNutritionPrompt',
   input: {schema: SkinNutritionInputSchema},
   output: {schema: SkinNutritionOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
   prompt: `You are an AI nutritionist specializing in skin health. Based on the user's diet and skin concerns, provide a detailed analysis and actionable recommendations in Bahasa Indonesia.
 
 User's Diet: {{{currentDiet}}}
@@ -35,7 +35,15 @@ const skinNutritionFlow = ai.defineFlow(
     outputSchema: SkinNutritionOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const {output} = await prompt(input);
+      if (!output) {
+        throw new Error('Gagal menghasilkan saran nutrisi kulit.');
+      }
+      return output;
+    } catch (error) {
+      console.error('Error in skinNutritionFlow:', error);
+      throw new Error('Terjadi kesalahan saat memproses permintaan nutrisi kulit Anda.');
+    }
   }
 );

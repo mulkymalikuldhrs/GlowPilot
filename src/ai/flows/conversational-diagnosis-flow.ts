@@ -13,6 +13,8 @@ import { DiagnosisConversationInputSchema, DiagnosisConversationOutputSchema } f
 import { productCatalogTool } from '../tools/product-catalog-tool';
 
 
+export type { DiagnosisConversationOutput };
+
 export async function conductDiagnosis(input: DiagnosisConversationInput): Promise<DiagnosisConversationOutput> {
   return conversationalDiagnosisFlow(input);
 }
@@ -22,7 +24,7 @@ const prompt = ai.definePrompt({
   input: {schema: DiagnosisConversationInputSchema},
   output: {schema: DiagnosisConversationOutputSchema},
   tools: [productCatalogTool],
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
   prompt: `You are GlowPilot, a friendly and empathetic AI dermatology assistant.
 Your persona and specialization are defined by the system prompt below.
 Your goal is to have a natural, multi-turn conversation with a user to understand their skin concerns before providing a diagnosis and recommendations.

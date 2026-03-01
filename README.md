@@ -11,6 +11,7 @@ GlowPilot Copilot is a virtual AI dermatology platform that analyzes skin condit
 - **Product Comparison**: Compare products by price, rating, and ingredients.
 - **User Profile**: Manages user profiles and history for a personalized experience.
 - **Progress Tracking**: Track your skincare routine progress and set goals.
+- **NVIDIA NIM Integration**: Powered by NVIDIA's high-performance inference microservices for faster and more accurate AI responses.
 
 ## Getting Started
 

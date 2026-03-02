@@ -7,7 +7,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
 import {
   CatalogInputSchema,
   CatalogOutputSchema,
@@ -54,19 +53,19 @@ Find 4-6 of the most relevant, popular, and highly-rated skincare products that 
   }
 `;
 
+export const catalogPrompt = ai.definePrompt({
+  name: 'catalogPrompt',
+  input: {schema: CatalogInputSchema},
+  output: {schema: CatalogOutputSchema},
+  prompt: (input) => [{ text: catalogPromptTemplate(input.productQuery, input.platform) }],
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
+});
+
 export async function getCatalogProducts(
   input: CatalogInput
 ): Promise<CatalogOutput> {
   return catalogFlow(input);
 }
-
-const prompt = ai.definePrompt({
-  name: 'catalogPrompt',
-  input: {schema: CatalogInputSchema},
-  output: {schema: CatalogOutputSchema},
-  prompt: (input) => catalogPromptTemplate(input.productQuery, input.platform),
-  model: 'googleai/gemini-1.5-flash-latest',
-});
 
 const catalogFlow = ai.defineFlow(
   {
@@ -75,7 +74,7 @@ const catalogFlow = ai.defineFlow(
     outputSchema: CatalogOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const {output} = await catalogPrompt(input);
     return output || [];
   }
 );

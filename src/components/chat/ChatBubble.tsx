@@ -2,7 +2,7 @@
 'use client';
 import type { Message } from "@/app/chat/[doctor]/page";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Volume2, PlayCircle, Loader2, StopCircle, Soundwave } from "lucide-react";
+import { User, Volume2, PlayCircle, Loader2, StopCircle, AudioLines as Soundwave } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";

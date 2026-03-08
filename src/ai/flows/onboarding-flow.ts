@@ -18,8 +18,9 @@ const prompt = ai.definePrompt({
   name: 'onboardingPrompt',
   input: {schema: OnboardingInputSchema},
   output: {schema: OnboardingOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
-  prompt: `You are a friendly and engaging AI assistant for GlowPilot, a skincare app. Your goal is to onboard a new user by having a natural, in-depth conversation to build their profile.
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
+  prompt: (input) => [{
+    text: `You are a friendly and engaging AI assistant for GlowPilot, a skincare app. Your goal is to onboard a new user by having a natural, in-depth conversation to build their profile.
 
 You need to collect the following information:
 1. Their name.
@@ -47,10 +48,9 @@ Conversation Flow & Persona:
 Analyze the provided conversation history and generate the next appropriate response or the final profile summary.
 
 Current Conversation:
-{{#each currentHistory}}
-- {{role}}: {{{content}}}
-{{/each}}
-`,
+${input.currentHistory.map(h => `- ${h.role}: ${h.content}`).join('\n')}
+`
+  }],
 });
 
 const onboardingFlow = ai.defineFlow(

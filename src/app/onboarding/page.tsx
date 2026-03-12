@@ -18,7 +18,7 @@ const onboardingAI = {
     specialty: 'Onboarding Specialist', 
     avatar: 'https://placehold.co/100x100.png',
     dataAiHint: 'friendly robot',
-    voice: 'nova'
+    voice: 'nova' as const
 };
 
 
@@ -51,7 +51,7 @@ export default function OnboardingPage() {
         try {
             // Pass user's name to the first prompt
             const initialHistory: OnboardingMessage[] = [{ role: 'user', content: `Nama saya ${user.displayName || 'pengguna baru'}.` }];
-            const res = await conductOnboarding({ currentHistory: initialHistory });
+            const res = await conductOnboarding({ currentHistory: initialHistory as any });
             
             const initialMessage: Message = { id: Date.now().toString(), role: 'model', content: res.response };
             setMessages([initialMessage]);
@@ -79,7 +79,7 @@ export default function OnboardingPage() {
 
         try {
             const res = await conductOnboarding({ 
-                currentHistory: [...onboardingMessages, userOnboardingMessage],
+                currentHistory: [...onboardingMessages, userOnboardingMessage] as any,
             });
 
             const assistantMessage: Message = { id: (Date.now() + 1).toString(), role: 'model', content: res.response };
@@ -138,7 +138,6 @@ export default function OnboardingPage() {
                 loading={loading}
                 doctor={onboardingAI}
                 isLanding={true}
-                onGenerateAudio={() => {}}
                 onPlayAudio={() => {}}
                 playingMessageId={null}
             />

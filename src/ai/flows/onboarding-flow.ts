@@ -6,20 +6,28 @@
  * - conductOnboarding - A function that handles the onboarding conversation.
  */
 
-import {ai} from '@/ai/genkit';
-import { OnboardingInputSchema, OnboardingOutputSchema, type OnboardingInput, type OnboardingOutput } from '@/ai/schemas/onboarding-schemas';
+import { ai } from '@/ai/genkit';
+import {
+  OnboardingInputSchema,
+  OnboardingOutputSchema,
+  type OnboardingInput,
+  type OnboardingOutput,
+} from '@/ai/schemas/onboarding-schemas';
 
-
-export async function conductOnboarding(input: OnboardingInput): Promise<OnboardingOutput> {
+export async function conductOnboarding(
+  input: OnboardingInput
+): Promise<OnboardingOutput> {
   return onboardingFlow(input);
 }
 
 const prompt = ai.definePrompt({
   name: 'onboardingPrompt',
-  input: {schema: OnboardingInputSchema},
-  output: {schema: OnboardingOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
-  prompt: `You are a friendly and engaging AI assistant for GlowPilot, a skincare app. Your goal is to onboard a new user by having a natural, in-depth conversation to build their profile.
+  input: { schema: OnboardingInputSchema },
+  output: { schema: OnboardingOutputSchema },
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
+  prompt: (input) => [
+    {
+      text: `You are a friendly and engaging AI assistant for GlowPilot, a skincare app. Your goal is to onboard a new user by having a natural, in-depth conversation to build their profile.
 
 You need to collect the following information:
 1. Their name.
@@ -47,10 +55,12 @@ Conversation Flow & Persona:
 Analyze the provided conversation history and generate the next appropriate response or the final profile summary.
 
 Current Conversation:
-{{#each currentHistory}}
-- {{role}}: {{{content}}}
-{{/each}}
+${input.currentHistory
+  .map((h) => `- ${h.role}: ${h.content}`)
+  .join('\n')}
 `,
+    },
+  ],
 });
 
 const onboardingFlow = ai.defineFlow(
@@ -59,8 +69,8 @@ const onboardingFlow = ai.defineFlow(
     inputSchema: OnboardingInputSchema,
     outputSchema: OnboardingOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const { output } = await prompt(input);
     return output!;
   }
 );

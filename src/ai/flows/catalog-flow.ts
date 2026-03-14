@@ -6,8 +6,7 @@
  * - getCatalogProducts - A function that fetches product data based on a query.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
 import {
   CatalogInputSchema,
   CatalogOutputSchema,
@@ -16,7 +15,10 @@ import {
 } from '@/ai/schemas/catalog-schemas';
 
 // This prompt is dynamically generated based on user input.
-const catalogPromptTemplate = (productQuery: string, platform: string = "Shopee") => `
+const catalogPromptTemplate = (
+  productQuery: string,
+  platform: string = 'Shopee'
+) => `
 You are GlowPilot Catalog Agent, an expert AI that finds skincare products from e-commerce sites like ${platform} and structures the data for GlowPilot's catalog.
 
 # Goal:
@@ -62,10 +64,12 @@ export async function getCatalogProducts(
 
 const prompt = ai.definePrompt({
   name: 'catalogPrompt',
-  input: {schema: CatalogInputSchema},
-  output: {schema: CatalogOutputSchema},
-  prompt: (input) => catalogPromptTemplate(input.productQuery, input.platform),
-  model: 'googleai/gemini-1.5-flash-latest',
+  input: { schema: CatalogInputSchema },
+  output: { schema: CatalogOutputSchema },
+  prompt: (input) => [
+    { text: catalogPromptTemplate(input.productQuery, input.platform) },
+  ],
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
 });
 
 const catalogFlow = ai.defineFlow(
@@ -75,7 +79,7 @@ const catalogFlow = ai.defineFlow(
     outputSchema: CatalogOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output || [];
   }
 );

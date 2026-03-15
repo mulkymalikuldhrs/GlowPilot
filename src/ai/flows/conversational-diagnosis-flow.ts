@@ -12,6 +12,7 @@ import type { DiagnosisConversationInput, DiagnosisConversationOutput } from '@/
 import { DiagnosisConversationInputSchema, DiagnosisConversationOutputSchema } from '@/ai/schemas/conversational-diagnosis-schemas';
 import { productCatalogTool } from '../tools/product-catalog-tool';
 
+export type { DiagnosisConversationInput, DiagnosisConversationOutput };
 
 export async function conductDiagnosis(input: DiagnosisConversationInput): Promise<DiagnosisConversationOutput> {
   return conversationalDiagnosisFlow(input);
@@ -22,12 +23,15 @@ const prompt = ai.definePrompt({
   input: {schema: DiagnosisConversationInputSchema},
   output: {schema: DiagnosisConversationOutputSchema},
   tools: [productCatalogTool],
-  model: 'googleai/gemini-1.5-flash-latest',
-  prompt: `You are GlowPilot, a friendly and empathetic AI dermatology assistant.
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
+  prompt: (input) => {
+    const parts: any[] = [
+      {
+        text: `You are GlowPilot, a friendly and empathetic AI dermatology assistant.
 Your persona and specialization are defined by the system prompt below.
 Your goal is to have a natural, multi-turn conversation with a user to understand their skin concerns before providing a diagnosis and recommendations.
 
-System Prompt: {{{systemPrompt}}}
+System Prompt: ${input.systemPrompt}
 
 Conversation Flow:
 1.  **Greeting & Opening:** If the conversation is new (history is empty), greet the user warmly and ask them to describe their skin problem.
@@ -47,15 +51,27 @@ Conversation Flow:
 
 Analyze the provided conversation history and generate the next appropriate response or the final diagnosis.
 
-{{#if photoDataUri}}
-User has provided a photo: {{media url=photoDataUri}}
-{{/if}}
-
 Current Conversation History:
-{{#each currentHistory}}
-- {{role}}: {{{content}}}
-{{/each}}
-`,
+${input.currentHistory.map(h => `- ${h.role}: ${h.content}`).join('\n')}
+`
+      }
+    ];
+
+    if (input.photoDataUri) {
+      const contentType = input.photoDataUri.split(';')[0].split(':')[1];
+      parts.push({
+        text: "User has provided a photo.",
+      });
+      parts.push({
+        media: {
+          url: input.photoDataUri,
+          contentType: contentType,
+        }
+      });
+    }
+
+    return parts;
+  },
 });
 
 const conversationalDiagnosisFlow = ai.defineFlow(

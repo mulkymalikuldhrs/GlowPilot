@@ -7,7 +7,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
 import {
   CatalogInputSchema,
   CatalogOutputSchema,
@@ -64,8 +63,8 @@ const prompt = ai.definePrompt({
   name: 'catalogPrompt',
   input: {schema: CatalogInputSchema},
   output: {schema: CatalogOutputSchema},
-  prompt: (input) => catalogPromptTemplate(input.productQuery, input.platform),
-  model: 'googleai/gemini-1.5-flash-latest',
+  prompt: (input) => [{ text: catalogPromptTemplate(input.productQuery, input.platform) }],
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
 });
 
 const catalogFlow = ai.defineFlow(

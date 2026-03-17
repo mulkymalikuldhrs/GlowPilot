@@ -18,8 +18,10 @@ const prompt = ai.definePrompt({
   name: 'onboardingPrompt',
   input: {schema: OnboardingInputSchema},
   output: {schema: OnboardingOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
-  prompt: `You are a friendly and engaging AI assistant for GlowPilot, a skincare app. Your goal is to onboard a new user by having a natural, in-depth conversation to build their profile.
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
+  prompt: (input) => [
+    {
+      text: `You are a friendly and engaging AI assistant for GlowPilot, a skincare app. Your goal is to onboard a new user by having a natural, in-depth conversation to build their profile.
 
 You need to collect the following information:
 1. Their name.
@@ -42,15 +44,15 @@ Conversation Flow & Persona:
     1. Once you have ALL the information, you MUST set \`isComplete\` to true.
     2. Populate the \`userData\` object with ALL the collected details.
     3. Provide a brief, one-sentence \`routineAnalysis\` based on their answers (e.g., "Rutinitas Anda tampaknya bagus, tetapi mungkin kita bisa menambahkan perlindungan matahari." or "Kurang tidur dan stres bisa jadi pemicu masalah kulit Anda.").
-    4. Your final \`response\` should be encouraging and transition them to the dashboard, like "Luar biasa! Profil Anda sudah siap dengan analisis awal. Mari kita lihat dashboard pribadi Anda!"
+    4. Your final \`response\` should be encouraging and transition them to the dashboard, like "Luar biasa! Profil Anda sudah siap with analisis awal. Mari kita lihat dashboard pribadi Anda!"
 
 Analyze the provided conversation history and generate the next appropriate response or the final profile summary.
 
 Current Conversation:
-{{#each currentHistory}}
-- {{role}}: {{{content}}}
-{{/each}}
-`,
+${input.currentHistory.map((h: any) => `- ${h.role}: ${h.content}`).join('\n')}
+`
+    }
+  ]
 });
 
 const onboardingFlow = ai.defineFlow(

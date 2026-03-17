@@ -11,7 +11,7 @@ import {z} from 'genkit';
 
 export const CatalogInputSchema = z.object({
   productQuery: z.string().describe('The search query for the product.'),
-  platform: z.string().optional().default('Shopee').describe('The e-commerce platform to search on.'),
+  platform: z.string().optional().describe('The e-commerce platform to search on.'),
 });
 export type CatalogInput = z.infer<typeof CatalogInputSchema>;
 

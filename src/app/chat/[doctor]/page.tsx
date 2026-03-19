@@ -1,7 +1,8 @@
 
 'use client';
 
-import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/conversational-diagnosis-flow";
+import { conductDiagnosis } from "@/ai/flows/conversational-diagnosis-flow";
+import { type DiagnosisConversationOutput } from "@/ai/schemas/conversational-diagnosis-schemas";
 import { textToSpeech } from "@/ai/flows/tts-flow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";

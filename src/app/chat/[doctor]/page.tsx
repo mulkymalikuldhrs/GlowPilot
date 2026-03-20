@@ -1,7 +1,8 @@
 
 'use client';
 
-import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/conversational-diagnosis-flow";
+import { conductDiagnosis } from "@/ai/flows/conversational-diagnosis-flow";
+import type { DiagnosisConversationOutput } from "@/ai/schemas/conversational-diagnosis-schemas";
 import { textToSpeech } from "@/ai/flows/tts-flow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ import { useUser } from "@/hooks/use-user";
 import { db } from "@/lib/firebase/client";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import type { DiagnosisMessage, Message } from "@/lib/types";
-import { doctors } from "@/lib/doctors";
+import { doctors, type DoctorSlug } from "@/lib/doctors";
 
 
 export default function DoctorChatPage() {
@@ -29,7 +30,7 @@ export default function DoctorChatPage() {
     const [isPending, startTransition] = useTransition();
 
     const doctorSlug = typeof params.doctor === 'string' ? params.doctor : '';
-    const doctor = doctors[doctorSlug];
+    const doctor = doctors[doctorSlug as DoctorSlug];
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
@@ -49,7 +50,7 @@ export default function DoctorChatPage() {
         
         setMessages(prev => prev.map(m => m.id === messageId ? { ...m, isGeneratingAudio: true } : m));
         try {
-            const res = await textToSpeech({ text, voice: doctor.voice });
+            const res = await textToSpeech({ text, voice: doctor.voice as any });
             const audioUrl = res.audioDataUri;
             setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioUrl, isGeneratingAudio: false } : m));
             
@@ -147,7 +148,7 @@ export default function DoctorChatPage() {
                     <div className="space-y-4">
                         <h3 className="font-semibold text-primary">Rekomendasi Produk</h3>
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {res.productRecommendations.map((product, index) => (
+                            {res.productRecommendations.map((product: any, index: number) => (
                                 <Card key={index} className="glass-card">
                                     <CardContent className="p-4">
                                         <p className="font-bold text-sm">{product.name}</p>

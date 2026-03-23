@@ -19,7 +19,7 @@ import { useUser } from "@/hooks/use-user";
 import { db } from "@/lib/firebase/client";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import type { DiagnosisMessage, Message } from "@/lib/types";
-import { doctors } from "@/lib/doctors";
+import { doctors, type DoctorSlug } from "@/lib/doctors";
 
 
 export default function DoctorChatPage() {
@@ -28,7 +28,7 @@ export default function DoctorChatPage() {
     const { user } = useUser();
     const [isPending, startTransition] = useTransition();
 
-    const doctorSlug = typeof params.doctor === 'string' ? params.doctor : '';
+    const doctorSlug = typeof params.doctor === 'string' ? params.doctor as DoctorSlug : '' as DoctorSlug;
     const doctor = doctors[doctorSlug];
 
     const [messages, setMessages] = useState<Message[]>([]);

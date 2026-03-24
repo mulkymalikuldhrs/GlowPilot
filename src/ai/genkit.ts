@@ -4,30 +4,40 @@ config();
 
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
+import {openAI} from 'genkitx-openai';
 
-// Function to get a random API key from the list
-const getApiKey = (): string => {
-  // Read the environment variable every time the function is called.
-  const apiKeys = process.env.GEMINI_API_KEY?.split(',').filter(k => k.trim()) || [];
-  
-  if (apiKeys.length === 0) {
-    // This will now throw an error only when an actual API call is attempted without keys.
-    throw new Error('GEMINI_API_KEY environment variable is not set or empty.');
-  }
+/**
+ * Higher-order function to get an API key retrieval function for Genkit plugins.
+ * Supports comma-separated API keys in environment variables for dynamic rotation.
+ *
+ * @param envVarName - The name of the environment variable (e.g., 'GEMINI_API_KEY', 'NVIDIA_API_KEY').
+ * @returns A function that returns a random API key from the list.
+ */
+const getApiKey = (envVarName: string) => {
+  return (): string => {
+    const apiKeys = process.env[envVarName]?.split(',').filter(k => k.trim()) || [];
 
-  if (apiKeys.length === 1) {
-    return apiKeys[0];
-  }
-  const randomIndex = Math.floor(Math.random() * apiKeys.length);
-  return apiKeys[randomIndex];
+    if (apiKeys.length === 0) {
+      // Return empty string if no keys are found
+      return '';
+    }
+
+    if (apiKeys.length === 1) {
+      return apiKeys[0];
+    }
+    const randomIndex = Math.floor(Math.random() * apiKeys.length);
+    return apiKeys[randomIndex];
+  };
 };
 
 export const ai = genkit({
   plugins: [
     googleAI({
-      // The apiKey property now accepts a function that will be called
-      // on each request, allowing for dynamic key rotation.
-      apiKey: getApiKey,
+      apiKey: getApiKey('GEMINI_API_KEY') as any,
+    }),
+    openAI({
+      apiKey: getApiKey('NVIDIA_API_KEY') as any,
+      baseURL: 'https://integrate.api.nvidia.com/v1',
     }),
   ],
 });

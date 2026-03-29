@@ -2,17 +2,21 @@
 import { config } from 'dotenv';
 config();
 
-import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
+import { genkit } from 'genkit';
+import { googleAI } from '@genkit-ai/googleai';
+import { openAI } from 'genkitx-openai';
 
-// Function to get a random API key from the list
-const getApiKey = (): string => {
-  // Read the environment variable every time the function is called.
-  const apiKeys = process.env.GEMINI_API_KEY?.split(',').filter(k => k.trim()) || [];
+/**
+ * Returns a function that retrieves a random API key from a comma-separated environment variable.
+ * This allows for dynamic key rotation on each request.
+ *
+ * @param envVar The name of the environment variable containing the API key(s).
+ */
+const getApiKey = (envVar: string) => (): string => {
+  const apiKeys = process.env[envVar]?.split(',').filter(k => k.trim()) || [];
   
   if (apiKeys.length === 0) {
-    // This will now throw an error only when an actual API call is attempted without keys.
-    throw new Error('GEMINI_API_KEY environment variable is not set or empty.');
+    throw new Error(`${envVar} environment variable is not set or empty.`);
   }
 
   if (apiKeys.length === 1) {
@@ -25,9 +29,14 @@ const getApiKey = (): string => {
 export const ai = genkit({
   plugins: [
     googleAI({
-      // The apiKey property now accepts a function that will be called
-      // on each request, allowing for dynamic key rotation.
-      apiKey: getApiKey,
+      // @ts-ignore - Genkit types might only expect string, but runtime supports function
+      apiKey: getApiKey('GEMINI_API_KEY'),
+    }),
+    openAI({
+      baseURL: 'https://integrate.api.nvidia.com/v1',
+      // NVIDIA NIM requires casting as any because the plugin's TS definition
+      // might strictly expect a string, but the plugin supports dynamic retrieval.
+      apiKey: getApiKey('NVIDIA_API_KEY') as any,
     }),
   ],
 });

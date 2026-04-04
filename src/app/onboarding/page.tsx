@@ -18,7 +18,7 @@ const onboardingAI = {
     specialty: 'Onboarding Specialist', 
     avatar: 'https://placehold.co/100x100.png',
     dataAiHint: 'friendly robot',
-    voice: 'nova'
+    voice: 'nova' as const
 };
 
 
@@ -138,7 +138,6 @@ export default function OnboardingPage() {
                 loading={loading}
                 doctor={onboardingAI}
                 isLanding={true}
-                onGenerateAudio={() => {}}
                 onPlayAudio={() => {}}
                 playingMessageId={null}
             />

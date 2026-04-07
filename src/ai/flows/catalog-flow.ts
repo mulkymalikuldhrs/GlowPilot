@@ -7,7 +7,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
 import {
   CatalogInputSchema,
   CatalogOutputSchema,
@@ -15,9 +14,22 @@ import {
   type CatalogOutput,
 } from '@/ai/schemas/catalog-schemas';
 
-// This prompt is dynamically generated based on user input.
-const catalogPromptTemplate = (productQuery: string, platform: string = "Shopee") => `
-You are GlowPilot Catalog Agent, an expert AI that finds skincare products from e-commerce sites like ${platform} and structures the data for GlowPilot's catalog.
+export async function getCatalogProducts(
+  input: CatalogInput
+): Promise<CatalogOutput> {
+  return catalogFlow(input);
+}
+
+const prompt = ai.definePrompt({
+  name: 'catalogPrompt',
+  input: {schema: CatalogInputSchema},
+  output: {schema: CatalogOutputSchema},
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
+  prompt: (input) => {
+    const { productQuery, platform = "Shopee" } = input;
+    return [
+      {
+        text: `You are GlowPilot Catalog Agent, an expert AI that finds skincare products from e-commerce sites like ${platform} and structures the data for GlowPilot's catalog.
 
 # Goal:
 Find 4-6 of the most relevant, popular, and highly-rated skincare products that match the user's search query: "${productQuery}". For each product, create a data object and generate a valid affiliate link.
@@ -51,21 +63,10 @@ Find 4-6 of the most relevant, popular, and highly-rated skincare products that 
     "image_url": "https://placehold.co/300x300.png",
     "rating": "4.9",
     "affiliate_link": "https://shopee.co.id/universal-link?af_click_id=GLOWPILOT_USER&af_siteid=glowpilot&url=https%3A%2F%2Fshopee.co.id%2FSOMETHINC-Niacinamide-Moisture-Beet-Serum-20ml-i.182430981.2829975743"
-  }
-`;
-
-export async function getCatalogProducts(
-  input: CatalogInput
-): Promise<CatalogOutput> {
-  return catalogFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'catalogPrompt',
-  input: {schema: CatalogInputSchema},
-  output: {schema: CatalogOutputSchema},
-  prompt: (input) => catalogPromptTemplate(input.productQuery, input.platform),
-  model: 'googleai/gemini-1.5-flash-latest',
+  }`
+      }
+    ];
+  },
 });
 
 const catalogFlow = ai.defineFlow(

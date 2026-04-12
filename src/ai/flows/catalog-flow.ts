@@ -15,6 +15,8 @@ import {
   type CatalogOutput,
 } from '@/ai/schemas/catalog-schemas';
 
+export type { CatalogOutput };
+
 // This prompt is dynamically generated based on user input.
 const catalogPromptTemplate = (productQuery: string, platform: string = "Shopee") => `
 You are GlowPilot Catalog Agent, an expert AI that finds skincare products from e-commerce sites like ${platform} and structures the data for GlowPilot's catalog.
@@ -64,8 +66,8 @@ const prompt = ai.definePrompt({
   name: 'catalogPrompt',
   input: {schema: CatalogInputSchema},
   output: {schema: CatalogOutputSchema},
-  prompt: (input) => catalogPromptTemplate(input.productQuery, input.platform),
-  model: 'googleai/gemini-1.5-flash-latest',
+  prompt: (input) => [{ text: catalogPromptTemplate(input.productQuery, input.platform) }],
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
 });
 
 const catalogFlow = ai.defineFlow(

@@ -10,6 +10,7 @@ import {ai} from '@/ai/genkit';
 import type { AntiAgingInput, AntiAgingOutput } from '@/ai/schemas/anti-aging-schemas';
 import { AntiAgingInputSchema, AntiAgingOutputSchema } from '@/ai/schemas/anti-aging-schemas';
 
+export type { AntiAgingOutput };
 
 export async function getAntiAgingAdvice(input: AntiAgingInput): Promise<AntiAgingOutput> {
   return antiAgingFlow(input);
@@ -19,7 +20,7 @@ const prompt = ai.definePrompt({
   name: 'antiAgingPrompt',
   input: {schema: AntiAgingInputSchema},
   output: {schema: AntiAgingOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
   prompt: `You are an AI anti-aging specialist. Based on the user's age, skin type, concerns, and current routine, provide a comprehensive anti-aging plan in Bahasa Indonesia.
 
 User's Age: {{{age}}}

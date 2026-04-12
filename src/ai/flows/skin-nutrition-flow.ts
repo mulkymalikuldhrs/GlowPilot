@@ -10,6 +10,7 @@ import {ai} from '@/ai/genkit';
 import type { SkinNutritionInput, SkinNutritionOutput } from '@/ai/schemas/skin-nutrition-schemas';
 import { SkinNutritionInputSchema, SkinNutritionOutputSchema } from '@/ai/schemas/skin-nutrition-schemas';
 
+export type { SkinNutritionOutput };
 
 export async function getSkinNutritionAdvice(input: SkinNutritionInput): Promise<SkinNutritionOutput> {
   return skinNutritionFlow(input);
@@ -19,7 +20,7 @@ const prompt = ai.definePrompt({
   name: 'skinNutritionPrompt',
   input: {schema: SkinNutritionInputSchema},
   output: {schema: SkinNutritionOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
   prompt: `You are an AI nutritionist specializing in skin health. Based on the user's diet and skin concerns, provide a detailed analysis and actionable recommendations in Bahasa Indonesia.
 
 User's Diet: {{{currentDiet}}}

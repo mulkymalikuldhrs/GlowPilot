@@ -29,7 +29,7 @@ export default function DoctorChatPage() {
     const [isPending, startTransition] = useTransition();
 
     const doctorSlug = typeof params.doctor === 'string' ? params.doctor : '';
-    const doctor = doctors[doctorSlug];
+    const doctor = doctors[doctorSlug as keyof typeof doctors];
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
@@ -150,9 +150,9 @@ export default function DoctorChatPage() {
                             {res.productRecommendations.map((product, index) => (
                                 <Card key={index} className="glass-card">
                                     <CardContent className="p-4">
-                                        <p className="font-bold text-sm">{product.name}</p>
-                                        <p className="text-xs text-muted-foreground mb-2">{product.category}</p>
-                                        <p className="text-xs text-foreground/80">{product.reason}</p>
+                                        <p className="font-bold text-sm">{(product as any).name}</p>
+                                        <p className="text-xs text-muted-foreground mb-2">{(product as any).category}</p>
+                                        <p className="text-xs text-foreground/80">{(product as any).reason}</p>
                                         <Button variant="outline" size="sm" className="w-full mt-3 text-xs" asChild>
                                             <Link href="/catalog">
                                                 Beli di E-commerce <ShoppingCart className="ml-2 h-3 w-3"/>

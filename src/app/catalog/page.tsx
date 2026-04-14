@@ -66,7 +66,7 @@ export default function CatalogPage() {
     const fetchProducts = async () => {
       startTransition(async () => {
         try {
-          const result = await getCatalogProducts({ productQuery: initialPrompt });
+          const result = await getCatalogProducts({ productQuery: initialPrompt, platform: 'Shopee' });
           setProducts(result);
         } catch (error) {
           console.error('Failed to fetch products:', error);
@@ -178,4 +178,3 @@ export default function CatalogPage() {
     </div>
   );
 }
-

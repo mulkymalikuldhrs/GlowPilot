@@ -1,0 +1,19 @@
+
+> nextn@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.4.6
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.2:3000
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 1151ms (153 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 11.7s (960 modules)
+ GET / 200 in 14129ms
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 906ms (973 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /chat 200 in 1615ms

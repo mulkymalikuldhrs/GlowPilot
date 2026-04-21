@@ -2,6 +2,14 @@
 
 GlowPilot Copilot is a virtual AI dermatology platform that analyzes skin conditions (via chat, voice, or photo) and provides personalized skincare routine recommendations. It features a futuristic interface with glassmorphism and aurora animations, and is integrated with affiliate links for product purchases.
 
+## 🚀 Recent Upgrades (v0.2.0)
+
+GlowPilot Copilot is now powered by **NVIDIA NIM**, providing faster and more accurate AI insights.
+
+- **Vision Diagnosis**: Powered by `meta/llama-3.2-90b-vision-instruct` for superior image analysis.
+- **Advanced Chat**: Powered by `nvidia/llama-3.1-nemotron-70b-instruct` for natural, empathetic, and knowledgeable skincare consultations.
+- **Optimized Performance**: Integrated with NVIDIA's global microservices infrastructure.
+
 ## Core Features
 
 - **AI Dermatologist**: AI Chat Dermatologist (Text & Voice) for diagnosis and personalized skincare routines.
@@ -24,11 +32,13 @@ To run the project locally:
     ```bash
     npm install
     ```
-3.  Run the development server:
+3.  Set up environment variables:
+    Create a `.env` file based on `.env.example` and add your `NVIDIA_API_KEY`.
+4.  Run the development server:
     ```bash
     npm run dev
     ```
-4.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Contributor
 

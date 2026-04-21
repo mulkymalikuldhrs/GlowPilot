@@ -20,14 +20,14 @@ const prompt = ai.definePrompt({
   name: 'skinConditionDiagnosisPrompt',
   input: {schema: SkinConditionDiagnosisInputSchema},
   output: {schema: SkinConditionDiagnosisOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
-  prompt: `You are GlowPilot Copilot, a non-medical virtual dermatology assistant. Your task is to analyze user input to provide a preliminary skin diagnosis, a detailed skincare routine, and specific product recommendations.
+  model: 'openai/meta/llama-3.2-90b-vision-instruct',
+  prompt: (input) => {
+    const parts = [
+      {
+        text: `You are GlowPilot Copilot, a non-medical virtual dermatology assistant. Your task is to analyze user input to provide a preliminary skin diagnosis, a detailed skincare routine, and specific product recommendations.
 
 User Information:
-Description: {{{description}}}
-{{#if photoDataUri}}
-Photo: {{media url=photoDataUri}}
-{{/if}}
+Description: ${input.description}
 
 Your tasks:
 1.  **Analyze and Diagnose:** Based on the user's description and photo (if provided), provide a possible skin diagnosis (e.g., hormonal acne, sensitivity, dullness, dehydration). Frame this as a non-medical observation.
@@ -37,7 +37,22 @@ Your tasks:
 5.  **Disclaimer:** Always include a disclaimer that you are an AI and not a substitute for a professional medical doctor.
 
 Output the entire response in Bahasa Indonesia.
-`,
+`
+      }
+    ];
+
+    if (input.photoDataUri) {
+      const contentType = input.photoDataUri.split(';')[0].split(':')[1];
+      parts.push({
+        media: {
+          url: input.photoDataUri,
+          contentType: contentType,
+        }
+      } as any);
+    }
+
+    return parts;
+  },
 });
 
 const skinConditionDiagnosisFlow = ai.defineFlow(

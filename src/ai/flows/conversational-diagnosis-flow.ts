@@ -17,17 +17,24 @@ export async function conductDiagnosis(input: DiagnosisConversationInput): Promi
   return conversationalDiagnosisFlow(input);
 }
 
+export type { DiagnosisConversationOutput };
+
 const prompt = ai.definePrompt({
   name: 'conversationalDiagnosisPrompt',
   input: {schema: DiagnosisConversationInputSchema},
   output: {schema: DiagnosisConversationOutputSchema},
   tools: [productCatalogTool],
-  model: 'googleai/gemini-1.5-flash-latest',
-  prompt: `You are GlowPilot, a friendly and empathetic AI dermatology assistant.
+  model: 'openai/meta/llama-3.2-90b-vision-instruct',
+  prompt: (input: any): any => {
+    const historyText = input.currentHistory
+      .map((h) => `- ${h.role}: ${h.content}`)
+      .join('\n');
+
+    const promptText = `You are GlowPilot, a friendly and empathetic AI dermatology assistant.
 Your persona and specialization are defined by the system prompt below.
 Your goal is to have a natural, multi-turn conversation with a user to understand their skin concerns before providing a diagnosis and recommendations.
 
-System Prompt: {{{systemPrompt}}}
+System Prompt: ${input.systemPrompt}
 
 Conversation Flow:
 1.  **Greeting & Opening:** If the conversation is new (history is empty), greet the user warmly and ask them to describe their skin problem.
@@ -47,15 +54,24 @@ Conversation Flow:
 
 Analyze the provided conversation history and generate the next appropriate response or the final diagnosis.
 
-{{#if photoDataUri}}
-User has provided a photo: {{media url=photoDataUri}}
-{{/if}}
-
 Current Conversation History:
-{{#each currentHistory}}
-- {{role}}: {{{content}}}
-{{/each}}
-`,
+${historyText}
+`;
+
+    const parts = [{ text: promptText }];
+    if (input.photoDataUri) {
+      const [header] = input.photoDataUri.split(',');
+      const contentType = header.split(';')[0].split(':')[1];
+      parts.push({
+        media: {
+          url: input.photoDataUri,
+          contentType: contentType,
+        },
+      });
+    }
+
+    return parts;
+  },
 });
 
 const conversationalDiagnosisFlow = ai.defineFlow(

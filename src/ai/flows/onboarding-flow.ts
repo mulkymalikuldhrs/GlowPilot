@@ -1,14 +1,19 @@
 
 'use server';
 /**
- * @fileOverview An AI agent that handles user onboarding through a conversation.
+ * @fileOverview An AI agent for onboarding users and collecting initial skin information.
  *
- * - conductOnboarding - A function that handles the onboarding conversation.
+ * - onboardUser - A function that handles the onboarding conversation.
  */
 
 import {ai} from '@/ai/genkit';
-import { OnboardingInputSchema, OnboardingOutputSchema, type OnboardingInput, type OnboardingOutput } from '@/ai/schemas/onboarding-schemas';
+import type { OnboardingInput, OnboardingOutput } from '@/ai/schemas/onboarding-schemas';
+import { OnboardingInputSchema, OnboardingOutputSchema } from '@/ai/schemas/onboarding-schemas';
 
+
+export async function onboardUser(input: OnboardingInput): Promise<OnboardingOutput> {
+  return onboardingFlow(input);
+}
 
 export async function conductOnboarding(input: OnboardingInput): Promise<OnboardingOutput> {
   return onboardingFlow(input);
@@ -18,11 +23,13 @@ const prompt = ai.definePrompt({
   name: 'onboardingPrompt',
   input: {schema: OnboardingInputSchema},
   output: {schema: OnboardingOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
-  prompt: `You are a friendly and engaging AI assistant for GlowPilot, a skincare app. Your goal is to onboard a new user by having a natural, in-depth conversation to build their profile.
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
+  prompt: (input) => [
+    {
+      text: `You are GlowPilot Onboarding Assistant. Your goal is to collect essential skin information from a new user through a friendly conversation in Bahasa Indonesia.
 
-You need to collect the following information:
-1. Their name.
+Information to Collect:
+1. User's name.
 2. Their skin type (e.g., oily, dry, combination, sensitive, normal).
 3. Their primary skin concerns (e.g., acne, wrinkles, dark spots, redness).
 4. Their current skincare routine (what products they use for cleansing, treatment, and moisturizing).
@@ -47,10 +54,10 @@ Conversation Flow & Persona:
 Analyze the provided conversation history and generate the next appropriate response or the final profile summary.
 
 Current Conversation:
-{{#each currentHistory}}
-- {{role}}: {{{content}}}
-{{/each}}
-`,
+${input.currentHistory.map((h: any) => `- ${h.role}: ${h.content}`).join('\n')}
+`
+    }
+  ],
 });
 
 const onboardingFlow = ai.defineFlow(

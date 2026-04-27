@@ -4,7 +4,7 @@ GlowPilot Copilot is a virtual AI dermatology platform that analyzes skin condit
 
 ## Core Features
 
-- **AI Dermatologist**: AI Chat Dermatologist (Text & Voice) for diagnosis and personalized skincare routines.
+- **AI Dermatologist**: AI Chat Dermatologist (Text & Voice) powered by NVIDIA NIM for diagnosis and personalized skincare routines.
 - **Product Scraper**: Automatically scrapes product data from e-commerce sites.
 - **Voice Chat**: STT + TTS for a hands-free experience.
 - **Responsive UI**: Light/Dark mode and language toggle (🇮🇩/🇺🇸).
@@ -29,6 +29,14 @@ To run the project locally:
     npm run dev
     ```
 4.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **AI Integration**: Genkit with NVIDIA NIM & Google AI
+- **Database/Auth**: Firebase
+- **Styling**: Tailwind CSS 4
+- **Icons**: Lucide React
 
 ## Contributor
 

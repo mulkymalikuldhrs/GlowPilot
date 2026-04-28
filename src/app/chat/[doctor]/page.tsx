@@ -1,16 +1,16 @@
 
 'use client';
 
-import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/conversational-diagnosis-flow";
+import { conductDiagnosis } from "@/ai/flows/conversational-diagnosis-flow";
 import { textToSpeech } from "@/ai/flows/tts-flow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingCart, Languages, MoreVertical, Loader2 } from "lucide-react";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition, Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ThemeSwitcher } from "@/components/common/ThemeSwitcher";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChatWindow } from "@/components/chat/ChatWindow";
@@ -18,18 +18,19 @@ import { MessageInput } from "@/components/chat/MessageInput";
 import { useUser } from "@/hooks/use-user";
 import { db } from "@/lib/firebase/client";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import type { DiagnosisMessage, Message } from "@/lib/types";
+import type { DiagnosisMessage, Message, Doctor } from "@/lib/types";
 import { doctors } from "@/lib/doctors";
+import type { DiagnosisConversationOutput } from "@/ai/schemas/conversational-diagnosis-schemas";
 
 
-export default function DoctorChatPage() {
+function DoctorChatContent() {
     const params = useParams();
     const router = useRouter();
     const { user } = useUser();
     const [isPending, startTransition] = useTransition();
 
     const doctorSlug = typeof params.doctor === 'string' ? params.doctor : '';
-    const doctor = doctors[doctorSlug];
+    const doctor = doctors[doctorSlug as keyof typeof doctors] as Doctor;
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
@@ -147,7 +148,7 @@ export default function DoctorChatPage() {
                     <div className="space-y-4">
                         <h3 className="font-semibold text-primary">Rekomendasi Produk</h3>
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {res.productRecommendations.map((product, index) => (
+                            {res.productRecommendations.map((product: any, index: number) => (
                                 <Card key={index} className="glass-card">
                                     <CardContent className="p-4">
                                         <p className="font-bold text-sm">{product.name}</p>
@@ -378,4 +379,12 @@ export default function DoctorChatPage() {
             <audio ref={audioRef} className="hidden" onEnded={() => setPlayingMessageId(null)} />
         </div>
     )
+}
+
+export default function DoctorChatPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center h-screen"><Loader2 className="h-8 w-8 animate-spin"/></div>}>
+            <DoctorChatContent />
+        </Suspense>
+    );
 }

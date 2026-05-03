@@ -1,6 +1,6 @@
 # GlowPilot Copilot
 
-GlowPilot Copilot is a virtual AI dermatology platform that analyzes skin conditions (via chat, voice, or photo) and provides personalized skincare routine recommendations. It features a futuristic interface with glassmorphism and aurora animations, and is integrated with affiliate links for product purchases.
+GlowPilot Copilot is a virtual AI dermatology platform that analyzes skin conditions (via chat, voice, or photo) and provides personalized skincare routine recommendations. It features a futuristic interface with glassmorphism and aurora animations, and is integrated with affiliate links for product purchases. Powered by **NVIDIA NIM** and **Genkit**.
 
 ## Core Features
 
@@ -20,7 +20,14 @@ To run the project locally:
     ```bash
     git clone https://github.com/mulkymalikuldhrs/GlowPilot_2.0.git
     ```
-2.  Install dependencies:
+2.  Set up environment variables in `.env`:
+    ```env
+    NVIDIA_API_KEY=your_nvidia_api_key
+    GEMINI_API_KEY=your_gemini_api_key
+    NEXT_PUBLIC_FIREBASE_API_KEY=...
+    # ... other firebase vars
+    ```
+3.  Install dependencies:
     ```bash
     npm install
     ```

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Star, MessageSquare, Ghost } from 'lucide-react';
+import { Star, MessageSquare, Ghost } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, useTransition } from 'react';
@@ -45,8 +45,8 @@ export default function CatalogPage() {
         } else {
           const lastConsultation = querySnapshot.docs[0].data();
           const diagnosisSummary = lastConsultation.diagnosis?.diagnosis || 'masalah kulit umum';
-          const prompt = `Produk skincare yang direkomendasikan untuk seseorang dengan diagnosis: ${diagnosisSummary}`;
-          setInitialPrompt(prompt);
+          const promptText = `Produk skincare yang direkomendasikan untuk seseorang dengan diagnosis: ${diagnosisSummary}`;
+          setInitialPrompt(promptText);
         }
       } catch (error) {
         console.error("Error fetching last consultation: ", error);
@@ -66,7 +66,7 @@ export default function CatalogPage() {
     const fetchProducts = async () => {
       startTransition(async () => {
         try {
-          const result = await getCatalogProducts({ productQuery: initialPrompt });
+          const result = await getCatalogProducts({ productQuery: initialPrompt, platform: 'Shopee' });
           setProducts(result);
         } catch (error) {
           console.error('Failed to fetch products:', error);
@@ -178,4 +178,3 @@ export default function CatalogPage() {
     </div>
   );
 }
-

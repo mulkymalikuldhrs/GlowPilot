@@ -10,6 +10,10 @@ import {ai} from '@/ai/genkit';
 import { OnboardingInputSchema, OnboardingOutputSchema, type OnboardingInput, type OnboardingOutput } from '@/ai/schemas/onboarding-schemas';
 
 
+export async function onboardUser(input: OnboardingInput): Promise<OnboardingOutput> {
+  return onboardingFlow(input);
+}
+
 export async function conductOnboarding(input: OnboardingInput): Promise<OnboardingOutput> {
   return onboardingFlow(input);
 }
@@ -18,7 +22,7 @@ const prompt = ai.definePrompt({
   name: 'onboardingPrompt',
   input: {schema: OnboardingInputSchema},
   output: {schema: OnboardingOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
   prompt: `You are a friendly and engaging AI assistant for GlowPilot, a skincare app. Your goal is to onboard a new user by having a natural, in-depth conversation to build their profile.
 
 You need to collect the following information:

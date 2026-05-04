@@ -65,7 +65,7 @@ const prompt = ai.definePrompt({
   input: {schema: CatalogInputSchema},
   output: {schema: CatalogOutputSchema},
   prompt: (input) => catalogPromptTemplate(input.productQuery, input.platform),
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
 });
 
 const catalogFlow = ai.defineFlow(

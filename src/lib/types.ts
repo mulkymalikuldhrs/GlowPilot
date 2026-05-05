@@ -1,6 +1,5 @@
 import type React from 'react';
 import type { DoctorSlug } from './doctors';
-export type { Database } from './types/supabase';
 
 export type Message = {
     id: string;

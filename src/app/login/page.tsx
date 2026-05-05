@@ -6,13 +6,10 @@ import { Logo } from "@/components/logo";
 import { useUser } from "@/hooks/use-user";
 import { Sparkles, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from 'lucide-react';
 
-
-export default function LoginPage() {
+function LoginContent() {
     const { user, isNewUser, isLoading } = useUser();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -73,4 +70,17 @@ export default function LoginPage() {
             </p>
         </div>
     )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex flex-col h-screen bg-background items-center justify-center p-8 text-center">
+                <Loader2 className="w-12 h-12 animate-spin text-primary"/>
+                <p className="text-muted-foreground mt-4">Memuat...</p>
+            </div>
+        }>
+            <LoginContent />
+        </Suspense>
+    );
 }

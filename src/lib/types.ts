@@ -1,6 +1,5 @@
 import type React from 'react';
 import type { DoctorSlug } from './doctors';
-export type { Database } from './types/supabase';
 
 export type Message = {
     id: string;
@@ -23,6 +22,6 @@ export type Doctor = {
     description: string;
     avatar: string;
     dataAiHint: string;
-    voice?: 'nova' | 'shimmer' | 'echo';
+    voice?: 'nova' | 'shimmer' | 'echo' | 'alloy' | 'onyx' | 'fable';
     systemPrompt: string;
 };

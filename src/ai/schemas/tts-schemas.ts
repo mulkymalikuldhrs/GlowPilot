@@ -11,7 +11,7 @@ import { z } from 'genkit';
 export const TextToSpeechInputSchema = z.object({
   text: z.string().describe('The text to be converted to speech.'),
   voice: z
-    .enum(['nova', 'shimmer', 'echo'])
+    .enum(['nova', 'shimmer', 'echo', 'alloy', 'onyx', 'fable'])
     .describe('The voice to use for the speech.'),
 });
 export type TextToSpeechInput = z.infer<typeof TextToSpeechInputSchema>;

@@ -6,13 +6,10 @@ import { Logo } from "@/components/logo";
 import { useUser } from "@/hooks/use-user";
 import { Sparkles, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from 'lucide-react';
 
-
-export default function LoginPage() {
+function LoginContent() {
     const { user, isNewUser, isLoading } = useUser();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -72,5 +69,13 @@ export default function LoginPage() {
                 Dengan melanjutkan, Anda menyetujui Ketentuan Layanan dan Kebijakan Privasi kami.
             </p>
         </div>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center h-screen"><Loader2 className="h-8 w-8 animate-spin"/></div>}>
+            <LoginContent />
+        </Suspense>
     )
 }

@@ -1,13 +1,7 @@
 
 'use server';
-/**
- * @fileOverview An AI agent for fetching products from e-commerce sites and generating affiliate links.
- *
- * - getCatalogProducts - A function that fetches product data based on a query.
- */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
 import {
   CatalogInputSchema,
   CatalogOutputSchema,
@@ -15,28 +9,29 @@ import {
   type CatalogOutput,
 } from '@/ai/schemas/catalog-schemas';
 
-// This prompt is dynamically generated based on user input.
-const catalogPromptTemplate = (productQuery: string, platform: string = "Shopee") => `
-You are GlowPilot Catalog Agent, an expert AI that finds skincare products from e-commerce sites like ${platform} and structures the data for GlowPilot's catalog.
+/**
+ * @fileOverview A flow for retrieving product recommendations from a simulated catalog.
+ *
+ * - getCatalogProducts - A function that returns a list of products based on a query.
+ */
 
-# Goal:
-Find 4-6 of the most relevant, popular, and highly-rated skincare products that match the user's search query: "${productQuery}". For each product, create a data object and generate a valid affiliate link.
+const catalogPromptTemplate = (productQuery: string, platform: string) => `
+You are an expert skincare product curator. Based on the following query, provide a list of highly-rated, relevant skincare products available on ${platform}.
 
-# Instructions:
-1.  **Search Simulation:** Use your knowledge to find real, well-known skincare products available in the Indonesian market on ${platform} that are a great match for "${productQuery}".
-2.  **Data Extraction:** For each product you find, extract or generate the following information:
-    *   **title:** The full, correct product name.
-    *   **price:** A realistic price in Indonesian Rupiah (Rp). Format: "RpXX.XXX".
-    *   **description:** A very brief, one-sentence compelling description in Bahasa Indonesia.
-    *   **image_url:** A placeholder image URL from placehold.co. The image MUST be square (e.g., 300x300).
-    *   **rating:** A realistic user rating between 4.7 and 5.0.
-    *   **affiliate_link:** The most important step. You MUST generate a valid affiliate link. First, create a plausible original product URL. Then, encode it and insert it into the correct affiliate template.
-3.  **Affiliate Link Generation (Crucial):**
-    *   First, create a realistic, direct product URL. Example: \`https://shopee.co.id/SOMETHINC-Niacinamide-Moisture-Beet-Serum-20ml-i.182430981.2829975743\`
-    *   URL-encode this direct link.
-    *   Insert the encoded URL into the affiliate template for the specified platform.
-        *   **Shopee Template:** \`https://shopee.co.id/universal-link?af_click_id=GLOWPILOT_USER&af_siteid=glowpilot&url={ENCODED_PRODUCT_URL}\`
-        *   **Tokopedia Template:** \`https://ta.tokopedia.link?af_click_id=GLOWPILOT_USER&af_siteid=glowpilot&url={ENCODED_PRODUCT_URL}\`
+**User Query:** ${productQuery}
+
+**Instructions:**
+1.  **Product Selection:** Select exactly 3-5 products that directly address the user's query.
+2.  **Product Details:** For each product, provide:
+    *   \`title\`: Full product name.
+    *   \`price\`: Approximate price in Rupiah (e.g., "Rp150.000").
+    *   \`description\`: A concise, one-sentence description in Bahasa Indonesia highlighting why it's good for the user's concern.
+    *   \`image_url\`: A placeholder URL like \`https://placehold.co/300x300.png\`.
+    *   \`rating\`: A realistic rating between 4.7 and 5.0.
+    *   \`affiliate_link\`: A simulated affiliate link using the provided templates.
+3.  **Affiliate Link Templates:**
+    *   **Shopee Template:** \`https://shopee.co.id/universal-link?af_click_id=GLOWPILOT_USER&af_siteid=glowpilot&url={ENCODED_PRODUCT_URL}\`
+    *   **Tokopedia Template:** \`https://ta.tokopedia.link?af_click_id=GLOWPILOT_USER&af_siteid=glowpilot&url={ENCODED_PRODUCT_URL}\`
 4.  **Final Output:**
     *   Return ONLY a valid JSON array of these product objects.
     *   Do not include any products that are out of stock or have a rating below 4.7.
@@ -64,8 +59,8 @@ const prompt = ai.definePrompt({
   name: 'catalogPrompt',
   input: {schema: CatalogInputSchema},
   output: {schema: CatalogOutputSchema},
-  prompt: (input) => catalogPromptTemplate(input.productQuery, input.platform),
-  model: 'googleai/gemini-1.5-flash-latest',
+  prompt: (input) => [{ text: catalogPromptTemplate(input.productQuery, input.platform) }],
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
 });
 
 const catalogFlow = ai.defineFlow(

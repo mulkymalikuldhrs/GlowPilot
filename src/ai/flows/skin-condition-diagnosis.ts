@@ -20,15 +20,28 @@ const prompt = ai.definePrompt({
   name: 'skinConditionDiagnosisPrompt',
   input: {schema: SkinConditionDiagnosisInputSchema},
   output: {schema: SkinConditionDiagnosisOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
-  prompt: `You are GlowPilot Copilot, a non-medical virtual dermatology assistant. Your task is to analyze user input to provide a preliminary skin diagnosis, a detailed skincare routine, and specific product recommendations.
+  model: 'openai/meta/llama-3.2-90b-vision-instruct',
+  prompt: (input) => {
+    const parts: any[] = [
+      { text: `You are GlowPilot Copilot, a non-medical virtual dermatology assistant. Your task is to analyze user input to provide a preliminary skin diagnosis, a detailed skincare routine, and specific product recommendations.
 
 User Information:
-Description: {{{description}}}
-{{#if photoDataUri}}
-Photo: {{media url=photoDataUri}}
-{{/if}}
+Description: ${input.description}
+` }
+    ];
 
+    if (input.photoDataUri) {
+      const contentType = input.photoDataUri.split(';')[0].split(':')[1];
+      parts.push({
+        media: {
+          url: input.photoDataUri,
+          contentType: contentType,
+        }
+      });
+    }
+
+    parts.push({
+      text: `
 Your tasks:
 1.  **Analyze and Diagnose:** Based on the user's description and photo (if provided), provide a possible skin diagnosis (e.g., hormonal acne, sensitivity, dullness, dehydration). Frame this as a non-medical observation.
 2.  **Create Skincare Routines:** Design a detailed AM (morning) and PM (evening) skincare routine tailored to the diagnosis. List the steps clearly.
@@ -37,7 +50,11 @@ Your tasks:
 5.  **Disclaimer:** Always include a disclaimer that you are an AI and not a substitute for a professional medical doctor.
 
 Output the entire response in Bahasa Indonesia.
-`,
+`
+    });
+
+    return parts;
+  },
 });
 
 const skinConditionDiagnosisFlow = ai.defineFlow(

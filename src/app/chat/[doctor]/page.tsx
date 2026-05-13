@@ -29,7 +29,7 @@ export default function DoctorChatPage() {
     const [isPending, startTransition] = useTransition();
 
     const doctorSlug = typeof params.doctor === 'string' ? params.doctor : '';
-    const doctor = doctors[doctorSlug];
+    const doctor = doctors[doctorSlug as keyof typeof doctors];
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
@@ -40,7 +40,7 @@ export default function DoctorChatPage() {
     const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
 
     const handleAutoPlayAudio = async (text: string, messageId: string) => {
-        if (!text || !doctor.voice) return;
+        if (!text || !doctor?.voice) return;
         
         // Stop any currently playing audio
         if (audioRef.current && !audioRef.current.paused) {

@@ -12,6 +12,7 @@ import type { DiagnosisConversationInput, DiagnosisConversationOutput } from '@/
 import { DiagnosisConversationInputSchema, DiagnosisConversationOutputSchema } from '@/ai/schemas/conversational-diagnosis-schemas';
 import { productCatalogTool } from '../tools/product-catalog-tool';
 
+export type { DiagnosisConversationOutput };
 
 export async function conductDiagnosis(input: DiagnosisConversationInput): Promise<DiagnosisConversationOutput> {
   return conversationalDiagnosisFlow(input);
@@ -22,12 +23,15 @@ const prompt = ai.definePrompt({
   input: {schema: DiagnosisConversationInputSchema},
   output: {schema: DiagnosisConversationOutputSchema},
   tools: [productCatalogTool],
-  model: 'googleai/gemini-1.5-flash-latest',
-  prompt: `You are GlowPilot, a friendly and empathetic AI dermatology assistant.
+  model: 'openai/nvidia/llama-3.1-nemotron-70b-instruct',
+  prompt: (input) => {
+    const parts: any[] = [
+      {
+        text: `You are GlowPilot, a friendly and empathetic AI dermatology assistant.
 Your persona and specialization are defined by the system prompt below.
 Your goal is to have a natural, multi-turn conversation with a user to understand their skin concerns before providing a diagnosis and recommendations.
 
-System Prompt: {{{systemPrompt}}}
+System Prompt: ${input.systemPrompt}
 
 Conversation Flow:
 1.  **Greeting & Opening:** If the conversation is new (history is empty), greet the user warmly and ask them to describe their skin problem.
@@ -45,17 +49,28 @@ Conversation Flow:
     d.  **Final Response:** Your final response in the 'response' field should be a concluding remark, as the main diagnosis will be displayed separately. Example: "Terima kasih atas informasinya. Berikut adalah analisis lengkap dan rekomendasi dari saya. Saya juga telah menambahkan tujuan baru ke halaman Progres Anda!"
 6.  **Language:** Always respond in Bahasa Indonesia.
 
-Analyze the provided conversation history and generate the next appropriate response or the final diagnosis.
+Analyze the provided conversation history and generate the next appropriate response or the final diagnosis.`
+      }
+    ];
 
-{{#if photoDataUri}}
-User has provided a photo: {{media url=photoDataUri}}
-{{/if}}
+    if (input.photoDataUri) {
+      const contentType = input.photoDataUri.split(';')[0].split(':')[1];
+      parts.push({
+        media: {
+          url: input.photoDataUri,
+          contentType: contentType
+        }
+      });
+    }
 
-Current Conversation History:
-{{#each currentHistory}}
-- {{role}}: {{{content}}}
-{{/each}}
-`,
+    input.currentHistory.forEach(h => {
+      parts.push({
+        text: `\n- ${h.role}: ${h.content}`
+      });
+    });
+
+    return parts;
+  }
 });
 
 const conversationalDiagnosisFlow = ai.defineFlow(
@@ -66,6 +81,7 @@ const conversationalDiagnosisFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) throw new Error('No output from prompt');
+    return output;
   }
 );

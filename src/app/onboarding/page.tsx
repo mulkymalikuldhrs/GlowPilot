@@ -137,8 +137,6 @@ export default function OnboardingPage() {
                 messages={messages}
                 loading={loading}
                 doctor={onboardingAI}
-                isLanding={true}
-                onGenerateAudio={() => {}}
                 onPlayAudio={() => {}}
                 playingMessageId={null}
             />

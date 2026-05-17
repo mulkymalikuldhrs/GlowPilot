@@ -136,9 +136,7 @@ export default function OnboardingPage() {
              <ChatWindow 
                 messages={messages}
                 loading={loading}
-                doctor={onboardingAI}
-                isLanding={true}
-                onGenerateAudio={() => {}}
+                doctor={onboardingAI as any}
                 onPlayAudio={() => {}}
                 playingMessageId={null}
             />

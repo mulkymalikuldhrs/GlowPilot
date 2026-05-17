@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingCart, Languages, MoreVertical, Loader2 } from "lucide-react";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition, use } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -22,14 +22,13 @@ import type { DiagnosisMessage, Message } from "@/lib/types";
 import { doctors } from "@/lib/doctors";
 
 
-export default function DoctorChatPage() {
-    const params = useParams();
+export default function DoctorChatPage({ params }: { params: Promise<{ doctor: string }> }) {
+    const { doctor: doctorSlug } = use(params);
     const router = useRouter();
     const { user } = useUser();
     const [isPending, startTransition] = useTransition();
 
-    const doctorSlug = typeof params.doctor === 'string' ? params.doctor : '';
-    const doctor = doctors[doctorSlug];
+    const doctor = doctors[doctorSlug as keyof typeof doctors];
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
@@ -147,7 +146,7 @@ export default function DoctorChatPage() {
                     <div className="space-y-4">
                         <h3 className="font-semibold text-primary">Rekomendasi Produk</h3>
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {res.productRecommendations.map((product, index) => (
+                            {res.productRecommendations.map((product: any, index: number) => (
                                 <Card key={index} className="glass-card">
                                     <CardContent className="p-4">
                                         <p className="font-bold text-sm">{product.name}</p>

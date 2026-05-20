@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Star, MessageSquare, Ghost } from 'lucide-react';
+import { Star, MessageSquare, Ghost } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, useTransition } from 'react';
@@ -66,7 +66,7 @@ export default function CatalogPage() {
     const fetchProducts = async () => {
       startTransition(async () => {
         try {
-          const result = await getCatalogProducts({ productQuery: initialPrompt });
+          const result = await getCatalogProducts({ productQuery: initialPrompt, platform: 'Shopee' });
           setProducts(result);
         } catch (error) {
           console.error('Failed to fetch products:', error);
@@ -178,4 +178,3 @@ export default function CatalogPage() {
     </div>
   );
 }
-

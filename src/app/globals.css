@@ -1,66 +1,88 @@
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: hsl(220 20% 99%);
+  --color-foreground: hsl(224 71.4% 4.1%);
+  --color-card: hsl(220 20% 99%);
+  --color-card-foreground: hsl(224 71.4% 4.1%);
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(224 71.4% 4.1%);
+  --color-primary: hsl(221.2 83.2% 53.3%);
+  --color-primary-foreground: hsl(210 20% 98%);
+  --color-secondary: hsl(220 14.3% 95.9%);
+  --color-secondary-foreground: hsl(220.9 39.3% 11%);
+  --color-muted: hsl(220 14.3% 95.9%);
+  --color-muted-foreground: hsl(220 8.9% 46.1%);
+  --color-accent: hsl(220 14.3% 95.9%);
+  --color-accent-foreground: hsl(220.9 39.3% 11%);
+  --color-destructive: hsl(0 84.2% 60.2%);
+  --color-destructive-foreground: hsl(210 20% 98%);
+  --color-border: hsl(220 13% 91%);
+  --color-input: hsl(220 13% 91%);
+  --color-ring: hsl(221.2 83.2% 53.3%);
+
+  --radius-lg: 1rem;
+  --radius-md: calc(1rem - 2px);
+  --radius-sm: calc(1rem - 4px);
+
+  --animate-aurora-1: aurora-1 30s infinite alternate ease-in-out;
+  --animate-aurora-2: aurora-2 35s infinite alternate ease-in-out;
+  --animate-aurora-3: aurora-3 28s infinite alternate ease-in-out;
+
+  @keyframes aurora-1 {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    50% { transform: translate(40vw, 50vh) scale(1.5) rotate(120deg); }
+    100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  }
+
+  @keyframes aurora-2 {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    50% { transform: translate(-50vw, -30vh) scale(0.7) rotate(-120deg); }
+    100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  }
+
+  @keyframes aurora-3 {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-30vw, 30vh) rotate(60deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+  }
+}
 
 @layer base {
   :root {
-    --background: 220 20% 99%;
-    --foreground: 224 71.4% 4.1%;
-    --card: 220 20% 99%;
-    --card-foreground: 224 71.4% 4.1%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 221.2 83.2% 53.3%; /* New Blueprint Blue */
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 1rem;
-    --chart-1: 221.2 83.2% 53.3%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    
-    /* Refined Glassmorphism & Aurora Tokens */
     --glass-bg: rgba(255, 255, 255, 0.5);
     --glass-border: rgba(255, 255, 255, 0.2);
-    --aurora-1: #3b82f6; /* Blueprint Blue */
-    --aurora-2: #14b8a6; /* Teal */
-    --aurora-3: #a855f7; /* Purple */
+    --aurora-1: #3b82f6;
+    --aurora-2: #14b8a6;
+    --aurora-3: #a855f7;
   }
 
   .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 217.2 91.2% 59.8%; /* Brighter Blue for Dark Mode */
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 217.2 91.2% 59.8%;
+    --color-background: hsl(224 71.4% 4.1%);
+    --color-foreground: hsl(210 20% 98%);
+    --color-card: hsl(224 71.4% 4.1%);
+    --color-card-foreground: hsl(210 20% 98%);
+    --color-popover: hsl(224 71.4% 4.1%);
+    --color-popover-foreground: hsl(210 20% 98%);
+    --color-primary: hsl(217.2 91.2% 59.8%);
+    --color-primary-foreground: hsl(210 20% 98%);
+    --color-secondary: hsl(215 27.9% 16.9%);
+    --color-secondary-foreground: hsl(210 20% 98%);
+    --color-muted: hsl(215 27.9% 16.9%);
+    --color-muted-foreground: hsl(217.9 10.6% 64.9%);
+    --color-accent: hsl(215 27.9% 16.9%);
+    --color-accent-foreground: hsl(210 20% 98%);
+    --color-destructive: hsl(0 62.8% 30.6%);
+    --color-destructive-foreground: hsl(210 20% 98%);
+    --color-border: hsl(215 27.9% 16.9%);
+    --color-input: hsl(215 27.9% 16.9%);
+    --color-ring: hsl(217.2 91.2% 59.8%);
 
-    /* Refined Glassmorphism & Aurora Tokens */
     --glass-bg: rgba(10, 10, 20, 0.35);
     --glass-border: rgba(255, 255, 255, 0.1);
   }
@@ -111,7 +133,7 @@
   background: var(--aurora-1);
   top: -20vh;
   left: -10vw;
-  animation: aurora-1 30s infinite alternate ease-in-out;
+  animation: var(--animate-aurora-1);
 }
 
 .aurora-bg .aurora-2 {
@@ -120,7 +142,7 @@
   background: var(--aurora-2);
   top: 40vh;
   left: 30vw;
-  animation: aurora-2 35s infinite alternate ease-in-out;
+  animation: var(--animate-aurora-2);
 }
 
 .aurora-bg .aurora-3 {
@@ -129,25 +151,7 @@
   background: var(--aurora-3);
   top: 10vh;
   right: -25vw;
-  animation: aurora-3 28s infinite alternate ease-in-out;
-}
-
-@keyframes aurora-1 {
-  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  50% { transform: translate(40vw, 50vh) scale(1.5) rotate(120deg); }
-  100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-}
-
-@keyframes aurora-2 {
-  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  50% { transform: translate(-50vw, -30vh) scale(0.7) rotate(-120deg); }
-  100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-}
-
-@keyframes aurora-3 {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  50% { transform: translate(-30vw, 30vh) rotate(60deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+  animation: var(--animate-aurora-3);
 }
 
 .glass-card {
@@ -156,5 +160,5 @@
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--glass-border);
   box-shadow: 0 4px 20px 0 hsla(0, 0%, 0%, 0.05);
-  border-radius: var(--radius);
+  border-radius: 1rem;
 }

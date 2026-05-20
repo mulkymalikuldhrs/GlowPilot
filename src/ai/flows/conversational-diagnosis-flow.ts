@@ -8,10 +8,15 @@
  */
 
 import {ai} from '@/ai/genkit';
-import type { DiagnosisConversationInput, DiagnosisConversationOutput } from '@/ai/schemas/conversational-diagnosis-schemas';
-import { DiagnosisConversationInputSchema, DiagnosisConversationOutputSchema } from '@/ai/schemas/conversational-diagnosis-schemas';
+import {
+  DiagnosisConversationInputSchema,
+  DiagnosisConversationOutputSchema,
+  type DiagnosisConversationInput,
+  type DiagnosisConversationOutput
+} from '@/ai/schemas/conversational-diagnosis-schemas';
 import { productCatalogTool } from '../tools/product-catalog-tool';
 
+export type { DiagnosisConversationInput, DiagnosisConversationOutput };
 
 export async function conductDiagnosis(input: DiagnosisConversationInput): Promise<DiagnosisConversationOutput> {
   return conversationalDiagnosisFlow(input);
@@ -22,12 +27,14 @@ const prompt = ai.definePrompt({
   input: {schema: DiagnosisConversationInputSchema},
   output: {schema: DiagnosisConversationOutputSchema},
   tools: [productCatalogTool],
-  model: 'googleai/gemini-1.5-flash-latest',
-  prompt: `You are GlowPilot, a friendly and empathetic AI dermatology assistant.
+  model: 'openai/meta/llama-3.2-90b-vision-instruct',
+  prompt: (input) => [
+    {
+      text: `You are GlowPilot, a friendly and empathetic AI dermatology assistant.
 Your persona and specialization are defined by the system prompt below.
 Your goal is to have a natural, multi-turn conversation with a user to understand their skin concerns before providing a diagnosis and recommendations.
 
-System Prompt: {{{systemPrompt}}}
+System Prompt: ${input.systemPrompt}
 
 Conversation Flow:
 1.  **Greeting & Opening:** If the conversation is new (history is empty), greet the user warmly and ask them to describe their skin problem.
@@ -47,15 +54,17 @@ Conversation Flow:
 
 Analyze the provided conversation history and generate the next appropriate response or the final diagnosis.
 
-{{#if photoDataUri}}
-User has provided a photo: {{media url=photoDataUri}}
-{{/if}}
-
 Current Conversation History:
-{{#each currentHistory}}
-- {{role}}: {{{content}}}
-{{/each}}
-`,
+${input.currentHistory.map(h => `- ${h.role}: ${h.content}`).join('\n')}
+`
+    },
+    ...(input.photoDataUri ? [{
+      media: {
+        url: input.photoDataUri,
+        contentType: input.photoDataUri.split(';')[0].split(':')[1] || 'image/jpeg'
+      }
+    }] : [])
+  ],
 });
 
 const conversationalDiagnosisFlow = ai.defineFlow(

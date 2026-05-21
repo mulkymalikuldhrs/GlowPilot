@@ -1,14 +1,10 @@
-import type React from 'react';
-import type { DoctorSlug } from './doctors';
-export type { Database } from './types/supabase';
-
 export type Message = {
     id: string;
     role: 'user' | 'model';
-    content: React.ReactNode;
+    content: string | React.ReactNode;
     audioUrl?: string;
-    textForTts?: string;
     isGeneratingAudio?: boolean;
+    textForTts?: string;
 };
 
 export type DiagnosisMessage = {
@@ -16,13 +12,11 @@ export type DiagnosisMessage = {
     content: string;
 };
 
-export type Doctor = {
-    slug: DoctorSlug;
-    name: string;
-    specialty: string;
-    description: string;
-    avatar: string;
-    dataAiHint: string;
-    voice?: 'nova' | 'shimmer' | 'echo';
-    systemPrompt: string;
-};
+export interface Goal {
+    id: string;
+    title: string;
+    targetDate: string;
+    progress: number;
+    createdAt: any;
+    isAiRecommended?: boolean;
+}

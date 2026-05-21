@@ -29,7 +29,7 @@ export default function DoctorChatPage() {
     const [isPending, startTransition] = useTransition();
 
     const doctorSlug = typeof params.doctor === 'string' ? params.doctor : '';
-    const doctor = doctors[doctorSlug];
+    const doctor = doctors[doctorSlug as keyof typeof doctors];
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [diagnosisMessages, setDiagnosisMessages] = useState<DiagnosisMessage[]>([]);
@@ -147,7 +147,7 @@ export default function DoctorChatPage() {
                     <div className="space-y-4">
                         <h3 className="font-semibold text-primary">Rekomendasi Produk</h3>
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {res.productRecommendations.map((product, index) => (
+                            {res.productRecommendations.map((product: any, index: number) => (
                                 <Card key={index} className="glass-card">
                                     <CardContent className="p-4">
                                         <p className="font-bold text-sm">{product.name}</p>
@@ -271,7 +271,7 @@ export default function DoctorChatPage() {
                             });
                         }
                        // Save the entire consultation
-                        const finalHistory = [...currentDiagnosisHistory, { role: 'model' as const, content: res.response }];
+                        const finalHistory: DiagnosisMessage[] = [...currentDiagnosisHistory, { role: 'model' as const, content: res.response }];
                         await saveConsultation(finalHistory, res.diagnosisResult);
                     }
                 }

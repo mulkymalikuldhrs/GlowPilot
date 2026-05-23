@@ -4,13 +4,22 @@ GlowPilot Copilot is a virtual AI dermatology platform that analyzes skin condit
 
 ## Core Features
 
-- **AI Dermatologist**: AI Chat Dermatologist (Text & Voice) for diagnosis and personalized skincare routines.
-- **Product Scraper**: Automatically scrapes product data from e-commerce sites.
-- **Voice Chat**: STT + TTS for a hands-free experience.
-- **Responsive UI**: Light/Dark mode and language toggle (🇮🇩/🇺🇸).
-- **Product Comparison**: Compare products by price, rating, and ingredients.
-- **User Profile**: Manages user profiles and history for a personalized experience.
-- **Progress Tracking**: Track your skincare routine progress and set goals.
+- **AI Dermatologist (Powered by NVIDIA NIM)**: Advanced AI analysis using `llama-3.1-nemotron-70b-instruct` and `llama-3.2-90b-vision-instruct` for highly accurate diagnoses and personalized routines.
+- **Vision-Based Analysis**: Analyze skin conditions directly from photos using state-of-the-art vision models.
+- **Conversational Diagnosis**: Empathetic multi-turn chat to understand your skin concerns deeply.
+- **Product Scraper & Catalog**: Automatically finds relevant products from Indonesian e-commerce (Shopee, Tokopedia) with affiliate link generation.
+- **Voice Chat**: Hands-free experience with STT and TTS (powered by Gemini).
+- **Progress Tracking**: Set and track skin health goals with AI-guided milestones.
+- **Responsive UI**: Modern, futuristic design with Tailwind CSS 4, Glassmorphism, and Aurora effects.
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **AI Orchestration**: Genkit
+- **AI Models**: NVIDIA NIM (Llama 3.1 & 3.2), Google AI (Gemini)
+- **Styling**: Tailwind CSS 4
+- **Backend/DB**: Firebase (Firestore, Auth)
+- **State Management**: Jotai
 
 ## Getting Started
 
@@ -22,13 +31,24 @@ To run the project locally:
     ```
 2.  Install dependencies:
     ```bash
-    npm install
+    npm install --legacy-peer-deps
     ```
-3.  Run the development server:
+3.  Set up environment variables in `.env`:
+    ```env
+    NEXT_PUBLIC_FIREBASE_API_KEY=...
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+    NEXT_PUBLIC_FIREBASE_APP_ID=...
+    GEMINI_API_KEY=...
+    NVIDIA_API_KEY=...
+    ```
+4.  Run the development server:
     ```bash
     npm run dev
     ```
-4.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Contributor
 

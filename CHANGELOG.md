@@ -5,6 +5,16 @@ All notable changes to GlowPilot Copilot will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-03-04
+
+### Added
+
+- 🎉 Official v1.0.0 release of GlowPilot Copilot
+- Complete trilingual README (English, Bahasa Indonesia, 中文)
+- Community files: CODE_OF_CONDUCT.md, SECURITY.md, CONTRIBUTING.md
+- GitHub issue templates, PR template, and FUNDING.yml
+- Branch cleanup and repository consolidation
+
 ## [0.1.0] - 2025-08-01
 
 ### Added

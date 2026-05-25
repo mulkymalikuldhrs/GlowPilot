@@ -36,7 +36,10 @@ export async function POST(req: Request) {
     //     return NextResponse.json({ error: `Webhook Error: ${errorMessage}` }, { status: 400 });
     // }
 
-    // Step 2: Parse the event body (placeholder until Stripe SDK is integrated)
+    // Step 2: Parse the event body
+    // WARNING: Without Stripe SDK signature verification, this endpoint
+    // accepts unverified payloads. Install the `stripe` package and
+    // verify signatures before processing real payments.
     let event;
     try {
         event = JSON.parse(body);

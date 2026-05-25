@@ -1,9 +1,8 @@
 
 'use client';
-import type { Message } from "@/app/chat/[doctor]/page";
+import type { Message } from "@/lib/types";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Volume2, PlayCircle, Loader2, StopCircle, Soundwave } from "lucide-react";
-import Image from "next/image";
+import { User, Soundwave, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +51,9 @@ export function ChatBubble({ message, doctor, playingMessageId, onPlayAudio }: C
         <div className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
            {message.role === 'model' && (
                <Avatar className="w-9 h-9">
-                    <Image src={doctor.avatar} alt={doctor.name} width={36} height={36} className="rounded-full" data-ai-hint={doctor.dataAiHint}/>
+                    <AvatarFallback className="bg-primary/10 text-primary text-sm font-bold">
+                        {doctor.name.charAt(0)}
+                    </AvatarFallback>
                </Avatar>
            )}
            <div className={`rounded-2xl p-3 max-w-[80%] w-fit text-sm shadow-md ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card glass-card border-0'}`}>

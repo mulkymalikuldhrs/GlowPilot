@@ -1,9 +1,9 @@
 
 'use server';
 /**
- * @fileOverview An AI agent for fetching products from e-commerce sites and generating affiliate links.
+ * @fileOverview An AI agent for generating skincare product recommendations.
  *
- * - getCatalogProducts - A function that fetches product data based on a query.
+ * - getCatalogProducts - A function that provides product data based on a query.
  */
 
 import {ai} from '@/ai/genkit';
@@ -17,40 +17,40 @@ import {
 
 // This prompt is dynamically generated based on user input.
 const catalogPromptTemplate = (productQuery: string, platform: string = "Shopee") => `
-You are GlowPilot Catalog Agent, an expert AI that finds skincare products from e-commerce sites like ${platform} and structures the data for GlowPilot's catalog.
+You are GlowPilot Catalog Agent, an expert AI that recommends skincare products from e-commerce sites like ${platform} and structures the data for GlowPilot's catalog.
 
 # Goal:
-Find 4-6 of the most relevant, popular, and highly-rated skincare products that match the user's search query: "${productQuery}". For each product, create a data object and generate a valid affiliate link.
+Recommend 4-6 of the most relevant, popular, and highly-rated skincare products that match the user's search query: "${productQuery}". For each product, create a data object with search-based links.
 
 # Instructions:
-1.  **Search Simulation:** Use your knowledge to find real, well-known skincare products available in the Indonesian market on ${platform} that are a great match for "${productQuery}".
-2.  **Data Extraction:** For each product you find, extract or generate the following information:
+1.  **Product Knowledge:** Use your knowledge to suggest real, well-known skincare products available in the Indonesian market that are a great match for "${productQuery}".
+2.  **Data Extraction:** For each product you recommend, extract or generate the following information:
     *   **title:** The full, correct product name.
-    *   **price:** A realistic price in Indonesian Rupiah (Rp). Format: "RpXX.XXX".
+    *   **price:** A realistic estimated price in Indonesian Rupiah (Rp). Format: "RpXX.XXX". This is an estimate and may vary.
     *   **description:** A very brief, one-sentence compelling description in Bahasa Indonesia.
-    *   **image_url:** A placeholder image URL from placehold.co. The image MUST be square (e.g., 300x300).
-    *   **rating:** A realistic user rating between 4.7 and 5.0.
-    *   **affiliate_link:** The most important step. You MUST generate a valid affiliate link. First, create a plausible original product URL. Then, encode it and insert it into the correct affiliate template.
-3.  **Affiliate Link Generation (Crucial):**
-    *   First, create a realistic, direct product URL. Example: \`https://shopee.co.id/SOMETHINC-Niacinamide-Moisture-Beet-Serum-20ml-i.182430981.2829975743\`
-    *   URL-encode this direct link.
-    *   Insert the encoded URL into the affiliate template for the specified platform.
-        *   **Shopee Template:** \`https://shopee.co.id/universal-link?af_click_id=GLOWPILOT_USER&af_siteid=glowpilot&url={ENCODED_PRODUCT_URL}\`
-        *   **Tokopedia Template:** \`https://ta.tokopedia.link?af_click_id=GLOWPILOT_USER&af_siteid=glowpilot&url={ENCODED_PRODUCT_URL}\`
+    *   **image_url:** Leave this as an empty string "". The app will display a product placeholder.
+    *   **rating:** A realistic user rating between 4.5 and 5.0 based on general market knowledge.
+    *   **affiliate_link:** Generate a search URL on the specified platform so users can find the product. Do NOT fabricate specific product page URLs.
+3.  **Search Link Generation (Crucial):**
+    *   Instead of fabricating direct product URLs, generate a search query link that users can click to find the product on the platform.
+    *   **Shopee Search Template:** \`https://shopee.co.id/search?keyword={URL_ENCODED_PRODUCT_NAME}\`
+    *   **Tokopedia Search Template:** \`https://www.tokopedia.com/search?q={URL_ENCODED_PRODUCT_NAME}\`
+    *   URL-encode the product name before inserting it into the template.
 4.  **Final Output:**
     *   Return ONLY a valid JSON array of these product objects.
-    *   Do not include any products that are out of stock or have a rating below 4.7.
+    *   Do not include any products that are out of stock or have a rating below 4.5.
     *   Ensure all text in descriptions is in Bahasa Indonesia.
     *   There should be NO other text, explanations, or markdown in your response. Just the raw JSON array.
+    *   Set image_url to an empty string "" for every product.
 
 # Example JSON Object for a single product:
   {
     "title": "SOMETHINC Niacinamide + Moisture Beet Serum",
     "price": "Rp89.000",
     "description": "Serum niacinamide untuk mengatasi kulit kusam dan mencerahkan wajah.",
-    "image_url": "https://placehold.co/300x300.png",
+    "image_url": "",
     "rating": "4.9",
-    "affiliate_link": "https://shopee.co.id/universal-link?af_click_id=GLOWPILOT_USER&af_siteid=glowpilot&url=https%3A%2F%2Fshopee.co.id%2FSOMETHINC-Niacinamide-Moisture-Beet-Serum-20ml-i.182430981.2829975743"
+    "affiliate_link": "https://shopee.co.id/search?keyword=SOMETHINC%20Niacinamide%20Moisture%20Beet%20Serum"
   }
 `;
 

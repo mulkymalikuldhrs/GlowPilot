@@ -3,7 +3,7 @@
 
 import { conductDiagnosis, type DiagnosisConversationOutput } from "@/ai/flows/conversational-diagnosis-flow";
 import { textToSpeech } from "@/ai/flows/tts-flow";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingCart, Languages, MoreVertical, Loader2 } from "lucide-react";
@@ -229,6 +229,7 @@ export default function DoctorChatPage() {
                 <div>
                     {input && <p>{input}</p>}
                     {attachedImage && (
+                        /* eslint-disable-next-line @next/next/no-img-element */
                         <img src={attachedImage} alt="Lampiran pengguna" width={150} height={150} className="rounded-lg mt-2"/>
                     )}
                 </div>
@@ -318,8 +319,9 @@ export default function DoctorChatPage() {
             <header className="sticky top-0 z-10 flex items-center justify-between p-2 border-b bg-background/80 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                      <Avatar className="w-10 h-10 border-2 border-primary/50">
-                        <AvatarImage src={doctor.avatar} alt={doctor.name} data-ai-hint={doctor.dataAiHint} />
-                        <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className={`${doctor.color} text-sm font-bold`}>
+                            {doctor.initials}
+                        </AvatarFallback>
                     </Avatar>
                     <div>
                         <p className="font-bold">{doctor.name}</p>

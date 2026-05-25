@@ -10,7 +10,7 @@ import type { Message, DiagnosisMessage } from "@/lib/types";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { doctors } from "@/lib/doctors";
 import type { DoctorSlug } from "@/lib/doctors";
 import { Info } from "lucide-react";
@@ -102,8 +102,9 @@ export default function HistoryDetailPage() {
                         <ArrowLeft className="w-5 h-5"/>
                     </Button>
                      <Avatar className="w-10 h-10 border-2 border-primary/50">
-                        <AvatarImage src={doctorInfo.avatar} alt={doctorInfo.name} data-ai-hint={doctorInfo.dataAiHint} />
-                        <AvatarFallback>{doctorInfo.name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className={`${doctorInfo.color} text-sm font-bold`}>
+                            {doctorInfo.initials}
+                        </AvatarFallback>
                     </Avatar>
                     <div>
                         <p className="font-bold">{consultation.doctor.name}</p>

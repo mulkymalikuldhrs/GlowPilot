@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Star, MessageSquare, Ghost } from 'lucide-react';
-import Image from 'next/image';
+import { Search, Star, MessageSquare, Ghost, Package } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useTransition } from 'react';
 import type {z} from 'genkit';
@@ -88,15 +87,18 @@ export default function CatalogPage() {
     <Card className="w-full glass-card overflow-hidden flex flex-col">
       <CardContent className="p-0 flex flex-col flex-grow">
         <div className="relative">
-          <Image
-            src={product.image_url}
-            alt={product.title}
-            width={300}
-            height={300}
-            className="w-full aspect-square object-cover"
-            unoptimized
-            data-ai-hint="skincare product"
-          />
+          {product.image_url ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={product.image_url}
+              alt={product.title}
+              className="w-full aspect-square object-cover"
+            />
+          ) : (
+            <div className="w-full aspect-square bg-muted flex items-center justify-center">
+              <Package className="w-12 h-12 text-muted-foreground/40" />
+            </div>
+          )}
           <Badge className="absolute top-2 right-2 flex items-center gap-1 bg-black/50 text-white">
             <Star className="w-3 h-3 text-yellow-300 fill-yellow-300" />
             {product.rating}
@@ -105,12 +107,14 @@ export default function CatalogPage() {
         <div className="p-4 space-y-2 flex flex-col flex-grow">
           <h3 className="font-bold text-sm leading-snug flex-grow">{product.title}</h3>
           <p className="text-sm text-muted-foreground font-semibold">{product.price}</p>
+          <p className="text-xs text-muted-foreground">{product.description}</p>
           <Button
             className="w-full text-primary-foreground bg-primary"
             asChild
           >
             <Link href={product.affiliate_link} target="_blank" rel="noopener noreferrer">
-              Beli Sekarang
+              <Search className="w-3 h-3 mr-1" />
+              Cari di E-commerce
             </Link>
           </Button>
         </div>
@@ -178,4 +182,3 @@ export default function CatalogPage() {
     </div>
   );
 }
-

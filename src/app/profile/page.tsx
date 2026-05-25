@@ -90,7 +90,7 @@ export default function ProfilePage() {
                         <div className='flex flex-col items-center gap-2 text-xs text-muted-foreground'>
                             <Sparkles className="w-5 h-5 text-primary"/>
                             <span className="font-medium">Dikembangkan oleh Mulky Malikul Dhaher</span>
-                            <span>mulkymalikuldhr@mail.com</span>
+                            <span>mulkymalikuldhaher@email.com</span>
                         </div>
                     </CardContent>
                 </Card>

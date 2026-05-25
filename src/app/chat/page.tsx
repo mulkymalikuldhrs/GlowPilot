@@ -2,8 +2,8 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ArrowRight } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { doctors } from '@/lib/doctors';
 
@@ -24,14 +24,11 @@ export default function DoctorSelectionPage() {
                     <Card key={doctor.slug} className="glass-card overflow-hidden hover:border-primary/50 transition-colors">
                          <Link href={`/chat/${doctor.slug}`} className="block">
                             <CardContent className="p-4 flex items-center gap-4">
-                                <Image 
-                                    src={doctor.avatar} 
-                                    alt={doctor.name}
-                                    width={80} 
-                                    height={80} 
-                                    className="rounded-full border-2 border-primary/20"
-                                    data-ai-hint={doctor.dataAiHint}
-                                />
+                                <Avatar className="w-20 h-20 border-2 border-primary/20">
+                                    <AvatarFallback className={`${doctor.color} text-lg font-bold`}>
+                                        {doctor.initials}
+                                    </AvatarFallback>
+                                </Avatar>
                                 <div className="flex-1">
                                     <h2 className="font-bold text-base">{doctor.name}</h2>
                                     <p className="text-sm text-primary font-medium">{doctor.specialty}</p>

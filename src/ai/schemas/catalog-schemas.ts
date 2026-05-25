@@ -17,11 +17,11 @@ export type CatalogInput = z.infer<typeof CatalogInputSchema>;
 
 export const ProductSchema = z.object({
   title: z.string().describe('The name of the product.'),
-  price: z.string().describe('The price of the product.'),
+  price: z.string().describe('The estimated price of the product.'),
   description: z.string().describe('A short description of the product.'),
-  image_url: z.string().describe('The URL for the product image.'),
-  rating: z.string().describe('The product rating, must be 4.7 or higher.'),
-  affiliate_link: z.string().describe('The generated affiliate link for the product.'),
+  image_url: z.string().describe('The URL for the product image. Empty string if unavailable.'),
+  rating: z.string().describe('The product rating, must be 4.5 or higher.'),
+  affiliate_link: z.string().describe('A search URL on the e-commerce platform for the product.'),
 });
 
 export const CatalogOutputSchema = z.array(ProductSchema);

@@ -5,7 +5,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15-000000.svg?logo=next.js)](https://nextjs.org/)
 [![Genkit AI](https://img.shields.io/badge/Genkit_AI-1.16-FF6F00.svg)](https://genkit.dev/)
 
-**GlowPilot Copilot** adalah platform dermatologi virtual berbasis AI yang menganalisis kondisi kulit melalui chat, suara, atau foto, serta memberikan rekomendasi rutinitas skincare yang dipersonalisasi. Platform ini menampilkan antarmuka futuristik dengan efek glassmorphism dan animasi aurora, serta terintegrasi dengan link afiliasi untuk pembelian produk.
+**GlowPilot Copilot** adalah platform dermatologi virtual berbasis AI yang menganalisis kondisi kulit melalui chat, suara, atau foto, serta memberikan rekomendasi rutinitas skincare yang dipersonalisasi. Platform ini menampilkan antarmuka futuristik dengan efek glassmorphism dan animasi aurora.
 
 [![Read in English](https://img.shields.io/badge/English-US-blue.svg)](README.md)
 [![阅读中文](https://img.shields.io/badge/Chinese-中文-green.svg)](README_zh.md)
@@ -30,7 +30,7 @@
 
 ## Gambaran Umum
 
-GlowPilot Copilot mendefinisikan ulang cara pengguna berinteraksi dengan perawatan kulit. Dengan memanfaatkan Google Genkit AI dan Firebase, platform ini menghadirkan pengalaman dermatologi cerdas dan konversasional yang menyesuaikan dengan profil kulit unik setiap pengguna. Platform menyediakan diagnosis berbasis AI melalui input teks, suara, dan gambar, serta menghasilkan rutinitas skincare AM/PM yang dipersonalisasi lengkap dengan rekomendasi produk dan link pembelian afiliasi.
+GlowPilot Copilot mendefinisikan ulang cara pengguna berinteraksi dengan perawatan kulit. Dengan memanfaatkan Google Genkit AI dan Firebase, platform ini menghadirkan pengalaman dermatologi cerdas dan konversasional yang menyesuaikan dengan profil kulit unik setiap pengguna. Platform menyediakan diagnosis berbasis AI melalui input teks, suara, dan gambar, serta menghasilkan rutinitas skincare AM/PM yang dipersonalisasi dengan rekomendasi produk dan tautan pencarian e-commerce.
 
 Aplikasi ini dirancang dengan estetika futuristik yang menampilkan UI glassmorphism, latar belakang aurora beranimasi, dan transisi Framer Motion yang halus. Mendukung mode terang dan gelap, serta toggle bahasa untuk Inggris dan Bahasa Indonesia. GlowPilot bukan pengganti dokter kulit medis; ini adalah alat edukasi dan advisory yang memberdayakan pengguna untuk membuat keputusan skincare yang lebih baik.
 
@@ -42,14 +42,14 @@ Proyek ini merupakan bagian dari ekosistem [HermesQuantOS](https://github.com/mu
 
 - **Dokter Kulit AI**: Diagnosis kondisi kulit berbasis chat menggunakan input teks, suara, atau foto. Tersedia berbagai persona dokter AI dengan keahlian dan gaya komunikasi yang unik.
 - **Chat Suara**: Integrasi speech-to-text dan text-to-speech penuh menggunakan Web Speech API dan ElevenLabs untuk interaksi natural tanpa tangan.
-- **Scraper Produk**: Mengambil data produk secara otomatis dari platform e-commerce (Shopee, Sociolla, dll.) untuk harga dan ketersediaan terkini.
+- **Katalog Produk**: Rekomendasi produk skincare berbasis AI dengan tautan pencarian e-commerce.
 - **Perbandingan Produk**: Perbandingan produk skincare berbasis AI berdasarkan harga, rating, dan bahan aktif dengan label seperti Best Value, Pilihan Dokter, dan Termurah.
 - **Rutinitas Skincare**: Menghasilkan rutinitas skincare AM/PM yang dipersonalisasi berdasarkan hasil diagnosis dan preferensi pengguna.
 - **Pelacakan Progres**: Lacak kepatuhan rutinitas skincare, tetapkan tujuan, dan pantau peningkatan dari waktu ke waktu.
 - **Profil Pengguna**: Kelola profil pengguna, riwayat kulit, dan preferensi untuk pengalaman yang disesuaikan.
 - **UI Responsif**: Toggle mode Terang/Gelap dan pengganti bahasa (Inggris/Bahasa Indonesia) dengan sistem desain glassmorphism.
 - **Sistem Referral**: Undang teman dan buka kunci persona dokter AI tambahan.
-- **Integrasi Afiliasi**: Tombol pembelian tertanam dengan link afiliasi untuk pembelian produk yang mulus.
+- **Perlindungan Rute**: Middleware autentikasi untuk halaman yang dilindungi.
 
 ---
 
@@ -202,7 +202,7 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 
 # Google AI (Genkit)
-GOOGLE_GENAI_API_KEY=
+GEMINI_API_KEY=
 ```
 
 ---
@@ -238,3 +238,6 @@ Dikembangkan oleh **Mulky Malikul Dhaher** - AI & UX Visionary
 ## Disclaimer
 
 GlowPilot Copilot adalah alat edukasi dan advisory berbasis AI. Ini bukan pengganti saran, diagnosis, atau perawatan medis profesional. Selalu konsultasikan dengan dokter kulit yang berkualifikasi untuk masalah medis. Semua data ditangani secara anonim, dan gambar wajah tidak pernah disimpan di server kami.
+
+**⚠️ Hanya untuk Tujuan Pendidikan** — Proyek ini disediakan secara ketat untuk tujuan pendidikan dan penelitian. Kami tidak menanggung tanggung jawab atau risiko apa pun untuk penggunaan perangkat lunak ini.
+**Kontak:** Mulky Malikul Dhaher | mulkymalikuldhaher@email.com

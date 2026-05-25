@@ -2,10 +2,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useUser } from '@/hooks/use-user';
-import { CheckCircle, Bot, LineChart, Sparkles, Star, Loader2 } from 'lucide-react';
-import Image from 'next/image';
+import { CheckCircle, Bot, LineChart, Sparkles, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -28,23 +27,6 @@ const features = [
         description: "Pantau perjalanan kesehatan kulit Anda dan lihat hasilnya secara visual dengan sistem pelacakan kami."
     }
 ];
-
-const testimonials = [
-    {
-        name: "Alya Putri",
-        title: "Mahasiswi",
-        avatar: "https://placehold.co/100x100.png",
-        dataAiHint: "woman smiling",
-        text: "GlowPilot benar-benar mengubah cara saya merawat kulit. Dokter AI-nya sangat membantu menemukan produk yang cocok untuk jerawat hormonal saya."
-    },
-    {
-        name: "Rizky Pratama",
-        title: "Pekerja Kantoran",
-        avatar: "https://placehold.co/100x100.png",
-        dataAiHint: "man professional",
-        text: "Sebagai seorang pria, saya sering bingung soal skincare. GlowPilot membuatnya sangat sederhana dan mudah diikuti. Kulit saya jauh lebih baik sekarang."
-    }
-]
 
 export default function LandingPage() {
     const { user, isNewUser, isLoading } = useUser();
@@ -103,14 +85,15 @@ export default function LandingPage() {
                                 </div>
                             </div>
                             <div className="flex justify-center">
-                                    <Image 
-                                    src="https://placehold.co/600x600.png"
-                                    alt="Hero Image"
-                                    width={600}
-                                    height={600}
-                                    className="rounded-xl shadow-2xl"
-                                    data-ai-hint="glowing skin"
-                                />
+                                <div className="w-full max-w-[600px] aspect-square rounded-xl shadow-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center">
+                                    <div className="text-center p-8">
+                                        <div className="inline-flex items-center justify-center bg-primary/10 text-primary rounded-full w-24 h-24 mb-6">
+                                            <Sparkles className="w-12 h-12" />
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-foreground/80">GlowPilot AI</h2>
+                                        <p className="text-muted-foreground mt-2">Konsultasi Kulit Cerdas</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -175,42 +158,16 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-
-                <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
+                <section id="community" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center text-center space-y-4">
-                            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl" style={{fontFamily: 'Sora, sans-serif'}}>Dicintai oleh Pengguna Kami</h2>
-                                <div className="flex items-center gap-1 text-primary">
-                                <Star className="w-6 h-6 fill-current"/>
-                                <Star className="w-6 h-6 fill-current"/>
-                                <Star className="w-6 h-6 fill-current"/>
-                                <Star className="w-6 h-6 fill-current"/>
-                                <Star className="w-6 h-6 fill-current"/>
-                                <span className="text-foreground ml-2 font-semibold">5.0 dari 2,187 ulasan</span>
-                            </div>
-                        </div>
-                        <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 mt-12">
-                            {testimonials.map((testimonial, index) => (
-                                <Card key={index} className="glass-card">
-                                    <CardContent className="p-6">
-                                        <p className="mb-4">"{testimonial.text}"</p>
-                                        <div className="flex items-center gap-3">
-                                            <Image 
-                                                src={testimonial.avatar} 
-                                                alt={testimonial.name}
-                                                width={40}
-                                                height={40}
-                                                className="rounded-full"
-                                                data-ai-hint={testimonial.dataAiHint}
-                                            />
-                                            <div>
-                                                <p className="font-semibold">{testimonial.name}</p>
-                                                <p className="text-sm text-muted-foreground">{testimonial.title}</p>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl" style={{fontFamily: 'Sora, sans-serif'}}>Bergabung dengan Komunitas Kami</h2>
+                            <p className="max-w-[600px] text-muted-foreground">
+                                Mulai perjalanan perawatan kulit Anda bersama ribuan pengguna yang telah mempercayai GlowPilot sebagai asisten dermatologi virtual mereka.
+                            </p>
+                            <Button asChild size="lg" className="mt-4">
+                                <Link href="/login">Mulai Sekarang — Gratis</Link>
+                            </Button>
                         </div>
                     </div>
                 </section>

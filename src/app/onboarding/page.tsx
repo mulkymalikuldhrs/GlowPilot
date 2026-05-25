@@ -16,8 +16,8 @@ import { doc, setDoc } from "firebase/firestore";
 const onboardingAI = { 
     name: 'GlowPilot Assistant', 
     specialty: 'Onboarding Specialist', 
-    avatar: 'https://placehold.co/100x100.png',
-    dataAiHint: 'friendly robot',
+    avatar: '',
+    dataAiHint: '',
     voice: 'nova'
 };
 
@@ -138,7 +138,6 @@ export default function OnboardingPage() {
                 loading={loading}
                 doctor={onboardingAI}
                 isLanding={true}
-                onGenerateAudio={() => {}}
                 onPlayAudio={() => {}}
                 playingMessageId={null}
             />

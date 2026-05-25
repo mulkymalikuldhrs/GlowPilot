@@ -4,7 +4,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Paperclip, SendHorizonal, XCircle } from "lucide-react";
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { VoiceInput } from "./VoiceInput";
 
@@ -42,7 +41,8 @@ export function MessageInput({
         <div className="space-y-2">
              {attachedImage && (
                 <div className="relative w-20 h-20 ml-4">
-                    <Image src={attachedImage} alt="Lampiran" fill objectFit="cover" className="rounded-md" />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={attachedImage} alt="Lampiran" className="w-full h-full object-cover rounded-md" />
                     <Button
                         variant="destructive"
                         size="icon"

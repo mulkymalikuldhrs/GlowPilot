@@ -2,9 +2,8 @@
 'use client';
 
 import type { Message } from '@/lib/types';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Loader2, Sparkles, User, Info } from 'lucide-react';
-import Image from 'next/image';
 import { useRef, useEffect } from 'react';
 import { ChatBubble } from './ChatBubble';
 
@@ -66,7 +65,9 @@ export function ChatWindow({
             {loading && (
                  <div className="flex items-start gap-3">
                      <Avatar className="w-9 h-9">
-                        <Image src={doctor.avatar} alt={doctor.name} width={36} height={36} className="rounded-full" data-ai-hint={doctor.dataAiHint}/>
+                        <AvatarFallback className="bg-primary/10 text-primary text-sm font-bold">
+                            {doctor.name.charAt(0)}
+                        </AvatarFallback>
                      </Avatar>
                      <div className="rounded-2xl p-3 max-w-lg bg-muted flex items-center space-x-2">
                          <Loader2 className="h-4 w-4 animate-spin text-primary" />
